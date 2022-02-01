@@ -1,9 +1,9 @@
 openapi: 3.0.2
 info:
-  title: Arbeidsoppfølging API
+  title: Aktivitetsplan API
   version: '1.0'
 servers:
-  - url: https://veilarbapi
+  - url: https://veilarbaktivitet
 components:
   schemas:
     aktivitet:

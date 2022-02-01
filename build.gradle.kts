@@ -21,14 +21,31 @@ repositories {
     mavenCentral()
 }
 
-openApiGenerate {
-    generatorName.set("kotlin")
-    inputSpec.set("$projectDir/src/main/resources/openapi/ArbeidsoppfolgingV1.yaml")
-    outputDir.set("$buildDir/generated")
+task("generateAktivitetsplanClient") {
+    openApiGenerate {
+        id.set("aktivitetsplan-client")
+        generatorName.set("kotlin")
+        inputSpec.set("$projectDir/src/main/resources/openapi/AktivitetsplanV1.yaml")
+        groupId.set("no.nav.veilarbaktivitet")
+        packageName.set("no.nav.veilarbaktivitet.client")
+        outputDir.set("$buildDir/generated")
+    }
+}
+
+task("generateArbeidsoppfolgingServer") {
+    openApiGenerate {
+        id.set("arbeidsoppfolging-server")
+        generatorName.set("kotlin-server")
+        library.set("ktor")
+        inputSpec.set("$projectDir/src/main/resources/openapi/ArbeidsoppfolgingV1.yaml")
+        groupId.set("no.nav.veilarbapi")
+        packageName.set("no.nav.veilarbapi.server")
+        outputDir.set("$buildDir/generated")
+    }
 }
 
 tasks.named( "compileKotlin") {
-    dependsOn( ":openApiGenerate" )
+    dependsOn( ":generateAktivitetsplanClient", ":generateArbeidsoppfolgingServer" )
 }
 
 dependencies {
