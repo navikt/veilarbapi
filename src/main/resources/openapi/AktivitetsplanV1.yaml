@@ -214,6 +214,7 @@ components:
             $ref: '#/components/schemas/aktivitet'
           description: Liste med aktiviteter tilknyttet en oppfølgingsperiode
 
+
 paths:
   /internal/api/v1/aktivitet/:
     get:

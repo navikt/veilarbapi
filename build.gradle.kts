@@ -7,6 +7,7 @@ plugins {
     kotlin("jvm") version "1.6.10"
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
     id ("org.openapi.generator") version "5.3.0"
+    idea
 }
 
 group = "no.nav.poao"
@@ -41,6 +42,13 @@ task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateArbei
 tasks.named( "compileKotlin") {
     dependsOn( "generateAktivitetsplanClient", "generateArbeidsoppfolgingServer")
 }
+
+idea {
+    module {
+        generatedSourceDirs.add(file("$buildDir/generated/src"))
+    }
+}
+
 
 dependencies {
     implementation("io.ktor:ktor-metrics:$ktor_version")
