@@ -10,20 +10,29 @@ components:
       type: object
       discriminator:
         propertyName: aktivitet_type
+#        mapping:
+#          egenaktivitet   : '#/components/schemas/egenaktivitet'
+#          jobbsoeking     : '#/components/schemas/jobbsoeking'
+#          sokeavtale      : '#/components/schemas/sokeavtale'
+#          ijobb           : '#/components/schemas/ijobb'
+#          behandling      : '#/components/schemas/behandling'
+#          mote            : '#/components/schemas/mote'
+#          samtalereferat  : '#/components/schemas/samtalereferat'
+#          stilling_fra_nav: '#/components/schemas/stilling_fra_nav'
       required:
         - aktivitet_type
       properties:
         aktivitet_type:
           type: string
-          enum:
-            - egenaktivitet
-            - jobbsoeking
-            - sokeavtale
-            - ijobb
-            - behandling
-            - mote
-            - samtalereferat
-            - stilling_fra_nav
+#          enum:
+#            - egenaktivitet
+#            - jobbsoeking
+#            - sokeavtale
+#            - ijobb
+#            - behandling
+#            - mote
+#            - samtalereferat
+#            - stilling_fra_nav
           example: samtalereferat
         kontorsperre_enhet_id:
           type: string
