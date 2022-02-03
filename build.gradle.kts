@@ -31,16 +31,16 @@ repositories {
     mavenCentral()
 }
 
-//
-//task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateAktivitetsplanClient") {
-//    generatorName.set("java")
-//    inputSpec.set("$projectDir/src/main/resources/openapi/AktivitetsplanV1.yaml")
-//    packageName.set("no.nav.veilarbaktivitet.client")
-//    apiPackage.set("no.nav.veilarbaktivitet.api")
-//    modelPackage.set("no.nav.veilarbaktivitet.model")
-//
-//    outputDir.set("$buildDir/generated")
-//}
+
+task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateAktivitetsplanClient") {
+    generatorName.set("kotlin")
+    inputSpec.set("$projectDir/src/main/resources/openapi/AktivitetsplanV1.yaml")
+    packageName.set("no.nav.veilarbaktivitet.client")
+    apiPackage.set("no.nav.veilarbaktivitet.api")
+    modelPackage.set("no.nav.veilarbaktivitet.model")
+
+    outputDir.set("$buildDir/generated")
+}
 
 task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateAktivitetsplanServer") {
     generatorName.set("java")
@@ -57,7 +57,7 @@ task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateAktiv
 }
 
 tasks.named( "compileKotlin") {
-    dependsOn( "generateAktivitetsplanServer")
+    dependsOn( "generateAktivitetsplanServer", "generateAktivitetsplanClient")
 }
 java.sourceSets["main"].java.srcDir("$buildDir/generated/src/main/java")
 
@@ -69,9 +69,12 @@ dependencies {
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
     api("javax.validation:validation-api:2.0.1.Final")
-    implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    implementation("io.ktor:ktor-gson:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
+    implementation(group= "ch.qos.logback", name= "logback-classic", version= "1.2.6")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
     // avhengigheter i generert kode
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("io.gsonfire:gson-fire:1.8.5")
@@ -79,6 +82,8 @@ dependencies {
     implementation(group= "org.threeten", name= "threetenbp", version= "1.5.1")
     implementation("io.swagger:swagger-annotations:1.6.4")
     implementation("com.squareup.okio:okio:3.0.0")
+
+
     // avhengigheter i generert kode SLUTT
 
 }
