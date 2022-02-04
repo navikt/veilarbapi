@@ -6,34 +6,16 @@ servers:
   - url: https://api.server.test/v1
 components:
   schemas:
-    baseaktivitet:
+    Baseaktivitet:
       type: object
-      discriminator:
-        propertyName: aktivitet_type
-#        mapping:
-#          egenaktivitet   : '#/components/schemas/egenaktivitet'
-#          jobbsoeking     : '#/components/schemas/jobbsoeking'
-#          sokeavtale      : '#/components/schemas/sokeavtale'
-#          ijobb           : '#/components/schemas/ijobb'
-#          behandling      : '#/components/schemas/behandling'
-#          mote            : '#/components/schemas/mote'
-#          samtalereferat  : '#/components/schemas/samtalereferat'
-#          stilling_fra_nav: '#/components/schemas/stilling_fra_nav'
       required:
         - aktivitet_type
+      discriminator:
+        propertyName: aktivitet_type
       properties:
         aktivitet_type:
           type: string
-#          enum:
-#            - egenaktivitet
-#            - jobbsoeking
-#            - sokeavtale
-#            - ijobb
-#            - behandling
-#            - mote
-#            - samtalereferat
-#            - stilling_fra_nav
-          example: samtalereferat
+          example: Samtalereferat
         kontorsperre_enhet_id:
           type: string
         avtalt_med_nav:
@@ -67,18 +49,18 @@ components:
         endret_dato:
           type: string
           format: date-time
-    egenaktivitet:
+    Egenaktivitet:
       allOf:
-        - $ref: '#/components/schemas/baseaktivitet'
+        - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
             hensikt:
               type: string
             oppfolging:
               type: string
-    jobbsoeking:
+    Jobbsoeking:
       allOf:
-        - $ref: '#/components/schemas/baseaktivitet'
+        - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
             arbeidsgiver:
@@ -96,9 +78,9 @@ components:
                 - JOBBTILBUD
             kontaktPerson:
               type: string
-    sokeavtale:
+    Sokeavtale:
       allOf:
-        - $ref: '#/components/schemas/baseaktivitet'
+        - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
             antallStillingerSokes:
@@ -107,9 +89,9 @@ components:
               type: integer
             avtaleOppfolging:
               type: string
-    ijobb:
+    Ijobb:
       allOf:
-        - $ref: '#/components/schemas/baseaktivitet'
+        - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
             jobbStatusType:
@@ -121,9 +103,9 @@ components:
               type: string
             arbeidstid:
               type: string
-    behandling:
+    Behandling:
       allOf:
-        - $ref: '#/components/schemas/baseaktivitet'
+        - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
             behandlingType:
@@ -134,9 +116,9 @@ components:
               type: string
             behandlingOppfolging:
               type: string
-    mote:
+    Mote:
       allOf:
-        - $ref: '#/components/schemas/baseaktivitet'
+        - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
             adresse:
@@ -153,9 +135,9 @@ components:
               type: string
             referatPublisert:
               type: boolean
-    samtalereferat:
+    Samtalereferat:
       allOf:
-        - $ref: '#/components/schemas/baseaktivitet'
+        - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
             kanal:
@@ -168,9 +150,9 @@ components:
               type: string
             referatPublisert:
               type: boolean
-    stilling_fra_nav:
+    Stilling_fra_nav:
       allOf:
-        - $ref: '#/components/schemas/baseaktivitet'
+        - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
             cvKanDelesData:
@@ -211,7 +193,7 @@ components:
                 - SKAL_PAA_INTERVJU
                 - JOBBTILBUD
                 - AVSLAG
-    oppfolgingsperiode:
+    Oppfolgingsperiode:
       type: object
       properties:
         id:
@@ -220,19 +202,21 @@ components:
         aktiviteter:
           type: array
           items:
-            $ref: '#/components/schemas/aktivitet'
+            $ref: '#/components/schemas/Aktivitet'
           description: Liste med aktiviteter tilknyttet en oppfølgingsperiode
-    aktivitet:
+    Aktivitet:
       type: object
       oneOf:
-        - $ref: '#/components/schemas/egenaktivitet'
-        - $ref: '#/components/schemas/jobbsoeking'
-        - $ref: '#/components/schemas/sokeavtale'
-        - $ref: '#/components/schemas/ijobb'
-        - $ref: '#/components/schemas/behandling'
-        - $ref: '#/components/schemas/mote'
-        - $ref: '#/components/schemas/samtalereferat'
-        - $ref: '#/components/schemas/stilling_fra_nav'
+        - $ref: '#/components/schemas/Egenaktivitet'
+        - $ref: '#/components/schemas/Jobbsoeking'
+        - $ref: '#/components/schemas/Sokeavtale'
+        - $ref: '#/components/schemas/Ijobb'
+        - $ref: '#/components/schemas/Behandling'
+        - $ref: '#/components/schemas/Mote'
+        - $ref: '#/components/schemas/Samtalereferat'
+        - $ref: '#/components/schemas/Stilling_fra_nav'
+      discriminator:
+        propertyName: aktivitet_type
 paths:
   /aktivitetsplan:
     get:
@@ -254,4 +238,4 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/oppfolgingsperiode'
+                  $ref: '#/components/schemas/Oppfolgingsperiode'

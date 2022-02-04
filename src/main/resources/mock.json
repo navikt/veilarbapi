@@ -1,0 +1,21 @@
+ {
+    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+    "aktiviteter": [
+      {
+        "aktivitet_type": "Mote",
+        "avtalt_med_nav": false,
+        "status": "FULLFORT",
+        "beskrivelse": "Planleggingsmøte",
+        "tittel": "Beste møtet ever",
+        "fra_dato": "2030-08-21T08:00:00+02:00",
+        "til_dato": "2030-08-21T12:15:00+02:00",
+        "opprettet_dato": "2018-08-21T11:55:14.044+02:00",
+        "endret_dato": "2018-08-21T11:57:57.636+02:00",
+        "adresse": "NAV Sandakerveien 12",
+        "forberedelser": "N/A",
+        "kanal": "OPPMOTE",
+        "referat": "Vi pratet om litt av hvert",
+        "referatPublisert": true
+      }
+    ]
+  }
