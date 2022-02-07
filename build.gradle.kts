@@ -56,22 +56,6 @@ task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateAktiv
     outputDir.set("$buildDir/generated")
 }
 
-tasks.withType<Jar>() {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from(sourceSets.main.get().output)
-
-    manifest {
-        attributes["Main-Class"] = "no.nav.poao.ApplicationKt"
-    }
-
-    dependsOn(configurations.runtimeClasspath)
-    from({
-        configurations.runtimeClasspath.get()
-            .filter { it.name.endsWith("jar") }
-            .map { zipTree(it) }
-    })
-}
-
 tasks.named( "compileKotlin") {
     dependsOn( "generateAktivitetsplanServer", "generateAktivitetsplanClient")
 }
@@ -90,7 +74,7 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
     implementation(group= "ch.qos.logback", name= "logback-classic", version= "1.2.6")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
     // avhengigheter i generert kode
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("io.gsonfire:gson-fire:1.8.5")
