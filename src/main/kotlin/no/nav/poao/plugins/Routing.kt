@@ -15,7 +15,7 @@ fun Application.configureRouting() {
             call.respond(HttpStatusCode.OK, "pong")
         }
         get("/arbeidsoppfolging") {
-            call.respond(getMockData())
+            call.respond(getMockData(fromMockFile = true))
         }
     }
 }

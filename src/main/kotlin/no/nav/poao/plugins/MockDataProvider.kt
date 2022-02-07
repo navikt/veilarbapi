@@ -2,11 +2,38 @@ package no.nav.poao.plugins
 
 import io.ktor.application.*
 import no.nav.veilarbapi.JSON
+import no.nav.veilarbapi.model.Aktivitet
+import no.nav.veilarbapi.model.Baseaktivitet
+import no.nav.veilarbapi.model.Mote
 import no.nav.veilarbapi.model.Oppfolgingsperiode
+import org.threeten.bp.OffsetDateTime
+import java.time.Instant
+import java.util.*
 
-fun Application.getMockData(): Oppfolgingsperiode {
-    val mockDataFileName = "mock.json"
-    val json = this::class.java.classLoader.getResource(mockDataFileName).readText(Charsets.UTF_8)
-    JSON()
-    return JSON.deserialize<Oppfolgingsperiode>(json, Oppfolgingsperiode::class.java)
+fun Application.getMockData(fromMockFile: Boolean): Oppfolgingsperiode {
+    if (fromMockFile) {
+        val mockDataFileName = "mock.json"
+        val json = this::class.java.classLoader.getResource(mockDataFileName).readText(Charsets.UTF_8)
+        return JSON.deserialize(json, Oppfolgingsperiode::class.java)
+    } else return oppfolgingsperiode()
+}
+
+fun oppfolgingsperiode() : Oppfolgingsperiode {
+    val mote: Mote = Mote()
+        .referat("Vi pratet om litt av hvert")
+        .adresse("Nav Sandaker")
+        .forberedelser("Agenda")
+        .endretDato(OffsetDateTime.now().minusDays(2))
+        .fraDato(OffsetDateTime.now())
+        .tilDato(OffsetDateTime.now().plusDays(2))
+        .avtaltMedNav(true)
+        .tittel("Møte")
+        .beskrivelse("Beste møtet ever")
+        .opprettetDato(OffsetDateTime.now()) as Mote
+
+
+    val oppfolgingsperiode = Oppfolgingsperiode()
+        .id(UUID.randomUUID())
+        .addAktiviteterItem(Aktivitet(mote))
+    return oppfolgingsperiode
 }
