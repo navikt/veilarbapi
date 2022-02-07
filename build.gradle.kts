@@ -56,6 +56,22 @@ task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateAktiv
     outputDir.set("$buildDir/generated")
 }
 
+tasks.withType<Jar>() {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from(sourceSets.main.get().output)
+
+    manifest {
+        attributes["Main-Class"] = "no.nav.poao.ApplicationKt"
+    }
+
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get()
+            .filter { it.name.endsWith("jar") }
+            .map { zipTree(it) }
+    })
+}
+
 tasks.named( "compileKotlin") {
     dependsOn( "generateAktivitetsplanServer", "generateAktivitetsplanClient")
 }
