@@ -22,7 +22,7 @@ java {
 }
 
 group = "no.nav.poao"
-version = "0.0.1"
+version = ""
 application {
     mainClass.set("no.nav.poao.ApplicationKt")
 }
