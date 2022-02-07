@@ -17,9 +17,8 @@ class ApplicationTest {
     @Test
     fun testPing() {
         withTestApplication({ configureRouting() }) {
-            handleRequest(HttpMethod.Get, "/ping").apply {
+            handleRequest(HttpMethod.Get, "/internal/isAlive").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                assertEquals("pong", response.content)
             }
         }
     }
