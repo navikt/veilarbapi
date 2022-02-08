@@ -71,6 +71,30 @@ class ApplicationTest {
     }
 
     @Test
+    fun testMockAktiviteter() {
+        val expectedMockDataFile = "mock/aktiviteter.json"
+        val json = this::class.java.classLoader.getResource(expectedMockDataFile)
+            .readText(Charsets.UTF_8)
+        JSON()
+
+        val expectedAktiviteter = JSON.deserialize<Array<Aktivitet>>(json, Aktivitet::class.java.arrayType())
+        withTestApplication({
+            configureRouting()
+            configureSerialization()
+        }) {
+            handleRequest(HttpMethod.Get, "/v1/oppfolging/aktivitet?aktorId=12345678") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val aktiviteter = JSON.deserialize<Array<Aktivitet>>(json, Aktivitet::class.java.arrayType())
+// assert expectedAktiviteter has same content as aktiviteter
+                val aktivitet = aktiviteter?.get(0)?.actualInstance
+                assertThat(aktivitet, instanceOf(Mote::class.java))
+            }
+        }
+    }
+
+    @Test
     fun testMockAktivitet() {
         val expectedMockDataFile = "mock/aktivitet.json"
         val json = this::class.java.classLoader.getResource(expectedMockDataFile)
