@@ -17,6 +17,9 @@ components:
         aktivitet_id:
           type: number
           format: int64
+        oppfolgingsperiode_id:
+          type: string
+          format: uuid
         aktivitet_type:
           type: string
           example: Samtalereferat
@@ -222,8 +225,9 @@ components:
       discriminator:
         propertyName: aktivitet_type
 paths:
-  /aktivitetsplan:
+  /v1/oppfolging/periode:
     get:
+      operationId: hentOppfolgingsperioder
       tags:
         - Oppfolging
       description: ''
@@ -243,3 +247,44 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Oppfolgingsperiode'
+  /v1/oppfolging/periode/{oppfolgingsperiodeId}:
+    get:
+      operationId: hentOppfolgingsperiode
+      tags:
+        - Aktiviteter
+      description: ''
+      parameters:
+        - name: oppfolgingsperiodeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Uuid til oppfolgingsperioden
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Oppfolgingsperiode'
+  /v1/oppfolging/aktivitet/{aktivitetId}:
+    get:
+      operationId: hentAktivitet
+      tags:
+        - Aktiviteter
+      description: ''
+      parameters:
+        - name: aktivitetId
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Numerisk id til aktiviteten
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Aktivitet'

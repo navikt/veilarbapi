@@ -1,0 +1,19 @@
+ {
+  "aktivitet_id": 1,
+  "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "aktivitet_type": "Mote",
+  "avtalt_med_nav": false,
+  "status": "PLANLAGT",
+  "beskrivelse": "Veien videre",
+  "tittel": "Planleggingsmøte",
+  "fra_dato": "2022-02-21T08:00:00+02:00",
+  "til_dato": "2022-02-21T09:00:00+02:00",
+  "opprettet_dato": "2022-02-08T11:55:14.044+02:00",
+  "endret_dato": "2022-02-08T11:55:14.044+02:00",
+
+  "adresse": "NAV Sandakerveien 12",
+  "forberedelser": "N/A",
+  "kanal": "OPPMOTE",
+  "referat": null,
+  "referatPublisert": false
+}
