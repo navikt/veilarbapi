@@ -1,0 +1,17 @@
+
+{
+"aktivitet_id": 7,
+"aktivitet_type": "Samtalereferat",
+"avtalt_med_nav": false,
+"status": "FULLFORT",
+"beskrivelse": "Referat Telefonmøte",
+"tittel": "Samtalereferat",
+"til_dato": null,
+"fra_dato": "2022-02-01T08:00:00+02:00",
+"opprettet_dato": "2022-02-02T08:00:00+02:00",
+"endret_dato": "2022-02-02T08:30:00+02:00",
+
+"kanal": "TELEFON",
+"referat": "Bla bla bla",
+"referatPublisert": true
+}

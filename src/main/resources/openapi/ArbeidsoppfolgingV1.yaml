@@ -10,9 +10,13 @@ components:
       type: object
       required:
         - aktivitet_type
+        - aktivitet_id
       discriminator:
         propertyName: aktivitet_type
       properties:
+        aktivitet_id:
+          type: number
+          format: int64
         aktivitet_type:
           type: string
           example: Samtalereferat

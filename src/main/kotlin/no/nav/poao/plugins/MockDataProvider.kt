@@ -2,12 +2,8 @@ package no.nav.poao.plugins
 
 import io.ktor.application.*
 import no.nav.veilarbapi.JSON
-import no.nav.veilarbapi.model.Aktivitet
-import no.nav.veilarbapi.model.Baseaktivitet
-import no.nav.veilarbapi.model.Mote
-import no.nav.veilarbapi.model.Oppfolgingsperiode
+import no.nav.veilarbapi.model.*
 import org.threeten.bp.OffsetDateTime
-import java.time.Instant
 import java.util.*
 
 fun Application.getMockData(fromMockFile: Boolean): Oppfolgingsperiode {
