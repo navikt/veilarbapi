@@ -130,11 +130,11 @@
     ]
   },
    {
-     "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+     "id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
      "aktiviteter": [
        {
-         "aktivitet_id": 1,
-         "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         "aktivitet_id": 10,
+         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
          "aktivitet_type": "Mote",
          "avtalt_med_nav": false,
          "status": "PLANLAGT",
@@ -152,8 +152,8 @@
          "referatPublisert": false
        },
        {
-         "aktivitet_id": 2,
-         "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         "aktivitet_id": 11,
+         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
          "aktivitet_type": "Mote",
          "avtalt_med_nav": false,
          "status": "FULLFORT",
@@ -171,8 +171,8 @@
          "referatPublisert": true
        },
        {
-         "aktivitet_id": 3,
-         "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         "aktivitet_id": 12,
+         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
          "aktivitet_type": "Behandling",
          "avtalt_med_nav": false,
          "status": "PLANLAGT",
@@ -189,8 +189,8 @@
          "behandlingOppfolging": "Ukentlig samtale"
        },
        {
-         "aktivitet_id": 4,
-         "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         "aktivitet_id": 13,
+         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
          "aktivitet_type": "Egenaktivitet",
          "avtalt_med_nav": false,
          "status": "AVBRUTT",
@@ -205,8 +205,8 @@
          "oppfolging": "Følger opp i dialogen"
        },
        {
-         "aktivitet_id": 5,
-         "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         "aktivitet_id": 14,
+         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
          "aktivitet_type": "Ijobb",
          "avtalt_med_nav": false,
          "status": "GJENNOMFORES",
@@ -222,8 +222,8 @@
          "arbeidstid": "varierende"
        },
        {
-         "aktivitet_id": 6,
-         "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         "aktivitet_id": 15,
+         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
          "aktivitet_type": "Jobbsoeking",
          "avtalt_med_nav": true,
          "status": "GJENNOMFORES",
@@ -241,8 +241,8 @@
          "stillingsoekEtikett": "SOKNAD_SENDT"
        },
        {
-         "aktivitet_id": 8,
-         "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+         "aktivitet_id": 16,
+         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
          "aktivitet_type": "Sokeavtale",
          "avtalt_med_nav": true,
          "status": "PLANLAGT",
