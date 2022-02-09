@@ -3,7 +3,7 @@ info:
   title: Arbeidsoppfolging API
   version: '1.0'
 servers:
-  - url: https://api.server.test/v1
+  - url: https://api.server.test/
 components:
   schemas:
     Baseaktivitet:
@@ -223,6 +223,17 @@ components:
           items:
             $ref: '#/components/schemas/Aktivitet'
           description: Liste med aktiviteter tilknyttet en oppfølgingsperiode
+        feilkilder:
+          description: Feilende kilde ved ufullstendige data
+          example: [ARENA]
+          type: array
+          items:
+            type: string
+            enum:
+              - OPPFOLGING
+              - DIALOG
+              - AKTIVITET
+              - ARENA
     Aktivitet:
       type: object
       oneOf:
@@ -241,7 +252,7 @@ components:
     Melding:
       type: object
       properties:
-        avsender:
+        avsenderType:
           type: string
           enum:
             - NAV
@@ -330,6 +341,28 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Oppfolgingsperiode'
+  /v1/oppfolging/aktivitet:
+    get:
+      operationId: hentAktiviteter
+      tags:
+        - Aktiviteter
+      description: ''
+      parameters:
+        - name: aktorId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: aktorId for aktivitetene
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Aktivitet'
   /v1/oppfolging/aktivitet/{aktivitetId}:
     get:
       operationId: hentAktivitet

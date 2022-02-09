@@ -15,5 +15,35 @@
   "forberedelser": "N/A",
   "kanal": "OPPMOTE",
   "referat": null,
-  "referatPublisert": false
+  "referatPublisert": false,
+   "dialog" :
+   {
+     "dialog_start": "2022-02-21T08:00:00+02:00",
+     "tittel": "Stillingssøk Konditor",
+     "ventersvarnav": false,
+     "ventersvarbruker": true,
+     "meldinger": [
+       {
+         "avsenderType" : "NAV",
+         "sendt_dato" : "2021-02-21T08:00:00+02:00",
+         "lest" : true,
+         "lest_dato" : "2021-02-22T13:00:00+02:00",
+         "meldingstekst" : "Hei. Vi har funnet en stilling som kan være aktuell for deg. Vil du ta en titt?"
+       },
+       {
+         "avsenderType" : "BRUKER",
+         "sendt_dato" : "2021-02-22T14:00:00+02:00",
+         "lest" : true,
+         "lest_dato" : "2021-02-23T09:00:00+02:00",
+         "meldingstekst" : "Det blir veldig lang reisevei for meg, så det lar seg ikke kombinere med henting/levering av barn i barnehagen."
+       },
+       {
+         "avsenderType" : "NAV",
+         "sendt_dato" : "2021-02-23T14:00:00+02:00",
+         "lest" : false,
+         "lest_dato" : null,
+         "meldingstekst" : "Okei, da"
+       }
+     ]
+   }
 }
