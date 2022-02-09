@@ -159,7 +159,7 @@ components:
               type: string
             referatPublisert:
               type: boolean
-    Stilling_fra_nav:
+    StillingFraNav:
       allOf:
         - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
@@ -233,7 +233,7 @@ components:
         - $ref: '#/components/schemas/Behandling'
         - $ref: '#/components/schemas/Mote'
         - $ref: '#/components/schemas/Samtalereferat'
-        - $ref: '#/components/schemas/Stilling_fra_nav'
+        - $ref: '#/components/schemas/StillingFraNav'
       discriminator:
         propertyName: aktivitet_type
 

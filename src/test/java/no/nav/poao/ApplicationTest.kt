@@ -39,7 +39,7 @@ class ApplicationTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val oppfolgingsperioder = JSON.deserialize<Array<Oppfolgingsperiode>>(json, Oppfolgingsperiode::class.java.arrayType())
+                val oppfolgingsperioder = JSON.deserialize<Array<Oppfolgingsperiode>>(response.content, Oppfolgingsperiode::class.java.arrayType())
                 Assertions.assertThat(oppfolgingsperioder).containsAll(expectedOppfolgingsperioder.asIterable())
                 val aktivitet = oppfolgingsperioder?.get(0)?.aktiviteter?.get(0)?.actualInstance
                 assertThat(aktivitet, instanceOf(Mote::class.java))
@@ -63,7 +63,7 @@ class ApplicationTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val oppfolgingsperiode = JSON.deserialize<Oppfolgingsperiode>(json, Oppfolgingsperiode::class.java)
+                val oppfolgingsperiode = JSON.deserialize<Oppfolgingsperiode>(response.content, Oppfolgingsperiode::class.java)
                 assertEquals(expectedOppfolgingsperiode, oppfolgingsperiode)
                 val aktivitet = oppfolgingsperiode?.aktiviteter?.get(0)?.actualInstance
                 assertThat(aktivitet, instanceOf(Mote::class.java))
@@ -87,7 +87,7 @@ class ApplicationTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val aktiviteter = JSON.deserialize<Array<Aktivitet>>(json, Aktivitet::class.java.arrayType())
+                val aktiviteter = JSON.deserialize<Array<Aktivitet>>(response.content, Aktivitet::class.java.arrayType())
                 Assertions.assertThat(aktiviteter).containsAll(expectedAktiviteter.asIterable())
                 val aktivitet = aktiviteter?.get(0)?.actualInstance
                 assertThat(aktivitet, instanceOf(Mote::class.java))
@@ -111,7 +111,7 @@ class ApplicationTest {
                 addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
-                val aktivitet = JSON.deserialize<Aktivitet>(json, Aktivitet::class.java)
+                val aktivitet = JSON.deserialize<Aktivitet>(response.content, Aktivitet::class.java)
                 assertEquals(expectedAktivitet, aktivitet)
                 assertThat(aktivitet.actualInstance, instanceOf(Mote::class.java))
             }
