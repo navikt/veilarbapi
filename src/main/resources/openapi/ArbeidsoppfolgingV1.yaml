@@ -56,6 +56,8 @@ components:
         endret_dato:
           type: string
           format: date-time
+        dialog:
+          $ref: '#/components/schemas/Dialog'
     Egenaktivitet:
       allOf:
         - $ref: '#/components/schemas/Baseaktivitet'
@@ -206,6 +208,16 @@ components:
         id:
           type: string
           format: uuid
+        startDato:
+          type: string
+          format: date-time
+        sluttDato:
+          type: string
+          format: date-time
+        dialoger:
+          type: array
+          items:
+            $ref: '#/components/schemas/Dialog'
         aktiviteter:
           type: array
           items:
@@ -224,6 +236,56 @@ components:
         - $ref: '#/components/schemas/Stilling_fra_nav'
       discriminator:
         propertyName: aktivitet_type
+
+
+    Melding:
+      type: object
+      properties:
+        avsender:
+          type: string
+          enum:
+            - NAV
+            - BRUKER
+        sendt_dato:
+          type: string
+          format: date-time
+          description: Beskriver når meldingen ble sendt til/fra NAV
+          example: 2022-02-21T08:00:00+02:00
+        lest:
+          type: boolean
+          description: Beskriver om melding er lest av bruker/veileder
+          example: true
+        lest_dato:
+          type: string
+          format: date-time
+        meldingstekst:
+          type: string
+          description: Fritekstfelt med melding som ble sendt/opprettet
+          example: Lorem ipsum..
+    Dialog:
+      type: object
+      properties:
+        dialog_start:
+          type: string
+          format: date-time
+          description: Beskriver når dialogen med NAV startet.
+          example: 2022-02-21T08:00:00+02:00
+        tittel:
+          type: string
+          description: Beskrivende navn på dialogen/tråden
+          example: 'Stilling fra NAV: Servitør'
+        ventersvarnav:
+          type: boolean
+          description: Beskriver om dialogen er tagget for at den venter på svar fra NAV
+          example: true
+        ventersvarbruker:
+          type: boolean
+          description: Beskriver om dialogen er tagget for at den venter på svar fra bruker
+          example: false
+        meldinger:
+          type: array
+          items:
+            $ref: '#/components/schemas/Melding'
 paths:
   /v1/oppfolging/periode:
     get:

@@ -1,5 +1,7 @@
  {
   "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+   "startDato": "2021-01-21T08:00:00+02:00",
+   "sluttDato": null,
   "aktiviteter": [
     {
       "aktivitet_id": 1,
