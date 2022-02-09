@@ -48,30 +48,6 @@ class ApplicationTest {
     }
 
     @Test
-    fun testMockOppfolgingsperiode() {
-        val expectedMockDataFile = "mock/oppfolgingperiode.json"
-        val json = this::class.java.classLoader.getResource(expectedMockDataFile)
-            .readText(Charsets.UTF_8)
-        JSON()
-
-        val expectedOppfolgingsperiode = JSON.deserialize<Oppfolgingsperiode>(json, Oppfolgingsperiode::class.java)
-        withTestApplication({
-            configureRouting()
-            configureSerialization()
-        }) {
-            handleRequest(HttpMethod.Get, "/v1/oppfolging/periode/3fa85f64-5717-4562-b3fc-2c963f66afa6") {
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                val oppfolgingsperiode = JSON.deserialize<Oppfolgingsperiode>(response.content, Oppfolgingsperiode::class.java)
-                assertEquals(expectedOppfolgingsperiode, oppfolgingsperiode)
-                val aktivitet = oppfolgingsperiode?.aktiviteter?.get(0)?.actualInstance
-                assertThat(aktivitet, instanceOf(Mote::class.java))
-            }
-        }
-    }
-
-    @Test
     fun testMockAktiviteter() {
         val expectedMockDataFile = "mock/aktiviteter.json"
         val json = this::class.java.classLoader.getResource(expectedMockDataFile)
@@ -95,26 +71,4 @@ class ApplicationTest {
         }
     }
 
-    @Test
-    fun testMockAktivitet() {
-        val expectedMockDataFile = "mock/aktivitet.json"
-        val json = this::class.java.classLoader.getResource(expectedMockDataFile)
-            .readText(Charsets.UTF_8)
-        JSON()
-
-        val expectedAktivitet = JSON.deserialize<Aktivitet>(json, Aktivitet::class.java)
-        withTestApplication({
-            configureRouting()
-            configureSerialization()
-        }) {
-            handleRequest(HttpMethod.Get, "/v1/oppfolging/aktivitet/1") {
-                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-                val aktivitet = JSON.deserialize<Aktivitet>(response.content, Aktivitet::class.java)
-                assertEquals(expectedAktivitet, aktivitet)
-                assertThat(aktivitet.actualInstance, instanceOf(Mote::class.java))
-            }
-        }
-    }
 }

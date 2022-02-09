@@ -51,5 +51,4 @@ val mote: Mote = Mote()
     .opprettetDato(OffsetDateTime.now()) as Mote
 
 val oppfolgingsperiode = Oppfolgingsperiode()
-    .id(UUID.randomUUID())
     .addAktiviteterItem(Aktivitet(mote))

@@ -1,7 +1,5 @@
 [
   {
-    "aktivitet_id": 1,
-    "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "aktivitet_type": "Mote",
     "avtalt_med_nav": false,
     "status": "PLANLAGT",
@@ -15,12 +13,9 @@
     "adresse": "NAV Sandakerveien 12",
     "forberedelser": "N/A",
     "kanal": "OPPMOTE",
-    "referat": null,
-    "referatPublisert": false
+    "referat": null
   },
   {
-    "aktivitet_id": 2,
-    "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "aktivitet_type": "Mote",
     "avtalt_med_nav": false,
     "status": "FULLFORT",
@@ -34,12 +29,9 @@
     "adresse": "NAV Sandakerveien 12",
     "forberedelser": "N/A",
     "kanal": "INTERNETT",
-    "referat": "Vi pratet om litt av hvert",
-    "referatPublisert": true
+    "referat": "Vi pratet om litt av hvert"
   },
   {
-    "aktivitet_id": 3,
-    "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "aktivitet_type": "Behandling",
     "avtalt_med_nav": false,
     "status": "PLANLAGT",
@@ -49,15 +41,9 @@
     "til_dato": "2022-02-21T09:00:00+02:00",
     "opprettet_dato": "2022-02-08T11:55:14.044+02:00",
     "endret_dato": "2022-02-08T11:55:14.044+02:00",
-
-    "behandlingType": "Psykolog",
-    "behandlingSted": "Hjerneveien 2",
-    "effekt": "Trygghet",
-    "behandlingOppfolging": "Ukentlig samtale"
+    "behandlingSted": "Hjerneveien 2"
   },
   {
-    "aktivitet_id": 4,
-    "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "aktivitet_type": "Egenaktivitet",
     "avtalt_med_nav": false,
     "status": "AVBRUTT",
@@ -72,8 +58,6 @@
     "oppfolging": "Følger opp i dialogen"
   },
   {
-    "aktivitet_id": 5,
-    "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "aktivitet_type": "Ijobb",
     "avtalt_med_nav": false,
     "status": "GJENNOMFORES",
@@ -89,8 +73,6 @@
     "arbeidstid": "varierende"
   },
   {
-    "aktivitet_id": 6,
-    "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "aktivitet_type": "Jobbsoeking",
     "avtalt_med_nav": true,
     "status": "GJENNOMFORES",
@@ -108,8 +90,6 @@
     "stillingsoekEtikett": "SOKNAD_SENDT"
   },
   {
-    "aktivitet_id": 8,
-    "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "aktivitet_type": "Sokeavtale",
     "avtalt_med_nav": true,
     "status": "PLANLAGT",
@@ -120,13 +100,9 @@
     "opprettet_dato": "2021-02-01T08:00:00+02:00",
     "endret_dato": "2021-02-01T08:00:00+02:00",
 
-    "antallStillingerSokes": 3,
-    "antallStillingerIUken": 3,
-    "avtaleOppfolging": "Du skal søke tre stillinger i uken"
+    "antallStillingerIUken": 3
   },
   {
-    "aktivitet_id": 10,
-    "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
     "aktivitet_type": "StillingFraNav",
     "avtalt_med_nav": true,
     "status": "PLANLAGT",

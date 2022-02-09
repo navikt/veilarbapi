@@ -1,10 +1,8 @@
- [
-   {
-    "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+[
+  {
+    "startDato": "2021-02-25T08:00:00+02:00",
     "aktiviteter": [
       {
-        "aktivitet_id": 1,
-        "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "aktivitet_type": "Mote",
         "avtalt_med_nav": false,
         "status": "PLANLAGT",
@@ -14,16 +12,12 @@
         "til_dato": "2022-02-21T09:00:00+02:00",
         "opprettet_dato": "2022-02-08T11:55:14.044+02:00",
         "endret_dato": "2022-02-08T11:55:14.044+02:00",
-
         "adresse": "NAV Sandakerveien 12",
         "forberedelser": "N/A",
         "kanal": "OPPMOTE",
-        "referat": null,
-        "referatPublisert": false
+        "referat": null
       },
       {
-        "aktivitet_id": 2,
-        "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "aktivitet_type": "Mote",
         "avtalt_med_nav": false,
         "status": "FULLFORT",
@@ -33,16 +27,12 @@
         "til_dato": "2022-02-01T09:00:00+02:00",
         "opprettet_dato": "2022-01-05T08:00:00+02:00",
         "endret_dato": "2022-02-02T08:00:00+02:00",
-
         "adresse": "NAV Sandakerveien 12",
         "forberedelser": "N/A",
         "kanal": "INTERNETT",
-        "referat": "Vi pratet om litt av hvert",
-        "referatPublisert": true
+        "referat": "Vi pratet om litt av hvert"
       },
       {
-        "aktivitet_id": 3,
-        "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "aktivitet_type": "Behandling",
         "avtalt_med_nav": false,
         "status": "PLANLAGT",
@@ -52,15 +42,9 @@
         "til_dato": "2022-02-21T09:00:00+02:00",
         "opprettet_dato": "2022-02-08T11:55:14.044+02:00",
         "endret_dato": "2022-02-08T11:55:14.044+02:00",
-
-        "behandlingType": "Psykolog",
-        "behandlingSted": "Hjerneveien 2",
-        "effekt": "Trygghet",
-        "behandlingOppfolging": "Ukentlig samtale"
+        "behandlingSted": "Hjerneveien 2"
       },
       {
-        "aktivitet_id": 4,
-        "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "aktivitet_type": "Egenaktivitet",
         "avtalt_med_nav": false,
         "status": "AVBRUTT",
@@ -70,13 +54,10 @@
         "til_dato": "2022-02-01T09:00:00+02:00",
         "opprettet_dato": "2022-01-05T08:00:00+02:00",
         "endret_dato": "2022-02-02T08:00:00+02:00",
-
         "hensikt": "Se om noen av stillingene kan være aktuelle for deg",
         "oppfolging": "Følger opp i dialogen"
       },
       {
-        "aktivitet_id": 5,
-        "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "aktivitet_type": "Ijobb",
         "avtalt_med_nav": false,
         "status": "GJENNOMFORES",
@@ -86,14 +67,11 @@
         "til_dato": null,
         "opprettet_dato": "2021-11-11T08:00:00+02:00",
         "endret_dato": "2021-11-11T08:00:00+02:00",
-
         "jobbStatusType": "DELTID",
         "ansettelsesforhold": "Vikar",
         "arbeidstid": "varierende"
       },
       {
-        "aktivitet_id": 6,
-        "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "aktivitet_type": "Jobbsoeking",
         "avtalt_med_nav": true,
         "status": "GJENNOMFORES",
@@ -103,7 +81,6 @@
         "til_dato": null,
         "opprettet_dato": "2022-01-30T08:00:00+02:00",
         "endret_dato": "2022-02-01T11:00:00+02:00",
-
         "arbeidsgiver": "HELTID",
         "stillingsTittel": "Konditor",
         "arbeidssted": "Helsfyr",
@@ -111,8 +88,6 @@
         "stillingsoekEtikett": "SOKNAD_SENDT"
       },
       {
-        "aktivitet_id": 8,
-        "oppfolgingsperiode_id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
         "aktivitet_type": "Sokeavtale",
         "avtalt_med_nav": true,
         "status": "PLANLAGT",
@@ -122,143 +97,164 @@
         "til_dato": "2022-03-25T08:00:00+02:00",
         "opprettet_dato": "2021-02-01T08:00:00+02:00",
         "endret_dato": "2021-02-01T08:00:00+02:00",
-
-        "antallStillingerSokes": 3,
-        "antallStillingerIUken": 3,
-        "avtaleOppfolging": "Du skal søke tre stillinger i uken"
+        "antallStillingerIUken": 3
+      },
+      {
+        "aktivitet_type": "StillingFraNav",
+        "avtalt_med_nav": true,
+        "status": "PLANLAGT",
+        "beskrivelse": "Konditorstilling som kan være aktuell for deg",
+        "tittel": "Konditor",
+        "fra_dato": "2021-02-25T08:00:00+02:00",
+        "til_dato": "2022-03-25T08:00:00+02:00",
+        "opprettet_dato": "2021-02-01T08:00:00+02:00",
+        "endret_dato": "2021-02-01T08:00:00+02:00",
+        "cvKanDelesData": {
+          "kanDeles": false,
+          "endretTidspunkt": "2021-02-01T08:00:00+02:00",
+          "endretAv": "Z999999",
+          "endretAvType": "NAV",
+          "avtaltDato": "2021-02-23"
+        },
+        "soknadsfrist": "Snarest",
+        "svarfrist": "2021-03-07",
+        "arbeidsgiver": "",
+        "stillingsId": "",
+        "arbeidssted": "Ski",
+        "soknadsstatus": "VENTER",
+        "dialog": {
+          "dialog_start": "2021-02-21T08:00:00+02:00",
+          "tittel": "Stillingssøk Konditor",
+          "ventersvarnav": false,
+          "ventersvarbruker": true,
+          "meldinger": [
+            {
+              "avsenderType": "NAV",
+              "sendt_dato": "2021-02-21T08:00:00+02:00",
+              "lest": true,
+              "lest_dato": "2021-02-22T13:00:00+02:00",
+              "meldingstekst": "Hei. Vi har funnet en stilling som kan være aktuell for deg. Vil du ta en titt?"
+            },
+            {
+              "avsenderType": "BRUKER",
+              "sendt_dato": "2021-02-22T14:00:00+02:00",
+              "lest": true,
+              "lest_dato": "2021-02-23T09:00:00+02:00",
+              "meldingstekst": "Det blir veldig lang reisevei for meg, så det lar seg ikke kombinere med henting/levering av barn i barnehagen."
+            },
+            {
+              "avsenderType": "NAV",
+              "sendt_dato": "2021-02-23T14:00:00+02:00",
+              "lest": false,
+              "lest_dato": null,
+              "meldingstekst": "Okei, da ber jeg nav ikke dele cv-en din med arbeidsgiver"
+            }
+          ]
+        }
       }
     ]
   },
-   {
-     "id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
-     "startDato": "2019-01-01T08:00:00+02:00",
-     "sluttDato": "2021-01-01T08:00:00+02:00",
-     "aktiviteter": [
-       {
-         "aktivitet_id": 10,
-         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
-         "aktivitet_type": "Mote",
-         "avtalt_med_nav": false,
-         "status": "PLANLAGT",
-         "beskrivelse": "Veien videre",
-         "tittel": "Planleggingsmøte",
-         "fra_dato": "2020-02-21T08:00:00+02:00",
-         "til_dato": "2020-02-21T09:00:00+02:00",
-         "opprettet_dato": "2020-02-08T11:55:14.044+02:00",
-         "endret_dato": "2020-02-08T11:55:14.044+02:00",
-
-         "adresse": "NAV Sandakerveien 12",
-         "forberedelser": "N/A",
-         "kanal": "OPPMOTE",
-         "referat": null,
-         "referatPublisert": false
-       },
-       {
-         "aktivitet_id": 11,
-         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
-         "aktivitet_type": "Mote",
-         "avtalt_med_nav": false,
-         "status": "FULLFORT",
-         "beskrivelse": "Hvordan komme nærmere jobb",
-         "tittel": "Kom i jobb",
-         "fra_dato": "2020-02-01T08:00:00+02:00",
-         "til_dato": "2020-02-01T09:00:00+02:00",
-         "opprettet_dato": "2020-01-05T08:00:00+02:00",
-         "endret_dato": "2020-02-02T08:00:00+02:00",
-
-         "adresse": "NAV Sandakerveien 12",
-         "forberedelser": "N/A",
-         "kanal": "INTERNETT",
-         "referat": "Vi pratet om litt av hvert",
-         "referatPublisert": true
-       },
-       {
-         "aktivitet_id": 12,
-         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
-         "aktivitet_type": "Behandling",
-         "avtalt_med_nav": false,
-         "status": "PLANLAGT",
-         "beskrivelse": "Veien videre",
-         "tittel": "Planleggingsmøte",
-         "fra_dato": "2020-02-21T08:00:00+02:00",
-         "til_dato": "2020-02-21T09:00:00+02:00",
-         "opprettet_dato": "2020-02-08T11:55:14.044+02:00",
-         "endret_dato": "2020-02-08T11:55:14.044+02:00",
-
-         "behandlingType": "Psykolog",
-         "behandlingSted": "Hjerneveien 2",
-         "effekt": "Trygghet",
-         "behandlingOppfolging": "Ukentlig samtale"
-       },
-       {
-         "aktivitet_id": 13,
-         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
-         "aktivitet_type": "Egenaktivitet",
-         "avtalt_med_nav": false,
-         "status": "AVBRUTT",
-         "beskrivelse": "Webinar om ledige stillinger og jobbsøkertips",
-         "tittel": "Webinar",
-         "fra_dato": "2019-02-01T08:00:00+02:00",
-         "til_dato": "2019-02-01T09:00:00+02:00",
-         "opprettet_dato": "2019-01-05T08:00:00+02:00",
-         "endret_dato": "2019-02-02T08:00:00+02:00",
-
-         "hensikt": "Se om noen av stillingene kan være aktuelle for deg",
-         "oppfolging": "Følger opp i dialogen"
-       },
-       {
-         "aktivitet_id": 14,
-         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
-         "aktivitet_type": "Ijobb",
-         "avtalt_med_nav": false,
-         "status": "GJENNOMFORES",
-         "beskrivelse": "Bakerassistent",
-         "tittel": "Jobb jeg har nå",
-         "fra_dato": "2020-11-11T08:00:00+02:00",
-         "til_dato": null,
-         "opprettet_dato": "2020-11-11T08:00:00+02:00",
-         "endret_dato": "2020-11-11T08:00:00+02:00",
-
-         "jobbStatusType": "DELTID",
-         "ansettelsesforhold": "Vikar",
-         "arbeidstid": "varierende"
-       },
-       {
-         "aktivitet_id": 15,
-         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
-         "aktivitet_type": "Jobbsoeking",
-         "avtalt_med_nav": true,
-         "status": "GJENNOMFORES",
-         "beskrivelse": "Jobb jeg søker på ",
-         "tittel": "Konditor",
-         "fra_dato": "2021-02-11T08:00:00+02:00",
-         "til_dato": null,
-         "opprettet_dato": "2021-01-30T08:00:00+02:00",
-         "endret_dato": "2021-02-01T11:00:00+02:00",
-
-         "arbeidsgiver": "HELTID",
-         "stillingsTittel": "Konditor",
-         "arbeidssted": "Helsfyr",
-         "kontaktPerson": "Jostein Flotten",
-         "stillingsoekEtikett": "SOKNAD_SENDT"
-       },
-       {
-         "aktivitet_id": 16,
-         "oppfolgingsperiode_id": "4fb95f63-5811-4562-c34a-2b983aa2b3fe",
-         "aktivitet_type": "Sokeavtale",
-         "avtalt_med_nav": true,
-         "status": "PLANLAGT",
-         "beskrivelse": "Avtale om å søke jobber",
-         "tittel": "Jobbsøking",
-         "fra_dato": "2020-02-25T08:00:00+02:00",
-         "til_dato": "2021-03-25T08:00:00+02:00",
-         "opprettet_dato": "2020-02-01T08:00:00+02:00",
-         "endret_dato": "2020-02-01T08:00:00+02:00",
-
-         "antallStillingerSokes": 3,
-         "antallStillingerIUken": 3,
-         "avtaleOppfolging": "Du skal søke tre stillinger i uken"
-       }
-     ]
-   }
- ]
+  {
+    "startDato": "2019-01-01T08:00:00+02:00",
+    "sluttDato": "2021-01-01T08:00:00+02:00",
+    "aktiviteter": [
+      {
+        "aktivitet_type": "Mote",
+        "avtalt_med_nav": false,
+        "status": "PLANLAGT",
+        "beskrivelse": "Veien videre",
+        "tittel": "Planleggingsmøte",
+        "fra_dato": "2020-02-21T08:00:00+02:00",
+        "til_dato": "2020-02-21T09:00:00+02:00",
+        "opprettet_dato": "2020-02-08T11:55:14.044+02:00",
+        "endret_dato": "2020-02-08T11:55:14.044+02:00",
+        "adresse": "NAV Sandakerveien 12",
+        "forberedelser": "N/A",
+        "kanal": "OPPMOTE",
+        "referat": null
+      },
+      {
+        "aktivitet_type": "Mote",
+        "avtalt_med_nav": false,
+        "status": "FULLFORT",
+        "beskrivelse": "Hvordan komme nærmere jobb",
+        "tittel": "Kom i jobb",
+        "fra_dato": "2020-02-01T08:00:00+02:00",
+        "til_dato": "2020-02-01T09:00:00+02:00",
+        "opprettet_dato": "2020-01-05T08:00:00+02:00",
+        "endret_dato": "2020-02-02T08:00:00+02:00",
+        "adresse": "NAV Sandakerveien 12",
+        "forberedelser": "N/A",
+        "kanal": "INTERNETT",
+        "referat": "Vi pratet om litt av hvert"
+      },
+      {
+        "aktivitet_type": "Behandling",
+        "avtalt_med_nav": false,
+        "status": "PLANLAGT",
+        "beskrivelse": "Veien videre",
+        "tittel": "Planleggingsmøte",
+        "fra_dato": "2020-02-21T08:00:00+02:00",
+        "til_dato": "2020-02-21T09:00:00+02:00",
+        "opprettet_dato": "2020-02-08T11:55:14.044+02:00",
+        "endret_dato": "2020-02-08T11:55:14.044+02:00",
+        "behandlingSted": "Hjerneveien 2"
+      },
+      {
+        "aktivitet_type": "Egenaktivitet",
+        "avtalt_med_nav": false,
+        "status": "AVBRUTT",
+        "beskrivelse": "Webinar om ledige stillinger og jobbsøkertips",
+        "tittel": "Webinar",
+        "fra_dato": "2019-02-01T08:00:00+02:00",
+        "til_dato": "2019-02-01T09:00:00+02:00",
+        "opprettet_dato": "2019-01-05T08:00:00+02:00",
+        "endret_dato": "2019-02-02T08:00:00+02:00",
+        "hensikt": "Se om noen av stillingene kan være aktuelle for deg",
+        "oppfolging": "Følger opp i dialogen"
+      },
+      {
+        "aktivitet_type": "Ijobb",
+        "avtalt_med_nav": false,
+        "status": "GJENNOMFORES",
+        "beskrivelse": "Bakerassistent",
+        "tittel": "Jobb jeg har nå",
+        "fra_dato": "2020-11-11T08:00:00+02:00",
+        "til_dato": null,
+        "opprettet_dato": "2020-11-11T08:00:00+02:00",
+        "endret_dato": "2020-11-11T08:00:00+02:00",
+        "jobbStatusType": "DELTID",
+        "ansettelsesforhold": "Vikar",
+        "arbeidstid": "varierende"
+      },
+      {
+        "aktivitet_type": "Jobbsoeking",
+        "avtalt_med_nav": true,
+        "status": "GJENNOMFORES",
+        "beskrivelse": "Jobb jeg søker på ",
+        "tittel": "Konditor",
+        "fra_dato": "2021-02-11T08:00:00+02:00",
+        "til_dato": null,
+        "opprettet_dato": "2021-01-30T08:00:00+02:00",
+        "endret_dato": "2021-02-01T11:00:00+02:00",
+        "arbeidsgiver": "HELTID",
+        "stillingsTittel": "Konditor",
+        "arbeidssted": "Helsfyr",
+        "kontaktPerson": "Jostein Flotten",
+        "stillingsoekEtikett": "SOKNAD_SENDT"
+      },
+      {
+        "aktivitet_type": "Sokeavtale",
+        "avtalt_med_nav": true,
+        "status": "PLANLAGT",
+        "beskrivelse": "Avtale om å søke jobber",
+        "tittel": "Jobbsøking",
+        "fra_dato": "2020-02-25T08:00:00+02:00",
+        "til_dato": "2021-03-25T08:00:00+02:00",
+        "opprettet_dato": "2020-02-01T08:00:00+02:00",
+        "endret_dato": "2020-02-01T08:00:00+02:00",
+        "antallStillingerIUken": 3
+      }
+    ]
+  }
+]

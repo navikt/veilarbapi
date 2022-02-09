@@ -10,21 +10,12 @@ components:
       type: object
       required:
         - aktivitet_type
-        - aktivitet_id
       discriminator:
         propertyName: aktivitet_type
       properties:
-        aktivitet_id:
-          type: number
-          format: int64
-        oppfolgingsperiode_id:
-          type: string
-          format: uuid
         aktivitet_type:
           type: string
           example: Samtalereferat
-        kontorsperre_enhet_id:
-          type: string
         avtalt_med_nav:
           type: boolean
           description: Definer om den definerte aktiviteten er avtalt med NAV
@@ -92,8 +83,6 @@ components:
         - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
-            antallStillingerSokes:
-              type: integer
             antallStillingerIUken:
               type: integer
             avtaleOppfolging:
@@ -117,13 +106,7 @@ components:
         - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
-            behandlingType:
-              type: string
             behandlingSted:
-              type: string
-            effekt:
-              type: string
-            behandlingOppfolging:
               type: string
     Mote:
       allOf:
@@ -141,9 +124,8 @@ components:
                 - TELEFON
                 - INTERNETT
             referat:
+              description: Referatet hvis det er delt med bruker
               type: string
-            referatPublisert:
-              type: boolean
     Samtalereferat:
       allOf:
         - $ref: '#/components/schemas/Baseaktivitet'
@@ -157,8 +139,7 @@ components:
                 - INTERNETT
             referat:
               type: string
-            referatPublisert:
-              type: boolean
+              description: Referatet hvis det er delt med bruker
     StillingFraNav:
       allOf:
         - $ref: '#/components/schemas/Baseaktivitet'
@@ -205,9 +186,6 @@ components:
     Oppfolgingsperiode:
       type: object
       properties:
-        id:
-          type: string
-          format: uuid
         startDato:
           type: string
           format: date-time
@@ -215,6 +193,7 @@ components:
           type: string
           format: date-time
         dialoger:
+          description:  Dialoger som ikke hører til en aktivitet
           type: array
           items:
             $ref: '#/components/schemas/Dialog'
@@ -223,17 +202,24 @@ components:
           items:
             $ref: '#/components/schemas/Aktivitet'
           description: Liste med aktiviteter tilknyttet en oppfølgingsperiode
-        feilkilder:
+        feil:
           description: Feilende kilde ved ufullstendige data
-          example: [ARENA]
           type: array
           items:
-            type: string
-            enum:
-              - OPPFOLGING
-              - DIALOG
-              - AKTIVITET
-              - ARENA
+            type: object
+            properties:
+              feilkilder:
+                description: Hvilken datakilde vi ikke kunne hente data fra
+                type: string
+                enum:
+                  - OPPFOLGING
+                  - DIALOG
+                  - AKTIVITET
+                  - ANNET
+              feilmelding:
+                description: Feilmelding i klar tekst
+                type: string
+                example: Kunne ikke hente dialoger.
     Aktivitet:
       type: object
       oneOf:
@@ -312,6 +298,7 @@ paths:
             type: string
           description: AktørID til personen man ønsker å hente ut aktivitetsplanen til
       responses:
+#  TODO andre returkoder
         '200':
           description: OK
           content:
@@ -320,27 +307,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Oppfolgingsperiode'
-  /v1/oppfolging/periode/{oppfolgingsperiodeId}:
-    get:
-      operationId: hentOppfolgingsperiode
-      tags:
-        - Aktiviteter
-      description: ''
-      parameters:
-        - name: oppfolgingsperiodeId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: Uuid til oppfolgingsperioden
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Oppfolgingsperiode'
   /v1/oppfolging/aktivitet:
     get:
       operationId: hentAktiviteter
@@ -355,6 +321,7 @@ paths:
             type: string
           description: aktorId for aktivitetene
       responses:
+        #  TODO andre returkoder
         '200':
           description: OK
           content:
@@ -363,23 +330,3 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Aktivitet'
-  /v1/oppfolging/aktivitet/{aktivitetId}:
-    get:
-      operationId: hentAktivitet
-      tags:
-        - Aktiviteter
-      description: ''
-      parameters:
-        - name: aktivitetId
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: Numerisk id til aktiviteten
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Aktivitet'
