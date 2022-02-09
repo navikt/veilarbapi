@@ -137,7 +137,11 @@
     "opprettet_dato": "2021-02-01T08:00:00+02:00",
     "endret_dato": "2021-02-01T08:00:00+02:00",
     "cvKanDelesData": {
-
+      "kanDeles": false,
+      "endretTidspunkt": "2021-02-01T08:00:00+02:00",
+      "endretAv" : "Z999999",
+      "endretAvType": "NAV",
+      "avtaltDato": "2021-02-23"
     },
     "soknadsfrist": "Snarest",
     "svarfrist" : "2021-03-07",
@@ -170,7 +174,7 @@
           "sendt_dato" : "2021-02-23T14:00:00+02:00",
           "lest" : false,
           "lest_dato" : null,
-          "meldingstekst" : "Okei, da"
+          "meldingstekst" : "Okei, da ber jeg nav ikke dele cv-en din med arbeidsgiver"
         }
       ]
     }
