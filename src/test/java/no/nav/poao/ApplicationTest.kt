@@ -9,6 +9,7 @@ import no.nav.veilarbapi.JSON
 import no.nav.veilarbapi.model.Aktivitet
 import no.nav.veilarbapi.model.Mote
 import no.nav.veilarbapi.model.Oppfolgingsperiode
+import org.assertj.core.api.Assertions
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
 
@@ -39,7 +40,7 @@ class ApplicationTest {
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val oppfolgingsperioder = JSON.deserialize<Array<Oppfolgingsperiode>>(json, Oppfolgingsperiode::class.java.arrayType())
-// assert expectedOppfolgingsperioder has same content as oppfolgingsperioder
+                Assertions.assertThat(oppfolgingsperioder).containsAll(expectedOppfolgingsperioder.asIterable())
                 val aktivitet = oppfolgingsperioder?.get(0)?.aktiviteter?.get(0)?.actualInstance
                 assertThat(aktivitet, instanceOf(Mote::class.java))
             }
@@ -87,7 +88,7 @@ class ApplicationTest {
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 val aktiviteter = JSON.deserialize<Array<Aktivitet>>(json, Aktivitet::class.java.arrayType())
-// assert expectedAktiviteter has same content as aktiviteter
+                Assertions.assertThat(aktiviteter).containsAll(expectedAktiviteter.asIterable())
                 val aktivitet = aktiviteter?.get(0)?.actualInstance
                 assertThat(aktivitet, instanceOf(Mote::class.java))
             }

@@ -88,6 +88,7 @@ dependencies {
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     implementation("io.ktor:ktor-gson:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("org.assertj:assertj-core:3.18.0")
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
     implementation(group= "ch.qos.logback", name= "logback-classic", version= "1.2.6")
     implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
