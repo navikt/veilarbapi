@@ -22,6 +22,14 @@ fun Application.getMockAktiviteter(fromMockFile: Boolean): Array<Aktivitet> {
     } else return arrayOf(Aktivitet(mote))
 }
 
+fun Application.getMockOppfolgingsinfo(fromMockFile: Boolean): Oppfolgingsinfo {
+    if (fromMockFile) {
+        val mockDataFileName = "mock/oppfolgingsinfo.json"
+        val json = this::class.java.classLoader.getResource(mockDataFileName).readText(Charsets.UTF_8)
+        return JSON.deserialize(json, Oppfolgingsinfo::class.java)
+    } else return oppfolgingsinfo
+}
+
 
 val mote: Mote = Mote()
     .referat("Vi pratet om litt av hvert")
@@ -37,3 +45,7 @@ val mote: Mote = Mote()
 
 val oppfolgingsperiode = Oppfolgingsperiode()
     .addAktiviteterItem(Aktivitet(mote))
+
+val oppfolgingsinfo = Oppfolgingsinfo()
+    .underOppfolging(true)
+    .primaerVeileder("Z999999")

@@ -1,4 +1,5 @@
-package no.nav.poao
+package no.nav.poao.rest
+
 
 import io.ktor.http.*
 
@@ -8,21 +9,13 @@ import no.nav.poao.plugins.*
 import no.nav.veilarbapi.JSON
 import no.nav.veilarbapi.model.Aktivitet
 import no.nav.veilarbapi.model.Mote
+import no.nav.veilarbapi.model.Oppfolgingsinfo
 import no.nav.veilarbapi.model.Oppfolgingsperiode
 import org.assertj.core.api.Assertions
 import org.hamcrest.CoreMatchers.*
 import org.hamcrest.MatcherAssert.assertThat
 
-class ApplicationTest {
-    @Test
-    fun testPing() {
-        withTestApplication({ configureRouting() }) {
-            handleRequest(HttpMethod.Get, "/internal/isAlive").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-            }
-        }
-    }
-
+class ArbeidsoppfolgingRoutesKtTest {
     @Test
     fun testMockOppfolgingsperioder() {
         val expectedMockDataFile = "mock/oppfolgingperioder.json"
@@ -67,6 +60,28 @@ class ApplicationTest {
                 Assertions.assertThat(aktiviteter).containsAll(expectedAktiviteter.asIterable())
                 val aktivitet = aktiviteter?.get(0)?.actualInstance
                 assertThat(aktivitet, instanceOf(Mote::class.java))
+            }
+        }
+    }
+
+    @Test
+    fun testMockOppfolgingsinfo() {
+        val expectedMockDataFile = "mock/oppfolgingsinfo.json"
+        val json = this::class.java.classLoader.getResource(expectedMockDataFile)
+            .readText(Charsets.UTF_8)
+        JSON()
+
+        val expectedOppfolgingsinfo = JSON.deserialize<Oppfolgingsinfo>(json, Oppfolgingsinfo::class.java)
+        withTestApplication({
+            configureRouting()
+            configureSerialization()
+        }) {
+            handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=12345678") {
+                addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+            }.apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+                val oppfolgingsinfo = JSON.deserialize<Oppfolgingsinfo>(response.content, Oppfolgingsinfo::class.java)
+                Assertions.assertThat(oppfolgingsinfo).isEqualTo(expectedOppfolgingsinfo)
             }
         }
     }
