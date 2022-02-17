@@ -36,3 +36,8 @@ spec:
       memory: 768Mi
   secureLogs:
     enabled: true
+  vault:
+    enabled: true
+    paths:
+      - kvPath: /serviceuser/data/dev/srvveilarbaktivitet
+        mountPath: /var/run/secrets/nais.io/service_user

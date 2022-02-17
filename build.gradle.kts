@@ -1,6 +1,8 @@
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
+val navcommonVersion: String = "2.2021.12.09_11.56-a71c36a61ba3"
+
 
 plugins {
     application
@@ -33,16 +35,16 @@ repositories {
 
 
 task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateAktivitetsplanClient") {
-    generatorName.set("kotlin")
+    generatorName.set("java")
+    library.set("okhttp-gson-nextgen")
     inputSpec.set("$projectDir/src/main/resources/openapi/AktivitetsplanV1.yaml")
     packageName.set("no.nav.veilarbaktivitet.client")
     apiPackage.set("no.nav.veilarbaktivitet.api")
     modelPackage.set("no.nav.veilarbaktivitet.model")
-
     outputDir.set("$buildDir/generated")
 }
 
-task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateAktivitetsplanServer") {
+task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateVeilarbapiServer") {
     generatorName.set("java")
     library.set("okhttp-gson-nextgen")
     inputSpec.set("$projectDir/src/main/resources/openapi/ArbeidsoppfolgingV1.yaml")
@@ -73,34 +75,54 @@ tasks.withType<Jar>() {
 }
 
 tasks.named( "compileKotlin") {
-    dependsOn( "generateAktivitetsplanServer", "generateAktivitetsplanClient")
+    dependsOn( "generateAktivitetsplanClient", "generateVeilarbapiServer")
 }
 java.sourceSets["main"].java.srcDir("$buildDir/generated/src/main/java")
+kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated/src/main/kotlin")
 
 
 
 dependencies {
     implementation("io.ktor:ktor-metrics:$ktor_version")
     implementation("io.ktor:ktor-server-core:$ktor_version")
-    implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
-    api("javax.validation:validation-api:2.0.1.Final")
-    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    implementation("io.ktor:ktor-auth:$ktor_version")
+    implementation("io.ktor:ktor-auth-jwt:$ktor_version")
+    implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-gson:$ktor_version")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-    testImplementation("org.assertj:assertj-core:3.18.0")
+    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
+    testImplementation("io.ktor:ktor-client-mock:$ktor_version")
+    api("javax.validation:validation-api:2.0.1.Final")
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
+    // LOGGING
     implementation(group= "ch.qos.logback", name= "logback-classic", version= "1.2.6")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
-    // avhengigheter i generert kode
+    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
+
+    implementation("com.natpryce:konfig:1.6.10.0")
+
+    implementation("no.nav.common:util:$navcommonVersion")
+    implementation("no.nav.common:sts:$navcommonVersion")
+    // Rest Client START
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-gson:$ktor_version")
+    implementation("io.ktor:ktor-client-java:$ktor_version")
+    implementation("io.ktor:ktor-client-apache:$ktor_version")
+    // Rest Client END
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
+    testImplementation("org.assertj:assertj-core:3.22.0")
+    // avhengigheter i generert server kode
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("io.gsonfire:gson-fire:1.8.5")
     api("javax.ws.rs:javax.ws.rs-api:2.1.1")
     implementation(group= "org.threeten", name= "threetenbp", version= "1.5.1")
-    implementation("io.swagger:swagger-annotations:1.6.4")
+    implementation("io.swagger:swagger-annotations:1.6.5")
     implementation("com.squareup.okio:okio:3.0.0")
-
-
+    // avhengigheter i generert client kode
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
+//    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
+//    compileOnly(group = "com.google.code.findbugs", name = "jsr305", version = "3.0.2")
+//    implementation("com.squareup.okhttp3:okhttp:4.9.3")
     // avhengigheter i generert kode SLUTT
 
 }

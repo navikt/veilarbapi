@@ -15,30 +15,13 @@ components:
       properties:
         aktivitet_type:
           type: string
-          enum:
-            - egenaktivitet
-            - jobbsoeking
-            - sokeavtale
-            - ijobb
-            - behandling
-            - mote
-            - samtalereferat
-            - stilling_fra_nav
           example: samtalereferat
-        kontorsperre_enhet_id:
-          type: string
         avtalt_med_nav:
           type: boolean
           description: Definer om den definerte aktiviteten er avtalt med NAV
           example: true
         status:
-          type: string
-          enum:
-            - PLANLAGT
-            - GJENNOMFORES
-            - FULLFORT
-            - BRUKER_ER_INTERESSERT
-            - AVBRUTT
+          $ref: '#/components/schemas/AktivitetStatus'
           example: FULLFORT
         beskrivelse:
           type: string
@@ -202,21 +185,17 @@ components:
                 - SKAL_PAA_INTERVJU
                 - JOBBTILBUD
                 - AVSLAG
-    oppfolgingsperiode:
-      type: object
-      properties:
-        id:
-          type: string
-          format: uuid
-        aktiviteter:
-          type: array
-          items:
-            $ref: '#/components/schemas/aktivitet'
-          description: Liste med aktiviteter tilknyttet en oppfølgingsperiode
-
+    AktivitetStatus:
+      type: string
+      enum:
+        - PLANLAGT
+        - GJENNOMFORES
+        - FULLFORT
+        - BRUKER_ER_INTERESSERT
+        - AVBRUTT
 
 paths:
-  /internal/api/v1/aktivitet/:
+  /internal/api/v1/aktivitet:
     get:
       operationId: hentAktiviteter
       tags:
@@ -225,10 +204,17 @@ paths:
       parameters:
         - name: aktorId
           in: query
-          required: true
+          required: false
           schema:
             type: string
           description: AktørID til personen man ønsker å hente ut aktivitetsplanen til
+        - name: oppfolgingsperiodeId
+          in: query
+          required: false
+          schema:
+            type: string
+            format: uuid
+          description: Uuid til oppfolgingsperioden
       responses:
         '200':
           description: OK
@@ -238,6 +224,18 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/aktivitet'
+        '204':
+          description: Ingen aktiviteter for aktorId/oppfolgingsperiodeId
+        '400':
+          description: Trenger aktorId eller/og oppfolgingsperiodeId
+        '401':
+          description: Ikke logget inn
+        '403':
+          description: Ingen tilgang
+        '404':
+          description: Finner ikke aktorId/oppfolgingsperiodeId
+        '500':
+          description: Serverfeil
   /internal/api/v1/aktivitet/{aktivitetId}:
     get:
       operationId: hentAktivitet
@@ -252,52 +250,13 @@ paths:
             type: integer
           description: Numerisk id til aktiviteten
       responses:
+        '500':
+          description: Serverfeil
+        '403':
+          description: Ingen tilgang
         '200':
           description: OK
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/aktivitet'
-  /internal/api/v1/oppfolgingsperiode/:
-    get:
-      operationId: hentOppfolgingsperioder
-      tags:
-        - Aktiviteter
-      description: ''
-      parameters:
-        - name: aktorId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: AktørID til personen man ønsker å hente ut oppfolgingsperioder for
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/oppfolgingsperiode'
-  /internal/api/v1/oppfolgingsperiode/{oppfolgingsperiodeId}:
-    get:
-      operationId: hentOppfolgingsperiode
-      tags:
-        - Aktiviteter
-      description: ''
-      parameters:
-        - name: oppfolgingsperiodeId
-          in: path
-          required: true
-          schema:
-            type: string
-            format: uuid
-          description: Uuid til oppfolgingsperioden
-      responses:
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/oppfolgingsperiode'
