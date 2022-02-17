@@ -23,7 +23,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
-      - name: Build maven artifacts
+      - name: Build artifacts
         run: ./gradlew build --no-daemon
       - name: Build and push Docker image
         env:

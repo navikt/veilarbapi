@@ -30,6 +30,6 @@ fun createHttpServer(
         LogFilter(EnvironmentUtils.requireApplicationName(), EnvironmentUtils.isDevelopment().orElse(false))
     }
 
-    configureRouting()
+    configureRouting(configuration.useAuthentication)
     applicationState.initialized = true
 }

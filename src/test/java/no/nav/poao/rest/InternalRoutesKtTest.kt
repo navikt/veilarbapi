@@ -9,7 +9,7 @@ import no.nav.poao.plugins.*
 class InternalRoutesKtTest {
     @Test
     fun testPing() {
-        withTestApplication({ configureRouting() }) {
+        withTestApplication({ configureRouting(false) }) {
             handleRequest(HttpMethod.Get, "/internal/isAlive").apply {
                 assertEquals(HttpStatusCode.OK, response.status())
             }
