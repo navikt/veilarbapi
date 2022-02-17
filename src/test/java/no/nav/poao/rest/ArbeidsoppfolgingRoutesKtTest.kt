@@ -25,7 +25,7 @@ class ArbeidsoppfolgingRoutesKtTest {
 
         val expectedOppfolgingsperioder = JSON.deserialize<Array<Oppfolgingsperiode>>(json, Oppfolgingsperiode::class.java.arrayType())
         withTestApplication({
-            configureRouting()
+            configureRouting(false)
             configureSerialization()
         }) {
             handleRequest(HttpMethod.Get, "/v1/oppfolging/periode") {
@@ -49,7 +49,7 @@ class ArbeidsoppfolgingRoutesKtTest {
 
         val expectedAktiviteter = JSON.deserialize<Array<Aktivitet>>(json, Aktivitet::class.java.arrayType())
         withTestApplication({
-            configureRouting()
+            configureRouting(false)
             configureSerialization()
         }) {
             handleRequest(HttpMethod.Get, "/v1/oppfolging/aktivitet?aktorId=12345678") {
@@ -73,7 +73,7 @@ class ArbeidsoppfolgingRoutesKtTest {
 
         val expectedOppfolgingsinfo = JSON.deserialize<Oppfolgingsinfo>(json, Oppfolgingsinfo::class.java)
         withTestApplication({
-            configureRouting()
+            configureRouting(false)
             configureSerialization()
         }) {
             handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=12345678") {

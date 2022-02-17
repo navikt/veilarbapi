@@ -2,15 +2,17 @@ package no.nav.poao.rest
 
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import no.nav.poao.MockPayload
 import no.nav.poao.plugins.getMockAktiviteter
 import no.nav.poao.plugins.getMockOppfolgingsinfo
 import no.nav.poao.plugins.getMockOppfolgingsperioder
 
-fun Application.arbeidsoppfolgingRoutes() {
+fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean) {
     routing() {
-        authenticate {
+        conditionalAuthenticate(useAuthentication) {
             route("/v1/oppfolging/") {
                 get("/periode") {
                     val aktorId = call.request.queryParameters["aktorId"]
@@ -30,4 +32,20 @@ fun Application.arbeidsoppfolgingRoutes() {
             }
         }
     }
+}
+
+fun Route.conditionalAuthenticate(useAuthentication: Boolean, build: Route.() -> Unit): Route {
+    if (useAuthentication) {
+        return authenticate(build = build, configurations = arrayOf("AzureAD"))
+    } else return mockAuthentication(build)
+}
+
+fun Route.mockAuthentication(build: Route.() -> Unit): Route {
+    val route = createChild(AuthenticationRouteSelector(listOf<String?>(null)))
+    route.insertPhaseAfter(ApplicationCallPipeline.Features, Authentication.AuthenticatePhase)
+    route.intercept(Authentication.AuthenticatePhase) {
+        this.context.authentication.principal = JWTPrincipal(MockPayload("Z999999"))
+    }
+    route.build()
+    return route
 }
