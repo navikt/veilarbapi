@@ -41,3 +41,6 @@ spec:
     paths:
       - kvPath: /serviceuser/data/dev/srvveilarbaktivitet
         mountPath: /var/run/secrets/nais.io/service_user
+  env:
+    - name: AZUREAD_JWKS_URL
+      value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/discovery/v2.0/keys

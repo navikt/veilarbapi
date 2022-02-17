@@ -11,11 +11,9 @@ private val defaultProperties by lazy {
     ConfigurationMap(
         mapOf(
             "NAIS_CLUSTER_NAME" to notUsedLocally,
-            "ISSO_JWKS_URL" to "https://isso-q.adeo.no/isso/oauth2/connect/jwk_uri",
-            "ISSO_ISSUER_URL" to "https://isso-q.adeo.no:443/isso/oauth2",
             "VAULT_MOUNT_PATH" to notUsedLocally,
             "SECURITY_TOKEN_SERVICE_DISCOVERY_URL" to notUsedLocally,
-            "VEILARBAPI_AAD_CLIENT_ID" to notUsedLocally,
+            "VEILARBLOGIN_AAD_CLIENT_ID" to notUsedLocally,
             "AZUREAD_JWKS_URL" to notUsedLocally,
             "VEILARBAKTIVITETAPI_URL" to notUsedLocally,
             "VEILARBDIALOGAPI_URL" to notUsedLocally
@@ -34,10 +32,8 @@ data class Configuration(
     val useAuthentication: Boolean = true
 ) {
     data class Jwt(
-        val issoJwksUrl: JwkProvider = JwtUtil.makeJwkProvider(config()[Key("ISSO_JWKS_URL", stringType)]),
-        val issoJwtIssuer: String = config()[Key("ISSO_ISSUER_URL", stringType)],
         val azureAdJwksUrl: JwkProvider = JwtUtil.makeJwkProvider(config()[Key("AZUREAD_JWKS_URL", stringType)]),
-        val azureAdClientId: String = config()[Key("VEILARBAPI_AAD_CLIENT_ID", stringType)]
+        val azureAdClientId: String = config()[Key("VEILARBLOGIN_AAD_CLIENT_ID", stringType)]
     )
     data class VeilarbaktivitetConfig(
         val url: String = config()[Key("VEILARBAKTIVITETAPI_URL", stringType)]
