@@ -1,7 +1,7 @@
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
-val navcommonVersion: String = "2.2021.12.09_11.56-a71c36a61ba3"
+val navcommonVersion: String = "2.2022.01.21_08.02-cd96965058ef"
 
 
 plugins {
@@ -60,17 +60,17 @@ task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateVeila
 
 tasks.withType<Jar>() {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    from(sourceSets.main.get().output)
 
     manifest {
         attributes["Main-Class"] = "no.nav.poao.ApplicationKt"
     }
 
-    dependsOn(configurations.runtimeClasspath)
+    from(sourceSets.main.get().output)
+
+    dependsOn(configurations.compileClasspath)
     from({
-        configurations.runtimeClasspath.get()
-            .filter { it.name.endsWith("jar") }
-            .map { zipTree(it) }
+        configurations.compileClasspath.get()
+            .map {  if(it.isDirectory) it else zipTree(it) }
     })
 }
 
@@ -83,6 +83,7 @@ kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated/src/main/kotlin")
 
 
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
     implementation("io.ktor:ktor-metrics:$ktor_version")
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
