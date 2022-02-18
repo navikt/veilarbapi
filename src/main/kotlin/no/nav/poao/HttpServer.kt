@@ -23,7 +23,7 @@ fun createHttpServer(
     configureMonitoring()
     configureAuthentication(configuration)
     configureSerialization()
-    configureCors()
+ //   configureCors()
 
 
     install(CallLogging) {
