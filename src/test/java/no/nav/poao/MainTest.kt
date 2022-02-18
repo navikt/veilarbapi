@@ -12,7 +12,7 @@ fun mainTest(): ApplicationEngine {
     val configuration = Configuration(
         clustername = "",
         stsDiscoveryUrl = "",
-        serviceUser = Credentials("foo", "bar"),
+        //serviceUser = Credentials("foo", "bar"),
     )
 
     val applicationState = ApplicationState()

@@ -27,7 +27,7 @@ data class Configuration(
     val clustername: String = config()[Key("NAIS_CLUSTER_NAME", stringType)],
     val stsDiscoveryUrl: String = config()[Key("SECURITY_TOKEN_SERVICE_DISCOVERY_URL", stringType)],
     val jwt: Jwt = Jwt(),
-    val serviceUser: Credentials = getCredentials("service_user"),
+//    val serviceUser: Credentials = getCredentials("service_user"),
     val httpServerWait: Boolean = true,
     val useAuthentication: Boolean = true
 ) {
