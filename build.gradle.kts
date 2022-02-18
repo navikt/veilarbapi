@@ -10,6 +10,8 @@ plugins {
     `java-library`
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
     id ("org.openapi.generator") version "5.4.0"
+    id("com.github.johnrengelman.shadow") version "7.0.0"
+
 }
 
 kotlin {
@@ -58,20 +60,12 @@ task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateVeila
     outputDir.set("$buildDir/generated")
 }
 
-tasks.withType<Jar>() {
-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-
-    manifest {
-        attributes["Main-Class"] = "no.nav.poao.ApplicationKt"
+tasks {
+    shadowJar {
+        manifest {
+            attributes(Pair("Main-Class", "no.nav.poao.ApplicationKt"))
+        }
     }
-
-    from(sourceSets.main.get().output)
-
-    dependsOn(configurations.compileClasspath)
-    from({
-        configurations.compileClasspath.get()
-            .map {  if(it.isDirectory) it else zipTree(it) }
-    })
 }
 
 tasks.named( "compileKotlin") {
