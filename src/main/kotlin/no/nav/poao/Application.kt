@@ -13,11 +13,11 @@ fun main() {
 fun main(configuration: Configuration) {
     SslUtils.setupTruststore()
     val applicationState = ApplicationState()
-    val systemUserTokenProvider = NaisSystemUserTokenProvider(
-        configuration.stsDiscoveryUrl,
-        configuration.serviceUser.username,
-        configuration.serviceUser.password
-    )
+//    val systemUserTokenProvider = NaisSystemUserTokenProvider(
+//        configuration.stsDiscoveryUrl,
+//        configuration.serviceUser.username,
+//        configuration.serviceUser.password
+//    )
 
     val applicationServer = createHttpServer(
         applicationState = applicationState,
