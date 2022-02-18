@@ -39,7 +39,7 @@ spec:
   vault:
     enabled: true
     paths:
-      - kvPath: /serviceuser/data/dev/srvveilarbaktivitet
+      - kvPath: /serviceuser/dev/srvveilarbaktivitet
         mountPath: /var/run/secrets/nais.io/service_user
   env:
     - name: AZUREAD_JWKS_URL
