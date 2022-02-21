@@ -5,7 +5,7 @@ import io.ktor.auth.*
 import io.ktor.auth.jwt.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import no.nav.poao.MockPayload
+import no.nav.poao.auth.MockPayload
 import no.nav.poao.plugins.getMockAktiviteter
 import no.nav.poao.plugins.getMockOppfolgingsinfo
 import no.nav.poao.plugins.getMockOppfolgingsperioder

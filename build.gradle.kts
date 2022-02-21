@@ -89,6 +89,8 @@ dependencies {
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
     api("javax.validation:validation-api:2.0.1.Final")
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
+
+    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.14")
     // LOGGING
     implementation(group= "ch.qos.logback", name= "logback-classic", version= "1.2.6")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
@@ -97,11 +99,13 @@ dependencies {
 
     implementation("no.nav.common:util:$navcommonVersion")
     implementation("no.nav.common:sts:$navcommonVersion")
-    // Rest Client START
+    // Velarbaktivitet Rest Client START
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-gson:$ktor_version")
     implementation("io.ktor:ktor-client-java:$ktor_version")
     implementation("io.ktor:ktor-client-apache:$ktor_version")
+    // Azure client
+    implementation("io.ktor:ktor-client-jackson:$ktor_version")
     // Rest Client END
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.assertj:assertj-core:3.22.0")

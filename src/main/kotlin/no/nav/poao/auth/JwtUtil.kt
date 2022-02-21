@@ -1,4 +1,4 @@
-package no.nav.poao
+package no.nav.poao.auth
 
 import com.auth0.jwk.JwkProvider
 import com.auth0.jwk.JwkProviderBuilder
