@@ -3,9 +3,11 @@ package no.nav.poao.rest
 import io.ktor.application.*
 import io.ktor.auth.*
 import io.ktor.auth.jwt.*
+import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.poao.auth.MockPayload
+import no.nav.poao.getTokenInfo
 import no.nav.poao.plugins.getMockAktiviteter
 import no.nav.poao.plugins.getMockOppfolgingsinfo
 import no.nav.poao.plugins.getMockOppfolgingsperioder
@@ -14,6 +16,12 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean) {
     routing() {
         conditionalAuthenticate(useAuthentication) {
             route("/v1/oppfolging/") {
+                get("tokeninfo") {
+                    when (val tokenInfo = call.getTokenInfo()) {
+                        null -> call.respond(HttpStatusCode.Unauthorized, "Could not find a valid principal")
+                        else -> call.respond(tokenInfo)
+                    }
+                }
                 get("/periode") {
                     val aktorId = call.request.queryParameters["aktorId"]
                     log.info("Hent oppfølgingsperioder for aktorId: {}", aktorId)

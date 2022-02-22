@@ -2,8 +2,10 @@ package no.nav.poao
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.application.*
 import io.ktor.auth.*
+import io.ktor.auth.jwt.*
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
@@ -13,7 +15,9 @@ import no.nav.poao.auth.ServiceToServiceTokenProvider
 import no.nav.poao.client.VeilarbaktivitetClient
 import no.nav.poao.config.Configuration
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
+import org.slf4j.LoggerFactory
 import java.net.ProxySelector
+private val logger = LoggerFactory.getLogger("Application")
 
 data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
 
@@ -62,4 +66,11 @@ private fun HttpAuthHeader.getBlob(): String? = when {
     else -> null
 }
 
-private fun ApplicationCall.getAccessToken(): String? = request.parseAuthorizationHeader()?.getBlob()
+fun ApplicationCall.getAccessToken(): String? = request.parseAuthorizationHeader()?.getBlob()
+fun ApplicationCall.getTokenInfo(): Map<String, JsonNode>? = authentication
+    .principal<JWTPrincipal>()
+    ?.let { principal ->
+        logger.debug("found principal $principal")
+        principal.payload.claims.entries
+            .associate { claim -> claim.key to claim.value.`as`(JsonNode::class.java) }
+    }
