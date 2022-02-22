@@ -9,8 +9,6 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.common.log.LogFilter
 import no.nav.common.utils.EnvironmentUtils
-import no.nav.poao.JwtUtil.Companion.useJwtFromCookie
-import no.nav.poao.config.AuthCookies
 import no.nav.poao.config.Configuration
 import no.nav.poao.plugins.*
 

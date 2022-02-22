@@ -16,6 +16,7 @@ import no.nav.poao.client.exceptions.ManglerTilgangException
 import no.nav.poao.client.exceptions.ServerFeilException
 import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbaktivitet.model.Aktivitet
+import no.nav.poao.config.Cluster
 
 class VeilarbaktivitetClient constructor(val veilarbaktivitetUrl: String, val systemUserTokenProvider: NaisSystemUserTokenProvider?, engine: HttpClientEngine = Java.create()) {
 
@@ -75,4 +76,7 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetUrl: String, val sy
     }
 
 
+    companion object {
+        val ptoProxyAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-gcp" else "dev-gcp"}.pto-proxy/.default" }
+    }
 }
