@@ -6,8 +6,8 @@ import io.ktor.http.*
 
 fun Application.configureCors() {
     install(CORS) {
-        anyHost()
-        method(HttpMethod.Get)
+//        anyHost()
+//        method(HttpMethod.Get)
 
         allowCredentials = true
     }
