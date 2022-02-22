@@ -48,6 +48,8 @@ fun main(configuration: Configuration) {
         scope = VeilarbaktivitetClient.ptoProxyAuthenticationScope
     ))
 
+
+
     val applicationServer = createHttpServer(
         applicationState = applicationState,
         configuration = configuration

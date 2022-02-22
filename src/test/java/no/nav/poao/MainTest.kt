@@ -9,8 +9,7 @@ fun mainTest(): ApplicationEngine {
     System.setProperty("AZURE_APP_WELL_KNOWN_URL", "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration");
 
     val configuration = Configuration(
-        clustername = "",
-        //serviceUser = Credentials("foo", "bar"),
+        clustername = ""
     )
 
     val applicationState = ApplicationState()
