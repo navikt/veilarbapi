@@ -2,17 +2,13 @@ package no.nav.poao
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.application.*
 import io.ktor.auth.*
-import io.ktor.auth.jwt.*
 import io.ktor.client.*
 import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.http.auth.*
 import no.nav.common.utils.SslUtils
-import no.nav.poao.auth.ServiceToServiceTokenProvider
-import no.nav.poao.client.VeilarbaktivitetClient
 import no.nav.poao.config.Configuration
 import no.nav.security.token.support.ktor.TokenValidationContextPrincipal
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner

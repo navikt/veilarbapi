@@ -13,8 +13,18 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
     id ("org.openapi.generator") version "5.4.0"
     id("com.github.johnrengelman.shadow") version "7.0.0"
-
 }
+
+dependencyLocking {
+    lockAllConfigurations()
+}
+
+buildscript {
+    configurations.classpath {
+        resolutionStrategy.activateDependencyLocking()
+    }
+}
+
 
 kotlin {
     jvmToolchain {
@@ -125,7 +135,7 @@ dependencies {
     // avhengigheter i generert client kode
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
-//    implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
+ //   implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
 //    compileOnly(group = "com.google.code.findbugs", name = "jsr305", version = "3.0.2")
 //    implementation("com.squareup.okhttp3:okhttp:4.9.3")
     // avhengigheter i generert kode SLUTT
