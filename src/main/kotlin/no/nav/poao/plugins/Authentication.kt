@@ -2,6 +2,7 @@ package no.nav.poao.plugins
 
 import io.ktor.application.*
 import io.ktor.auth.*
+import no.nav.poao.auth.JwtUtil
 import no.nav.poao.auth.tokenSupportConfig
 import no.nav.poao.config.Configuration
 import no.nav.security.token.support.ktor.tokenValidationSupport
@@ -15,6 +16,7 @@ fun Application.configureAuthentication(configuration: Configuration) {
             tokenValidationSupport(config = tokenSupportConfig)
         }
         install(Authentication, tokenValidationConfig)
+
     }
 
 }

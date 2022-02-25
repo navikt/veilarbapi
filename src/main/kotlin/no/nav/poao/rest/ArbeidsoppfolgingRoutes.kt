@@ -44,7 +44,7 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean) {
 
 fun Route.conditionalAuthenticate(useAuthentication: Boolean, build: Route.() -> Unit): Route {
     if (useAuthentication) {
-        return authenticate(build = build, configurations = arrayOf("AzureAD"))
+        return authenticate(build = build, configurations = arrayOf("azuread"))
     } else return mockAuthentication(build)
 }
 
