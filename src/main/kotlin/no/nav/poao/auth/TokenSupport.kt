@@ -5,7 +5,7 @@ import no.nav.security.token.support.ktor.IssuerConfig
 import no.nav.security.token.support.ktor.TokenSupportConfig
 
 
-fun tokenSupportConfig(azureAd: Configuration.AzureAd): TokenSupportConfig {
+fun azureAdtokenSupportConfig(azureAd: Configuration.AzureAd): TokenSupportConfig {
     val issuerConfig =  IssuerConfig(
             name = "azuread",
             discoveryUrl = azureAd.wellKnownConfigurationUrl,
