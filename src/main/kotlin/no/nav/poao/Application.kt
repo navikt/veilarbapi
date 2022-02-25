@@ -14,6 +14,7 @@ import no.nav.common.utils.SslUtils
 import no.nav.poao.auth.ServiceToServiceTokenProvider
 import no.nav.poao.client.VeilarbaktivitetClient
 import no.nav.poao.config.Configuration
+import no.nav.security.token.support.ktor.TokenValidationContextPrincipal
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.slf4j.LoggerFactory
 import java.net.ProxySelector
@@ -60,10 +61,10 @@ private fun HttpAuthHeader.getBlob(): String? = when {
 }
 
 fun ApplicationCall.getAccessToken(): String? = request.parseAuthorizationHeader()?.getBlob()
-fun ApplicationCall.getTokenInfo(): Map<String, JsonNode>? = authentication
-    .principal<JWTPrincipal>()
+fun ApplicationCall.getTokenInfo(): Map<String, String>? = authentication
+    .principal<TokenValidationContextPrincipal>()
     ?.let { principal ->
         logger.debug("found principal $principal")
-        principal.payload.claims.entries
-            .associate { claim -> claim.key to claim.value.`as`(JsonNode::class.java) }
+        principal.context.firstValidToken.get().jwtTokenClaims.allClaims.entries
+            .associate { claim -> claim.key to claim.value.toString() }
     }
