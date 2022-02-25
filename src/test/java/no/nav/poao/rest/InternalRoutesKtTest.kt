@@ -4,7 +4,8 @@ import io.ktor.http.*
 
 import kotlin.test.*
 import io.ktor.server.testing.*
-import no.nav.poao.plugins.*
+import no.nav.poao.veilarbapi.plugins.*
+import no.nav.poao.veilarbapi.plugins.configureRouting
 
 class InternalRoutesKtTest {
     @Test

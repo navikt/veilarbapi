@@ -1,4 +1,4 @@
-package no.nav.poao.config
+package no.nav.poao.veilarbapi.config
 
 enum class Cluster {
     DEV_GCP, PROD_GCP, LOKAL;

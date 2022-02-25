@@ -1,4 +1,4 @@
-package no.nav.poao.plugins
+package no.nav.poao.veilarbapi.plugins
 
 import io.ktor.application.*
 import no.nav.veilarbapi.JSON

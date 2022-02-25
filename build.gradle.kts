@@ -19,12 +19,6 @@ dependencyLocking {
     lockAllConfigurations()
 }
 
-buildscript {
-    configurations.classpath {
-        resolutionStrategy.activateDependencyLocking()
-    }
-}
-
 
 kotlin {
     jvmToolchain {

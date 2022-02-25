@@ -1,4 +1,4 @@
-package no.nav.poao.auth
+package no.nav.poao.veilarbapi.auth
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature

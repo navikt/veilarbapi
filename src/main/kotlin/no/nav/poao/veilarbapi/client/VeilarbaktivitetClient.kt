@@ -1,4 +1,4 @@
-package no.nav.poao.client
+package no.nav.poao.veilarbapi.client
 
 
 import com.github.michaelbull.result.get
@@ -11,14 +11,14 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.nav.common.utils.IdUtils
-import no.nav.poao.auth.AzureAdClient
-import no.nav.poao.client.exceptions.IkkePaaLoggetException
-import no.nav.poao.client.exceptions.ManglerTilgangException
-import no.nav.poao.client.exceptions.ServerFeilException
+import no.nav.poao.veilarbapi.auth.AzureAdClient
+import no.nav.poao.veilarbapi.client.exceptions.IkkePaaLoggetException
+import no.nav.poao.veilarbapi.client.exceptions.ManglerTilgangException
+import no.nav.poao.veilarbapi.client.exceptions.ServerFeilException
 import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbaktivitet.model.Aktivitet
-import no.nav.poao.config.Cluster
-import no.nav.poao.config.Configuration
+import no.nav.poao.veilarbapi.config.Cluster
+import no.nav.poao.veilarbapi.config.Configuration
 
 class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig, val azureAdClient: AzureAdClient?, engine: HttpClientEngine = Java.create()) {
 

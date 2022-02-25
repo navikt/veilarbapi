@@ -3,8 +3,9 @@ package no.nav.poao.client
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
-import no.nav.poao.client.exceptions.ServerFeilException
-import no.nav.poao.config.Configuration
+import no.nav.poao.veilarbapi.client.exceptions.ServerFeilException
+import no.nav.poao.veilarbapi.config.Configuration
+import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
 import no.nav.veilarbaktivitet.model.Mote
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test

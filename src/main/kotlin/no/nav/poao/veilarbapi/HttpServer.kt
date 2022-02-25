@@ -1,4 +1,4 @@
-package no.nav.poao
+package no.nav.poao.veilarbapi
 
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -9,8 +9,13 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.common.log.LogFilter
 import no.nav.common.utils.EnvironmentUtils
-import no.nav.poao.config.Configuration
-import no.nav.poao.plugins.*
+import no.nav.poao.veilarbapi.config.Configuration
+import no.nav.poao.veilarbapi.plugins.*
+import no.nav.poao.veilarbapi.ApplicationState
+import no.nav.poao.veilarbapi.plugins.configureAuthentication
+import no.nav.poao.veilarbapi.plugins.configureMonitoring
+import no.nav.poao.veilarbapi.plugins.configureRouting
+import no.nav.poao.veilarbapi.plugins.configureSerialization
 
 fun createHttpServer(
     applicationState: ApplicationState,

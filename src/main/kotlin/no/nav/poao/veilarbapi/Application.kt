@@ -1,4 +1,4 @@
-package no.nav.poao
+package no.nav.poao.veilarbapi
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.databind.DeserializationFeature
@@ -9,7 +9,8 @@ import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.http.auth.*
 import no.nav.common.utils.SslUtils
-import no.nav.poao.config.Configuration
+import no.nav.poao.veilarbapi.createHttpServer
+import no.nav.poao.veilarbapi.config.Configuration
 import no.nav.security.token.support.ktor.TokenValidationContextPrincipal
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.slf4j.LoggerFactory

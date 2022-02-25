@@ -1,10 +1,10 @@
-package no.nav.poao.config
+package no.nav.poao.veilarbapi.config
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.natpryce.konfig.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
-import no.nav.poao.defaultHttpClient
+import no.nav.poao.veilarbapi.defaultHttpClient
 
 private const val notUsedLocally = ""
 private val defaultProperties by lazy {

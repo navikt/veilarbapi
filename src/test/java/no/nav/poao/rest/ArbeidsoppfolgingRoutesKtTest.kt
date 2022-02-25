@@ -5,7 +5,9 @@ import io.ktor.http.*
 
 import kotlin.test.*
 import io.ktor.server.testing.*
-import no.nav.poao.plugins.*
+import no.nav.poao.veilarbapi.plugins.*
+import no.nav.poao.veilarbapi.plugins.configureRouting
+import no.nav.poao.veilarbapi.plugins.configureSerialization
 import no.nav.veilarbapi.JSON
 import no.nav.veilarbapi.model.Aktivitet
 import no.nav.veilarbapi.model.Mote

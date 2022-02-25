@@ -1,4 +1,4 @@
-package no.nav.poao.client.exceptions
+package no.nav.poao.veilarbapi.client.exceptions
 
 import io.ktor.client.statement.*
 

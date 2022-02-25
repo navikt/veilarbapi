@@ -1,7 +1,9 @@
 package no.nav.poao
 
 import io.ktor.server.engine.*
-import no.nav.poao.config.Configuration
+import no.nav.poao.veilarbapi.ApplicationState
+import no.nav.poao.veilarbapi.config.Configuration
+import no.nav.poao.veilarbapi.createHttpServer
 
 
 fun mainTest(): ApplicationEngine {
