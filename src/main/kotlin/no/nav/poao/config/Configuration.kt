@@ -12,7 +12,9 @@ private val defaultProperties by lazy {
         mapOf(
             "NAIS_CLUSTER_NAME" to notUsedLocally,
             "VEILARBAKTIVITETAPI_URL" to notUsedLocally,
+            "VEILARBAKTIVITETAPI_CLIENTID" to notUsedLocally,
             "VEILARBDIALOGAPI_URL" to notUsedLocally,
+            "VEILARBDIALOGAPI_CLIENTID" to notUsedLocally,
             "AZURE_APP_CLIENT_SECRET" to notUsedLocally,
             "AZURE_APP_CLIENT_ID" to notUsedLocally,
             "AZURE_APP_WELL_KNOWN_URL" to "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration"
@@ -38,10 +40,12 @@ data class Configuration(
     )
 
     data class VeilarbaktivitetConfig(
-        val url: String = config()[Key("VEILARBAKTIVITETAPI_URL", stringType)]
+        val url: String = config()[Key("VEILARBAKTIVITETAPI_URL", stringType)],
+        val clientId: String = config()[Key("VEILARBAKTIVITETAPI_CLIENTID", stringType)]
     )
     data class VeilarbdialogConfig(
-        val url: String = config()[Key("VEILARBDIALOGAPI_URL", stringType)]
+        val url: String = config()[Key("VEILARBDIALOGAPI_URL", stringType)],
+        val clientId: String = config()[Key("VEILARBDIALOGAPI_CLIENTID", stringType)]
     )
 }
 

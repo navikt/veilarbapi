@@ -41,15 +41,6 @@ fun main(configuration: Configuration) {
     SslUtils.setupTruststore()
     val applicationState = ApplicationState()
 
-    val veilarbaktivitetAccessTokenClient = ServiceToServiceTokenProvider(config = ServiceToServiceTokenProvider.Config(
-        azureClientSecret = configuration.azureAd.clientSecret,
-        azureClientId = configuration.azureAd.clientId,
-        tokenEndpoint = configuration.azureAd.openIdConfiguration.tokenEndpoint,
-        scope = VeilarbaktivitetClient.ptoProxyAuthenticationScope
-    ))
-
-
-
     val applicationServer = createHttpServer(
         applicationState = applicationState,
         configuration = configuration

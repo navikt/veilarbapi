@@ -16,7 +16,7 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean) {
     routing() {
         conditionalAuthenticate(useAuthentication) {
             route("/v1/oppfolging/") {
-                get("tokeninfo") {
+                get("/tokeninfo") {
                     when (val tokenInfo = call.getTokenInfo()) {
                         null -> call.respond(HttpStatusCode.Unauthorized, "Could not find a valid principal")
                         else -> call.respond(tokenInfo)

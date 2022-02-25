@@ -1,6 +1,7 @@
 package no.nav.poao.client
 
 
+import com.github.michaelbull.result.get
 import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.engine.java.*
@@ -9,16 +10,17 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import no.nav.common.sts.NaisSystemUserTokenProvider
 import no.nav.common.utils.IdUtils
+import no.nav.poao.auth.AzureAdClient
 import no.nav.poao.client.exceptions.IkkePaaLoggetException
 import no.nav.poao.client.exceptions.ManglerTilgangException
 import no.nav.poao.client.exceptions.ServerFeilException
 import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbaktivitet.model.Aktivitet
 import no.nav.poao.config.Cluster
+import no.nav.poao.config.Configuration
 
-class VeilarbaktivitetClient constructor(val veilarbaktivitetUrl: String, val systemUserTokenProvider: NaisSystemUserTokenProvider?, engine: HttpClientEngine = Java.create()) {
+class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig, val azureAdClient: AzureAdClient?, engine: HttpClientEngine = Java.create()) {
 
     val json = JSON()
     val client: HttpClient =
@@ -29,11 +31,22 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetUrl: String, val sy
             }
         }
 
-    fun hentAktivitet(aktivitetsId: Int): Aktivitet? {
+    val veilarbaktivitetUrl = veilarbaktivitetConfig.url
+    val resource = veilarbaktivitetConfig.clientId
+
+    fun hentAktivitet(aktivitetsId: Int, accessToken: String?): Aktivitet? {
         return runBlocking {
+            val oboAccessToken = accessToken?.let {
+                azureAdClient?.getOnBehalfOfAccessTokenForResource(
+                    scopes = listOf("api:$resource.default"),
+                    accessToken = it
+                )
+            }
             client.use { httpClient ->
                 val response =
-                httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet/$aktivitetsId")
+                httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet/$aktivitetsId") {
+                    header(HttpHeaders.Authorization, "Bearer ${oboAccessToken?.get()}")
+                }
                 if (response.status == HttpStatusCode.OK) {
                         Aktivitet.fromJson(response.readText())
                 } else {
@@ -43,11 +56,19 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetUrl: String, val sy
         }
     }
 
-    fun hentAktiviteter(aktorId: String): Array<Aktivitet>? {
+    fun hentAktiviteter(aktorId: String, accessToken: String?): Array<Aktivitet>? {
         return runBlocking {
+            val oboAccessToken = accessToken?.let {
+                azureAdClient?.getOnBehalfOfAccessTokenForResource(
+                    scopes = listOf("api:$resource.default"),
+                    accessToken = it
+                )
+            }
             client.use { httpClient ->
                 val response =
-                    httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet?aktorId=$aktorId")
+                    httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet?aktorId=$aktorId") {
+                        header(HttpHeaders.Authorization, "Bearer ${oboAccessToken?.get()}")
+                    }
                 if (response.status == HttpStatusCode.OK) {
                     JSON.deserialize<Array<Aktivitet>>(response.readText(), Aktivitet::class.java.arrayType())
                 } else {
@@ -61,9 +82,6 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetUrl: String, val sy
     fun HttpRequestBuilder.mandatoryHeaders() {
         header("Nav-Call-Id", IdUtils.generateId())
         header("Nav-Consumer-Id", "veilarbapi")
-        if (systemUserTokenProvider != null) {
-            header("Authorization", "Bearer " + systemUserTokenProvider.systemUserToken)
-        }
     }
 
     private suspend fun callFailure(response: HttpResponse): Exception {

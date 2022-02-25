@@ -6,17 +6,27 @@ import org.apache.http.client.methods.HttpUriRequest
 import org.apache.http.impl.client.BasicResponseHandler
 import org.apache.http.impl.client.HttpClientBuilder
 import org.assertj.core.api.Assertions.assertThat
+import kotlin.test.AfterTest
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 
 class IntegrationTestsInternal {
-    lateinit var applicationEngine: ApplicationEngine;
+    var applicationEngine: ApplicationEngine = mainTest()
+
+    @BeforeTest
+    fun startServer() {
+        applicationEngine.start(wait = false)
+    }
+
+    @AfterTest
+    fun stopServer() {
+        applicationEngine.stop(0,0)
+    }
 
     @Test
     fun testIsAlive() {
-        applicationEngine = mainTest()
-        withApplication { applicationEngine }
         val request: HttpUriRequest = HttpGet("http://0.0.0.0:8080/internal/isAlive")
         val httpResponse = HttpClientBuilder.create().build().execute(request)
         val responseString = BasicResponseHandler().handleResponse(httpResponse)

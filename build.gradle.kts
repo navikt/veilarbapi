@@ -1,7 +1,9 @@
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
-val navcommonVersion: String = "2.2022.01.21_08.02-cd96965058ef"
+val navcommonVersion: String by project
+val mockOAuth2ServerVersion: String by project
+val tokenValidationVersion: String by project
 
 
 plugins {
@@ -87,6 +89,9 @@ dependencies {
     implementation("io.ktor:ktor-gson:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
+    implementation("no.nav.security:token-validation-ktor:$tokenValidationVersion") {
+        exclude(group = "io.ktor", module = "ktor-auth")
+    }
     api("javax.validation:validation-api:2.0.1.Final")
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
 
@@ -109,6 +114,7 @@ dependencies {
     // Rest Client END
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.assertj:assertj-core:3.22.0")
+    testImplementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     // avhengigheter i generert server kode
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("io.gsonfire:gson-fire:1.8.5")

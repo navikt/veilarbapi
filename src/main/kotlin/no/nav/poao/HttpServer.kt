@@ -18,11 +18,10 @@ fun createHttpServer(
     configuration: Configuration
 ) : ApplicationEngine = embeddedServer(Netty, port, "0.0.0.0") {
 
+
     configureMonitoring()
     configureAuthentication(configuration)
     configureSerialization()
-    configureCors()
-
 
     install(CallLogging) {
         LogFilter(EnvironmentUtils.requireApplicationName(), EnvironmentUtils.isDevelopment().orElse(false))

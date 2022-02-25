@@ -20,9 +20,9 @@ import no.nav.poao.defaultHttpClient
 import no.nav.security.examples.ThrowableErrorMessage
 import org.slf4j.LoggerFactory
 
-private val logger = LoggerFactory.getLogger(OnBehalfOfTokenProvider::class.java)
+private val logger = LoggerFactory.getLogger(AzureAdClient::class.java)
 
-class OnBehalfOfTokenProvider(
+class AzureAdClient(
     private val config: Configuration.AzureAd,
     private val httpClient: HttpClient = defaultHttpClient
 ) {
@@ -50,7 +50,7 @@ class OnBehalfOfTokenProvider(
 
     private suspend fun Throwable.handleError(message: String): Err<ThrowableErrorMessage> {
         val responseBody: String? = when (this) {
-            is ResponseException -> this.response?.readText()
+            is ResponseException -> this.response.readText()
             else -> null
         }
         return "$message. response body: $responseBody"
@@ -59,6 +59,7 @@ class OnBehalfOfTokenProvider(
     }
 
     // Service-to-service access token request (client credentials grant)
+
     @OptIn(InternalAPI::class)
     suspend fun getAccessTokenForResource(scopes: List<String>): Result<AccessToken, ThrowableErrorMessage> =
         fetchAccessToken(
@@ -71,6 +72,7 @@ class OnBehalfOfTokenProvider(
         )
 
     // Service-to-service access token request (on-behalf-of flow)
+
     @OptIn(InternalAPI::class)
     suspend fun getOnBehalfOfAccessTokenForResource(scopes: List<String>, accessToken: String): Result<AccessToken, ThrowableErrorMessage> =
         fetchAccessToken(
@@ -86,6 +88,7 @@ class OnBehalfOfTokenProvider(
         )
 
     // Graph API lookup (on-behalf-of flow)
+
     suspend fun getUserInfoFromGraph(accessToken: String): Result<JsonNode, ThrowableErrorMessage> {
         val queryProperties = "onPremisesSamAccountName,displayName,givenName,mail,officeLocation,surname,userPrincipalName,id,jobTitle"
         val url = "https://graph.microsoft.com/v1.0/me?\$select=$queryProperties"

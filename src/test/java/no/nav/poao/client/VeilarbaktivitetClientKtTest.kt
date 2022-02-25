@@ -4,6 +4,7 @@ import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import no.nav.poao.client.exceptions.ServerFeilException
+import no.nav.poao.config.Configuration
 import no.nav.veilarbaktivitet.model.Mote
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
@@ -11,6 +12,7 @@ import kotlin.test.assertFailsWith
 
 
 class VeilarbaktivitetClientKtTest {
+    val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url="http://localhost:8080/veilarbaktivitet", clientId = "veilarbaktivitetClientId")
 
     @Test
     fun testHentAktivitetWithMockEngine() {
@@ -22,11 +24,11 @@ class VeilarbaktivitetClientKtTest {
             )
         }
         val client = VeilarbaktivitetClient(
-            veilarbaktivitetUrl = "http://localhost:8080/veilarbaktivitet",
-            systemUserTokenProvider = null,
-            engine = mockEngine
+            veilarbaktivitetConfig = veilarbaktivitetConfig,
+            engine = mockEngine,
+            azureAdClient = null
         )
-        val aktivitet = client.hentAktivitet(123)
+        val aktivitet = client.hentAktivitet(123, null)
         assertThat(aktivitet).isInstanceOf(Mote::class.java)
     }
 
@@ -40,11 +42,11 @@ class VeilarbaktivitetClientKtTest {
             )
         }
         val client = VeilarbaktivitetClient(
-            veilarbaktivitetUrl = "http://localhost:8080/veilarbaktivitet",
-            systemUserTokenProvider = null,
-            engine = mockEngine
+            veilarbaktivitetConfig = veilarbaktivitetConfig,
+            engine = mockEngine,
+            azureAdClient = null
         )
-        val aktiviteter = client.hentAktiviteter("123456789101")
+        val aktiviteter = client.hentAktiviteter("123456789101", null)
         assertThat(aktiviteter).hasSize(2)
     }
 
@@ -58,12 +60,12 @@ class VeilarbaktivitetClientKtTest {
             )
         }
         val client = VeilarbaktivitetClient(
-            veilarbaktivitetUrl = "http://localhost:8080/veilarbaktivitet",
-            systemUserTokenProvider = null,
-            engine = mockEngine
+            veilarbaktivitetConfig = veilarbaktivitetConfig,
+            engine = mockEngine,
+            azureAdClient = null
         )
         assertFailsWith<ServerFeilException> {
-            client.hentAktiviteter("123456789101")
+            client.hentAktiviteter("123456789101", null)
         }
     }
 
