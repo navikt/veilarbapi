@@ -12,13 +12,14 @@ plugins {
     `java-library`
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
     id ("org.openapi.generator") version "5.4.0"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 dependencyLocking {
     lockAllConfigurations()
 }
 
+//configurations.all { resolutionStrategy.failOnVersionConflict() }
 
 kotlin {
     jvmToolchain {
@@ -83,7 +84,8 @@ kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated/src/main/kotlin")
 
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
+    implementation(kotlin("stdlib"))
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
     implementation("io.ktor:ktor-metrics:$ktor_version")
     implementation("io.ktor:ktor-server-core:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
@@ -93,9 +95,7 @@ dependencies {
     implementation("io.ktor:ktor-gson:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
-    implementation("no.nav.security:token-validation-ktor:$tokenValidationVersion") {
-        exclude(group = "io.ktor", module = "ktor-auth")
-    }
+    implementation("no.nav.security:token-validation-ktor:$tokenValidationVersion")
     api("javax.validation:validation-api:2.0.1.Final")
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
 
@@ -120,7 +120,6 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.22.0")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     // avhengigheter i generert server kode
-    implementation("com.google.code.gson:gson:2.8.9")
     implementation("io.gsonfire:gson-fire:1.8.5")
     api("javax.ws.rs:javax.ws.rs-api:2.1.1")
     implementation(group= "org.threeten", name= "threetenbp", version= "1.5.1")
@@ -129,9 +128,6 @@ dependencies {
     // avhengigheter i generert client kode
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
- //   implementation("com.squareup.moshi:moshi-kotlin:1.12.0")
-//    compileOnly(group = "com.google.code.findbugs", name = "jsr305", version = "3.0.2")
-//    implementation("com.squareup.okhttp3:okhttp:4.9.3")
     // avhengigheter i generert kode SLUTT
 
 }
