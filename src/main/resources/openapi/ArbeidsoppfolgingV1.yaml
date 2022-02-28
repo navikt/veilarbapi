@@ -252,9 +252,6 @@ components:
           type: boolean
           description: Beskriver om melding er lest av bruker/veileder
           example: true
-        lest_dato:
-          type: string
-          format: date-time
         meldingstekst:
           type: string
           description: Fritekstfelt med melding som ble sendt/opprettet
