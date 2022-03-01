@@ -43,16 +43,15 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
                     accessToken = it
                 )
             }
-            val poaoGcpProxyOnBehalfOfAccessToken = accessToken?.let {
-                azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                    scopes = listOf(poaoGcpProxyResource),
-                    accessToken = it
+            val poaoGcpProxyServiceUserAccessToken = accessToken?.let {
+                azureAdClient?.getAccessTokenForResource(
+                    scopes = listOf(poaoGcpProxyResource)
                 )
             }
             client.use { httpClient ->
                 val response =
                 httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet/$aktivitetsId") {
-                    header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyOnBehalfOfAccessToken?.get()}")
+                    header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()}")
                     header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()}")
                 }
                 if (response.status == HttpStatusCode.OK) {
@@ -72,16 +71,15 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
                     accessToken = it
                 )
             }
-            val poaoGcpProxyOnBehalfOfAccessToken = accessToken?.let {
-                azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                    scopes = listOf(poaoGcpProxyResource),
-                    accessToken = it
+            val poaoGcpProxyServiceUserAccessToken = accessToken?.let {
+                azureAdClient?.getAccessTokenForResource(
+                    scopes = listOf(poaoGcpProxyResource)
                 )
             }
             client.use { httpClient ->
                 val response =
                     httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet?aktorId=$aktorId") {
-                        header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyOnBehalfOfAccessToken?.get()}")
+                        header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()}")
                         header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()}")
                     }
                 if (response.status == HttpStatusCode.OK) {
