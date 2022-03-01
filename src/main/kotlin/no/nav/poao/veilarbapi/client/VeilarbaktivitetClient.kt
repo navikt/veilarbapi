@@ -51,8 +51,8 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
             client.use { httpClient ->
                 val response =
                 httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet/$aktivitetsId") {
-                    header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()}")
-                    header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()}")
+                    header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
+                    header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()?.accessToken}")
                 }
                 if (response.status == HttpStatusCode.OK) {
                         Aktivitet.fromJson(response.readText())
@@ -79,8 +79,8 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
             client.use { httpClient ->
                 val response =
                     httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet?aktorId=$aktorId") {
-                        header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()}")
-                        header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()}")
+                        header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
+                        header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()?.accessToken}")
                     }
                 if (response.status == HttpStatusCode.OK) {
                     JSON.deserialize<Array<Aktivitet>>(response.readText(), Aktivitet::class.java.arrayType())
