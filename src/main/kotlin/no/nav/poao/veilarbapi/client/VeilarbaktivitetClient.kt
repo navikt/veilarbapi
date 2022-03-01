@@ -66,16 +66,23 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
 
     fun hentAktiviteter(aktorId: String, accessToken: String?): Array<Aktivitet> {
         return runBlocking {
-            val oboAccessToken = accessToken?.let {
+            val veilarbaktivitetOnBehalfOfAccessToken = accessToken?.let {
                 azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                    scopes = listOf("api:$veilarbaktivitetResource.default"),
+                    scopes = listOf(veilarbaktivitetResource),
+                    accessToken = it
+                )
+            }
+            val poaoGcpProxyOnBehalfOfAccessToken = accessToken?.let {
+                azureAdClient?.getOnBehalfOfAccessTokenForResource(
+                    scopes = listOf(poaoGcpProxyResource),
                     accessToken = it
                 )
             }
             client.use { httpClient ->
                 val response =
                     httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet?aktorId=$aktorId") {
-                        header(HttpHeaders.Authorization, "Bearer ${oboAccessToken?.get()}")
+                        header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyOnBehalfOfAccessToken?.get()}")
+                        header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()}")
                     }
                 if (response.status == HttpStatusCode.OK) {
                     JSON.deserialize<Array<Aktivitet>>(response.readText(), Aktivitet::class.java.arrayType())
