@@ -6,7 +6,7 @@ import io.ktor.auth.jwt.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
-import no.nav.poao.veilarbapi.auth.MockPayload
+import no.nav.poao.veilarbapi.oauth.MockPayload
 import no.nav.poao.veilarbapi.getTokenInfo
 import no.nav.poao.veilarbapi.plugins.getMockAktiviteter
 import no.nav.poao.veilarbapi.plugins.getMockOppfolgingsinfo

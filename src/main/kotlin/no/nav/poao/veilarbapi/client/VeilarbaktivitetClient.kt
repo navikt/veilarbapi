@@ -11,7 +11,7 @@ import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
 import no.nav.common.utils.IdUtils
-import no.nav.poao.veilarbapi.auth.AzureAdClient
+import no.nav.poao.veilarbapi.oauth.AzureAdClient
 import no.nav.poao.veilarbapi.client.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.client.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.client.exceptions.ServerFeilException

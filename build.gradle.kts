@@ -3,7 +3,8 @@ val kotlin_version: String by project
 val logback_version: String by project
 val navcommonVersion: String by project
 val mockOAuth2ServerVersion: String by project
-val tokenValidationVersion: String by project
+val token_support_version: String by project
+val caffeine_version: String by project
 
 
 plugins {
@@ -93,9 +94,11 @@ dependencies {
     implementation("io.ktor:ktor-auth-jwt:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-gson:$ktor_version")
+    implementation("com.github.ben-manes.caffeine:caffeine:$caffeine_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
-    implementation("no.nav.security:token-validation-ktor:$tokenValidationVersion")
+    implementation("no.nav.security:token-validation-ktor:$token_support_version")
+    implementation("no.nav.security:token-client-core:$token_support_version")
     api("javax.validation:validation-api:2.0.1.Final")
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
 

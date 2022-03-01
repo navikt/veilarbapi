@@ -1,4 +1,4 @@
-package no.nav.security.examples
+package no.nav.poao.veilarbapi.oauth
 
 data class Resource(
     val clientId: String,
