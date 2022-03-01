@@ -81,6 +81,8 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
                     httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet?aktorId=$aktorId") {
                         header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
                         header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()?.accessToken}")
+                        header("Nav-Call-Id", IdUtils.generateId())
+                        header("Nav-Consumer-Id", "veilarbapi")
                     }
                 if (response.status == HttpStatusCode.OK) {
                     JSON.deserialize<Array<Aktivitet>>(response.readText(), Aktivitet::class.java.arrayType())
