@@ -16,9 +16,9 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-//dependencyLocking {
-//    lockAllConfigurations()
-//}
+dependencyLocking {
+    lockAllConfigurations()
+}
 
 //configurations.all { resolutionStrategy.failOnVersionConflict() }
 
@@ -36,7 +36,7 @@ java {
 group = "no.nav.poao"
 version = ""
 application {
-    mainClass.set("no.nav.poao.ApplicationKt")
+    mainClass.set("no.nav.poao.veilarbapi.ApplicationKt")
 }
 
 repositories {
@@ -71,7 +71,7 @@ task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateVeila
 tasks {
     shadowJar {
         manifest {
-            attributes(Pair("Main-Class", "no.nav.poao.ApplicationKt"))
+            attributes(Pair("Main-Class", "no.nav.poao.veilarbapi.ApplicationKt"))
         }
     }
 }
