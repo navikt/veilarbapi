@@ -2,6 +2,7 @@ package no.nav.poao
 
 import io.ktor.server.engine.*
 import no.nav.poao.veilarbapi.ApplicationState
+import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
 import no.nav.poao.veilarbapi.config.Configuration
 import no.nav.poao.veilarbapi.createHttpServer
 
@@ -21,7 +22,8 @@ fun mainTest(): ApplicationEngine {
     val applicationServer = createHttpServer(
         applicationState = applicationState,
         configuration = configuration,
-    );
+        veilarbaktivitetClient = VeilarbaktivitetClient(configuration.veilarbaktivitetConfig, poaoGcpProxyConfig = configuration.poaoGcpProxyConfig, azureAdClient = null)
+    )
 
     Runtime.getRuntime().addShutdownHook(Thread {
         applicationState.initialized = false

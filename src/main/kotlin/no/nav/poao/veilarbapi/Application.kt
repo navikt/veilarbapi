@@ -9,8 +9,9 @@ import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.http.auth.*
 import no.nav.common.utils.SslUtils
-import no.nav.poao.veilarbapi.createHttpServer
+import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
 import no.nav.poao.veilarbapi.config.Configuration
+import no.nav.poao.veilarbapi.oauth.AzureAdClient
 import no.nav.security.token.support.ktor.TokenValidationContextPrincipal
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.slf4j.LoggerFactory
@@ -39,9 +40,14 @@ fun main(configuration: Configuration) {
     SslUtils.setupTruststore()
     val applicationState = ApplicationState()
 
+    val azureAdClient = AzureAdClient(configuration.azureAd)
+
+    val veilarbaktivitetClient = VeilarbaktivitetClient(configuration.veilarbaktivitetConfig, configuration.poaoGcpProxyConfig, azureAdClient)
+
     val applicationServer = createHttpServer(
         applicationState = applicationState,
-        configuration = configuration
+        configuration = configuration,
+        veilarbaktivitetClient = veilarbaktivitetClient
         )
 
     Runtime.getRuntime().addShutdownHook(Thread {

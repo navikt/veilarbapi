@@ -14,6 +14,7 @@ import kotlin.test.assertFailsWith
 
 class VeilarbaktivitetClientKtTest {
     val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url="http://localhost:8080/veilarbaktivitet", clientId = "veilarbaktivitetClientId")
+    val poaoGcpProxyConfig = Configuration.PoaoGcpProxyConfig(url="http://localhost:8080/proxu", clientId = "poaoGcpProxyClientId")
 
     @Test
     fun testHentAktivitetWithMockEngine() {
@@ -26,6 +27,7 @@ class VeilarbaktivitetClientKtTest {
         }
         val client = VeilarbaktivitetClient(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
+            poaoGcpProxyConfig = poaoGcpProxyConfig,
             engine = mockEngine,
             azureAdClient = null
         )
@@ -44,6 +46,7 @@ class VeilarbaktivitetClientKtTest {
         }
         val client = VeilarbaktivitetClient(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
+            poaoGcpProxyConfig = poaoGcpProxyConfig,
             engine = mockEngine,
             azureAdClient = null
         )
@@ -62,6 +65,7 @@ class VeilarbaktivitetClientKtTest {
         }
         val client = VeilarbaktivitetClient(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
+            poaoGcpProxyConfig = poaoGcpProxyConfig,
             engine = mockEngine,
             azureAdClient = null
         )

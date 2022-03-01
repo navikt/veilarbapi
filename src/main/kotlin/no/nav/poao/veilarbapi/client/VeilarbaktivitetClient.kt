@@ -20,7 +20,7 @@ import no.nav.veilarbaktivitet.model.Aktivitet
 import no.nav.poao.veilarbapi.config.Cluster
 import no.nav.poao.veilarbapi.config.Configuration
 
-class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig, val azureAdClient: AzureAdClient?, engine: HttpClientEngine = Java.create()) {
+class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig, val poaoGcpProxyConfig: Configuration.PoaoGcpProxyConfig, val azureAdClient: AzureAdClient?, engine: HttpClientEngine = Java.create()) {
 
     val json = JSON()
     val client: HttpClient =
@@ -32,20 +32,28 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
         }
 
     val veilarbaktivitetUrl = veilarbaktivitetConfig.url
-    val resource = veilarbaktivitetConfig.clientId
+    val veilarbaktivitetResource = veilarbaktivitetAuthenticationScope
+    val poaoGcpProxyResource = poaoProxyAuthenticationScope
 
     fun hentAktivitet(aktivitetsId: Int, accessToken: String?): Aktivitet? {
         return runBlocking {
-            val oboAccessToken = accessToken?.let {
+            val veilarbaktivitetOnBehalfOfAccessToken = accessToken?.let {
                 azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                    scopes = listOf("api:$resource.default"),
+                    scopes = listOf(veilarbaktivitetResource),
+                    accessToken = it
+                )
+            }
+            val poaoGcpProxyOnBehalfOfAccessToken = accessToken?.let {
+                azureAdClient?.getOnBehalfOfAccessTokenForResource(
+                    scopes = listOf(poaoGcpProxyResource),
                     accessToken = it
                 )
             }
             client.use { httpClient ->
                 val response =
                 httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet/$aktivitetsId") {
-                    header(HttpHeaders.Authorization, "Bearer ${oboAccessToken?.get()}")
+                    header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyOnBehalfOfAccessToken?.get()}")
+                    header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()}")
                 }
                 if (response.status == HttpStatusCode.OK) {
                         Aktivitet.fromJson(response.readText())
@@ -56,11 +64,11 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
         }
     }
 
-    fun hentAktiviteter(aktorId: String, accessToken: String?): Array<Aktivitet>? {
+    fun hentAktiviteter(aktorId: String, accessToken: String?): Array<Aktivitet> {
         return runBlocking {
             val oboAccessToken = accessToken?.let {
                 azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                    scopes = listOf("api:$resource.default"),
+                    scopes = listOf("api:$veilarbaktivitetResource.default"),
                     accessToken = it
                 )
             }
@@ -95,6 +103,8 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
 
 
     companion object {
-        val ptoProxyAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-gcp" else "dev-gcp"}.pto-proxy/.default" }
+        val poaoProxyAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.poao-gcp-proxy/.default" }
+        val veilarbaktivitetAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarbaktivitet/.default" }
     }
+
 }

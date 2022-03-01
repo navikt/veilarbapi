@@ -6,13 +6,14 @@ import io.ktor.auth.jwt.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
+import no.nav.poao.veilarbapi.getAccessToken
 import no.nav.poao.veilarbapi.oauth.MockPayload
 import no.nav.poao.veilarbapi.getTokenInfo
-import no.nav.poao.veilarbapi.plugins.getMockAktiviteter
 import no.nav.poao.veilarbapi.plugins.getMockOppfolgingsinfo
 import no.nav.poao.veilarbapi.plugins.getMockOppfolgingsperioder
 
-fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean) {
+fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, veilarbaktivitetClient: VeilarbaktivitetClient) {
     routing() {
         conditionalAuthenticate(useAuthentication) {
             route("/v1/oppfolging/") {
@@ -28,9 +29,15 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean) {
                     call.respond(getMockOppfolgingsperioder(fromMockFile = true))
                 }
                 get("/aktivitet") {
+                    val token = call.getAccessToken()
                     val aktorId = call.request.queryParameters["aktorId"]
-                    log.info("Hent aktiviteter for aktorId: {}", aktorId)
-                    call.respond(getMockAktiviteter(fromMockFile = true))
+                    if (aktorId == null) {
+                        call.respond(HttpStatusCode.BadRequest, "Missing aktorId")
+                    } else {
+                        log.info("Hent aktiviteter for aktorId: {}", aktorId)
+                        val aktiviteter = veilarbaktivitetClient.hentAktiviteter(aktorId, token)
+                        call.respond(aktiviteter)
+                    }
                 }
                 get("info") {
                     val aktorId = call.request.queryParameters["aktorId"]
