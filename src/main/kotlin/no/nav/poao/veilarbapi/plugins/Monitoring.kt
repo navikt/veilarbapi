@@ -33,6 +33,9 @@ fun Application.configureMonitoring() {
         mdc("Nav-Call-Id") { call ->
             call.request.header("Nav-Call-Id")
         }
+        filter { call ->
+            !call.request.path().startsWith("/internal")
+        }
         format { call ->
             val status = call.response.status()
             val httpMethod = call.request.httpMethod.value
