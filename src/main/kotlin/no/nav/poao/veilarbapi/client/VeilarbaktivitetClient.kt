@@ -72,20 +72,19 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
                     scopes = listOf(poaoGcpProxyResource)
                 )
             }
-            client.use { httpClient ->
-                val response =
-                    httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet?aktorId=$aktorId") {
-                        header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
-                        header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()?.accessToken}")
-                        header("Nav-Call-Id", IdUtils.generateId())
-                        header("Nav-Consumer-Id", "veilarbapi")
-                    }
-                if (response.status == HttpStatusCode.OK) {
-                    return JSON.deserialize<Array<Aktivitet>>(response.readText(), Aktivitet::class.java.arrayType())
-                } else {
-                    throw callFailure(response)
+            val response =
+                client.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet?aktorId=$aktorId") {
+                    header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
+                    header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()?.accessToken}")
+                    header("Nav-Call-Id", IdUtils.generateId())
+                    header("Nav-Consumer-Id", "veilarbapi")
                 }
+            if (response.status == HttpStatusCode.OK) {
+                return JSON.deserialize<Array<Aktivitet>>(response.readText(), Aktivitet::class.java.arrayType())
+            } else {
+                throw callFailure(response)
             }
+
     }
 
     private suspend fun callFailure(response: HttpResponse): Exception {
