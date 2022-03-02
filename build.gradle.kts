@@ -5,6 +5,7 @@ val navcommonVersion: String by project
 val mockOAuth2ServerVersion: String by project
 val token_support_version: String by project
 val caffeine_version: String by project
+val logstashEncoderVersion: String by project
 
 
 plugins {
@@ -106,6 +107,7 @@ dependencies {
     // LOGGING
     implementation(group= "ch.qos.logback", name= "logback-classic", version= "1.2.6")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
 
     implementation("com.natpryce:konfig:1.6.10.0")
 
