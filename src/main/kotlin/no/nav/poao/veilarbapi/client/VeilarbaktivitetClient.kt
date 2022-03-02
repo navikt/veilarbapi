@@ -19,13 +19,10 @@ import no.nav.veilarbaktivitet.model.Aktivitet
 import no.nav.poao.veilarbapi.config.Cluster
 import no.nav.poao.veilarbapi.config.Configuration
 
-class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig, val poaoGcpProxyConfig: Configuration.PoaoGcpProxyConfig, val azureAdClient: AzureAdClient?, engine: HttpClientEngine = Apache.create()) {
+class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig, val poaoGcpProxyConfig: Configuration.PoaoGcpProxyConfig, val azureAdClient: AzureAdClient?, val engine: HttpClientEngine = Apache.create()) {
 
     val json = JSON()
-    val client: HttpClient =
-        HttpClient(engine) {
-            expectSuccess = false
-        }
+
 
     val veilarbaktivitetUrl = veilarbaktivitetConfig.url
     val veilarbaktivitetResource = veilarbaktivitetAuthenticationScope
@@ -33,6 +30,10 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
 
     fun hentAktivitet(aktivitetsId: Int, accessToken: String?): Aktivitet? {
         return runBlocking {
+            val client: HttpClient =
+                HttpClient(engine) {
+                    expectSuccess = false
+                }
             val veilarbaktivitetOnBehalfOfAccessToken = accessToken?.let {
                 azureAdClient?.getOnBehalfOfAccessTokenForResource(
                     scopes = listOf(veilarbaktivitetResource),
@@ -61,6 +62,10 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
 
     fun hentAktiviteter(aktorId: String, accessToken: String?): Array<Aktivitet> {
         return runBlocking {
+            val client: HttpClient =
+                HttpClient(engine) {
+                    expectSuccess = false
+                }
             val veilarbaktivitetOnBehalfOfAccessToken = accessToken?.let {
                 azureAdClient?.getOnBehalfOfAccessTokenForResource(
                     scopes = listOf(veilarbaktivitetResource),
