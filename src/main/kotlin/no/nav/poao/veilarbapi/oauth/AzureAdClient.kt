@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.auth
+package no.nav.poao.veilarbapi.oauth
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
@@ -18,7 +18,6 @@ import io.ktor.util.*
 import no.nav.poao.veilarbapi.config.Configuration
 
 import no.nav.poao.veilarbapi.defaultHttpClient
-import no.nav.security.examples.ThrowableErrorMessage
 import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger(AzureAdClient::class.java)

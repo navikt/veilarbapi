@@ -7,7 +7,7 @@ import io.ktor.client.request.*
 import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
 import no.nav.poao.veilarbapi.config.Configuration
-import no.nav.poao.veilarbapi.auth.AzureAdClient
+import no.nav.poao.veilarbapi.oauth.AzureAdClient
 import no.nav.poao.veilarbapi.defaultHttpClient
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback

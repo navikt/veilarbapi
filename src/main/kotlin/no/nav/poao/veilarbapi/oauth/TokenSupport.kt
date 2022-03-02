@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.auth
+package no.nav.poao.veilarbapi.oauth
 
 import no.nav.poao.veilarbapi.config.Configuration
 import no.nav.security.token.support.ktor.IssuerConfig

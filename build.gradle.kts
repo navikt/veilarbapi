@@ -3,7 +3,10 @@ val kotlin_version: String by project
 val logback_version: String by project
 val navcommonVersion: String by project
 val mockOAuth2ServerVersion: String by project
-val tokenValidationVersion: String by project
+val token_support_version: String by project
+val caffeine_version: String by project
+val logstashEncoderVersion: String by project
+val prometeus_version: String by project
 
 
 plugins {
@@ -35,7 +38,7 @@ java {
 group = "no.nav.poao"
 version = ""
 application {
-    mainClass.set("no.nav.poao.ApplicationKt")
+    mainClass.set("no.nav.poao.veilarbapi.ApplicationKt")
 }
 
 repositories {
@@ -70,7 +73,7 @@ task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateVeila
 tasks {
     shadowJar {
         manifest {
-            attributes(Pair("Main-Class", "no.nav.poao.ApplicationKt"))
+            attributes(Pair("Main-Class", "no.nav.poao.veilarbapi.ApplicationKt"))
         }
     }
 }
@@ -93,9 +96,11 @@ dependencies {
     implementation("io.ktor:ktor-auth-jwt:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-gson:$ktor_version")
+    implementation("com.github.ben-manes.caffeine:caffeine:$caffeine_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
-    implementation("no.nav.security:token-validation-ktor:$tokenValidationVersion")
+    implementation("no.nav.security:token-validation-ktor:$token_support_version")
+    implementation("no.nav.security:token-client-core:$token_support_version")
     api("javax.validation:validation-api:2.0.1.Final")
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
 
@@ -103,6 +108,11 @@ dependencies {
     // LOGGING
     implementation(group= "ch.qos.logback", name= "logback-classic", version= "1.2.6")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
+    implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
+    // Monitoring
+    implementation("io.ktor:ktor-metrics-micrometer:$ktor_version")
+    implementation("io.micrometer:micrometer-registry-prometheus:$prometeus_version")
+
 
     implementation("com.natpryce:konfig:1.6.10.0")
 

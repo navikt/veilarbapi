@@ -2,7 +2,7 @@ package no.nav.poao.veilarbapi.plugins
 
 import io.ktor.application.*
 import io.ktor.auth.*
-import no.nav.poao.veilarbapi.auth.azureAdtokenSupportConfig
+import no.nav.poao.veilarbapi.oauth.azureAdtokenSupportConfig
 import no.nav.poao.veilarbapi.config.Configuration
 import no.nav.security.token.support.ktor.tokenValidationSupport
 

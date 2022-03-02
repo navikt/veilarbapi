@@ -15,6 +15,8 @@ private val defaultProperties by lazy {
             "VEILARBAKTIVITETAPI_CLIENTID" to notUsedLocally,
             "VEILARBDIALOGAPI_URL" to notUsedLocally,
             "VEILARBDIALOGAPI_CLIENTID" to notUsedLocally,
+            "POAOGCPPROXY_URL" to notUsedLocally,
+            "POAOGCPPROXY_CLIENT_ID" to notUsedLocally,
             "AZURE_APP_CLIENT_SECRET" to notUsedLocally,
             "AZURE_APP_CLIENT_ID" to notUsedLocally,
             "AZURE_APP_WELL_KNOWN_URL" to "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration"
@@ -25,6 +27,7 @@ private val defaultProperties by lazy {
 data class Configuration(
     val veilarbaktivitetConfig: VeilarbaktivitetConfig = VeilarbaktivitetConfig(),
     val veilarbdialogConfig: VeilarbdialogConfig = VeilarbdialogConfig(),
+    val poaoGcpProxyConfig: PoaoGcpProxyConfig = PoaoGcpProxyConfig(),
     val clustername: String = config()[Key("NAIS_CLUSTER_NAME", stringType)],
     val azureAd: AzureAd = AzureAd(),
     val httpServerWait: Boolean = true,
@@ -42,6 +45,10 @@ data class Configuration(
     data class VeilarbaktivitetConfig(
         val url: String = config()[Key("VEILARBAKTIVITETAPI_URL", stringType)],
         val clientId: String = config()[Key("VEILARBAKTIVITETAPI_CLIENTID", stringType)]
+    )
+    data class PoaoGcpProxyConfig(
+        val url: String = config()[Key("POAOGCPPROXY_URL", stringType)],
+        val clientId: String = config()[Key("POAOGCPPROXY_CLIENT_ID", stringType)]
     )
     data class VeilarbdialogConfig(
         val url: String = config()[Key("VEILARBDIALOGAPI_URL", stringType)],
