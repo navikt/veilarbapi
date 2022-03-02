@@ -4,8 +4,7 @@ package no.nav.poao.veilarbapi.client
 import com.github.michaelbull.result.get
 import io.ktor.client.*
 import io.ktor.client.engine.*
-import io.ktor.client.engine.java.*
-import io.ktor.client.features.*
+import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -20,15 +19,12 @@ import no.nav.veilarbaktivitet.model.Aktivitet
 import no.nav.poao.veilarbapi.config.Cluster
 import no.nav.poao.veilarbapi.config.Configuration
 
-class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig, val poaoGcpProxyConfig: Configuration.PoaoGcpProxyConfig, val azureAdClient: AzureAdClient?, engine: HttpClientEngine = Java.create()) {
+class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig, val poaoGcpProxyConfig: Configuration.PoaoGcpProxyConfig, val azureAdClient: AzureAdClient?, engine: HttpClientEngine = Apache.create()) {
 
     val json = JSON()
     val client: HttpClient =
         HttpClient(engine) {
             expectSuccess = false
-            defaultRequest {
-                mandatoryHeaders()
-            }
         }
 
     val veilarbaktivitetUrl = veilarbaktivitetConfig.url
@@ -91,12 +87,6 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
                 }
             }
         }
-    }
-
-
-    fun HttpRequestBuilder.mandatoryHeaders() {
-        header("Nav-Call-Id", IdUtils.generateId())
-        header("Nav-Consumer-Id", "veilarbapi")
     }
 
     private suspend fun callFailure(response: HttpResponse): Exception {
