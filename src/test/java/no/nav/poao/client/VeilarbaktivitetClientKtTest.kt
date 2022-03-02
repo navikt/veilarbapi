@@ -3,6 +3,7 @@ package no.nav.poao.client
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
+import kotlinx.coroutines.runBlocking
 import no.nav.poao.veilarbapi.client.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.config.Configuration
 import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
@@ -50,8 +51,10 @@ class VeilarbaktivitetClientKtTest {
             engine = mockEngine,
             azureAdClient = null
         )
-        val aktiviteter = client.hentAktiviteter("123456789101", null)
-        assertThat(aktiviteter).hasSize(2)
+        runBlocking {
+            val aktiviteter = client.hentAktiviteter("123456789101", null)
+            assertThat(aktiviteter).hasSize(2)
+        }
     }
 
     @Test
@@ -70,7 +73,9 @@ class VeilarbaktivitetClientKtTest {
             azureAdClient = null
         )
         assertFailsWith<ServerFeilException> {
-            client.hentAktiviteter("123456789101", null)
+            runBlocking {
+                client.hentAktiviteter("123456789101", null)
+            }
         }
     }
 
