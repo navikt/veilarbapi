@@ -60,8 +60,8 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
         }
     }
 
-    fun hentAktiviteter(aktorId: String, accessToken: String?): Array<Aktivitet> {
-        return runBlocking {
+    suspend fun hentAktiviteter(aktorId: String, accessToken: String?): Array<Aktivitet> {
+  //      return runBlocking {
             val client: HttpClient =
                 HttpClient(engine) {
                     expectSuccess = false
@@ -86,12 +86,12 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
                         header("Nav-Consumer-Id", "veilarbapi")
                     }
                 if (response.status == HttpStatusCode.OK) {
-                    JSON.deserialize<Array<Aktivitet>>(response.readText(), Aktivitet::class.java.arrayType())
+                    return JSON.deserialize<Array<Aktivitet>>(response.readText(), Aktivitet::class.java.arrayType())
                 } else {
                     throw callFailure(response)
                 }
             }
-        }
+    //    }
     }
 
     private suspend fun callFailure(response: HttpResponse): Exception {
