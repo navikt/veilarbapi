@@ -8,7 +8,6 @@ import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import kotlinx.coroutines.runBlocking
 import no.nav.common.utils.IdUtils
 import no.nav.poao.veilarbapi.oauth.AzureAdClient
 import no.nav.poao.veilarbapi.client.exceptions.IkkePaaLoggetException
@@ -30,35 +29,6 @@ class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configurati
     val veilarbaktivitetUrl = veilarbaktivitetConfig.url
     val veilarbaktivitetResource = veilarbaktivitetAuthenticationScope
     val poaoGcpProxyResource = poaoProxyAuthenticationScope
-
-    fun hentAktivitet(aktivitetsId: Int, accessToken: String?): Aktivitet? {
-        return runBlocking {
-
-            val veilarbaktivitetOnBehalfOfAccessToken = accessToken?.let {
-                azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                    scopes = listOf(veilarbaktivitetResource),
-                    accessToken = it
-                )
-            }
-            val poaoGcpProxyServiceUserAccessToken = accessToken?.let {
-                azureAdClient?.getAccessTokenForResource(
-                    scopes = listOf(poaoGcpProxyResource)
-                )
-            }
-            client.use { httpClient ->
-                val response =
-                httpClient.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet/$aktivitetsId") {
-                    header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
-                    header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()?.accessToken}")
-                }
-                if (response.status == HttpStatusCode.OK) {
-                        Aktivitet.fromJson(response.readText())
-                } else {
-                    throw callFailure(response)
-                }
-            }
-        }
-    }
 
     suspend fun hentAktiviteter(aktorId: String, accessToken: String?): Array<Aktivitet> {
             val veilarbaktivitetOnBehalfOfAccessToken = accessToken?.let {
