@@ -6,6 +6,7 @@ val mockOAuth2ServerVersion: String by project
 val token_support_version: String by project
 val caffeine_version: String by project
 val logstashEncoderVersion: String by project
+val prometeus_version: String by project
 
 
 plugins {
@@ -108,6 +109,10 @@ dependencies {
     implementation(group= "ch.qos.logback", name= "logback-classic", version= "1.2.6")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
+    // Monitoring
+    implementation("io.ktor:ktor-metrics-micrometer:$ktor_version")
+    implementation("io.micrometer:micrometer-registry-prometheus:$prometeus_version")
+
 
     implementation("com.natpryce:konfig:1.6.10.0")
 

@@ -29,11 +29,11 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, veilarbaktiv
                     call.respond(getMockOppfolgingsperioder(fromMockFile = true))
                 }
                 get("/aktivitet") {
-                    val token = call.getAccessToken()
                     val aktorId = call.request.queryParameters["aktorId"]
                     if (aktorId == null) {
                         call.respond(HttpStatusCode.BadRequest, "Missing aktorId")
                     } else {
+                        val token = call.getAccessToken()
                         log.info("Hent aktiviteter for aktorId: {}", aktorId)
                         val aktiviteter = veilarbaktivitetClient.hentAktiviteter(aktorId, token)
                         call.respond(aktiviteter)

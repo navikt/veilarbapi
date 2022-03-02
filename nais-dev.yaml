@@ -12,7 +12,8 @@ spec:
     - https://veilarbapi.dev.intern.nav.no
   port: 8080
   prometheus:
-    enabled: false
+    enabled: true
+    path: /internal/prometheus
   liveness:
     path: /internal/isAlive
     port: 8080
