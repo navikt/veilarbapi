@@ -16,6 +16,11 @@ components:
         aktivitet_type:
           type: string
           example: samtalereferat
+        aktivitet_id:
+          type: string
+        oppfolgingsperiode_id:
+          type: string
+          format: uuid
         avtalt_med_nav:
           type: boolean
           description: Definer om den definerte aktiviteten er avtalt med NAV
