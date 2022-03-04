@@ -4,6 +4,7 @@ import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.poao.veilarbapi.config.Configuration
 import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
+import no.nav.poao.veilarbapi.client.VeilarbdialogClient
 import no.nav.poao.veilarbapi.plugins.configureAuthentication
 import no.nav.poao.veilarbapi.plugins.configureMonitoring
 import no.nav.poao.veilarbapi.plugins.configureRouting
@@ -13,12 +14,13 @@ fun createHttpServer(
     applicationState: ApplicationState,
     port: Int = 8080,
     configuration: Configuration,
-    veilarbaktivitetClient: VeilarbaktivitetClient
+    veilarbaktivitetClient: VeilarbaktivitetClient,
+    veilarbdialogClient: VeilarbdialogClient
 ) : ApplicationEngine = embeddedServer(Netty, port, "0.0.0.0") {
 
     configureMonitoring()
     configureAuthentication(configuration)
     configureSerialization()
-    configureRouting(configuration.useAuthentication, veilarbaktivitetClient = veilarbaktivitetClient)
+    configureRouting(configuration.useAuthentication, veilarbaktivitetClient = veilarbaktivitetClient, veilarbdialogClient = veilarbdialogClient)
     applicationState.initialized = true
 }
