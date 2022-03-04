@@ -56,6 +56,16 @@ task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateAktiv
     outputDir.set("$buildDir/generated")
 }
 
+task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateDialogClient") {
+    generatorName.set("java")
+    library.set("okhttp-gson-nextgen")
+    inputSpec.set("$projectDir/src/main/resources/openapi/DialogV1.yaml")
+    packageName.set("no.nav.veilarbdialog.client")
+    apiPackage.set("no.nav.veilarbdialog.api")
+    modelPackage.set("no.nav.veilarbdialog.model")
+    outputDir.set("$buildDir/generated")
+}
+
 task<org.openapitools.generator.gradle.plugin.tasks.GenerateTask>("generateVeilarbapiServer") {
     generatorName.set("java")
     library.set("okhttp-gson-nextgen")
@@ -79,7 +89,7 @@ tasks {
 }
 
 tasks.named( "compileKotlin") {
-    dependsOn( "generateAktivitetsplanClient", "generateVeilarbapiServer")
+    dependsOn(  "generateDialogClient", "generateAktivitetsplanClient", "generateVeilarbapiServer")
 }
 java.sourceSets["main"].java.srcDir("$buildDir/generated/src/main/java")
 kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated/src/main/kotlin")

@@ -183,6 +183,31 @@ components:
                 - SKAL_PAA_INTERVJU
                 - JOBBTILBUD
                 - AVSLAG
+    Oppfolgingsperioder:
+      type: object
+      properties:
+        oppfolgingsperioder:
+          type: array
+          items:
+            $ref: '#/components/schemas/Oppfolgingsperiode'
+        feil:
+          description: Feilende kilde ved ufullstendige data
+          type: array
+          items:
+            type: object
+            properties:
+              feilkilder:
+                description: Hvilken datakilde vi ikke kunne hente data fra
+                type: string
+                enum:
+                  - OPPFOLGING
+                  - DIALOG
+                  - AKTIVITET
+                  - ANNET
+              feilmelding:
+                description: Feilmelding i klar tekst
+                type: string
+                example: Kunne ikke hente dialoger.
     Oppfolgingsperiode:
       type: object
       properties:
@@ -202,24 +227,6 @@ components:
           items:
             $ref: '#/components/schemas/Aktivitet'
           description: Liste med aktiviteter tilknyttet en oppfølgingsperiode
-        feil:
-          description: Feilende kilde ved ufullstendige data
-          type: array
-          items:
-            type: object
-            properties:
-              feilkilder:
-                description: Hvilken datakilde vi ikke kunne hente data fra
-                type: string
-                enum:
-                  - OPPFOLGING
-                  - DIALOG
-                  - AKTIVITET
-                  - ANNET
-              feilmelding:
-                description: Feilmelding i klar tekst
-                type: string
-                example: Kunne ikke hente dialoger.
     Aktivitet:
       type: object
       oneOf:
@@ -233,7 +240,6 @@ components:
         - $ref: '#/components/schemas/StillingFraNav'
       discriminator:
         propertyName: aktivitet_type
-
 
     Melding:
       type: object
@@ -252,9 +258,6 @@ components:
           type: boolean
           description: Beskriver om melding er lest av bruker/veileder
           example: true
-        lest_dato:
-          type: string
-          format: date-time
         meldingstekst:
           type: string
           description: Fritekstfelt med melding som ble sendt/opprettet
@@ -294,6 +297,7 @@ components:
           type: string
           description: NAV ident til brukerens veileder for oppfølgingen
           example: Z999999
+
 paths:
   /v1/oppfolging/periode:
     get:
@@ -317,33 +321,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Oppfolgingsperiode'
-  /v1/oppfolging/aktivitet:
-    get:
-      operationId: hentAktiviteter
-      tags:
-        - Aktivitet
-        - Dialog
-      description: ''
-      parameters:
-        - name: aktorId
-          in: query
-          required: true
-          schema:
-            type: string
-          description: aktorId for aktivitetene
-      responses:
-        #  TODO andre returkoder
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/Aktivitet'
+                $ref: '#/components/schemas/Oppfolgingsperioder'
   /v1/oppfolging/info:
     get:
       tags:
