@@ -10,6 +10,7 @@ import io.ktor.client.features.json.*
 import io.ktor.http.auth.*
 import no.nav.common.utils.SslUtils
 import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
+import no.nav.poao.veilarbapi.client.VeilarbdialogClient
 import no.nav.poao.veilarbapi.config.Configuration
 import no.nav.poao.veilarbapi.oauth.AzureAdClient
 import no.nav.security.token.support.ktor.TokenValidationContextPrincipal
@@ -43,11 +44,13 @@ fun main(configuration: Configuration) {
     val azureAdClient = AzureAdClient(configuration.azureAd)
 
     val veilarbaktivitetClient = VeilarbaktivitetClient(configuration.veilarbaktivitetConfig, configuration.poaoGcpProxyConfig, azureAdClient)
+    val veilarbdialogClient = VeilarbdialogClient(configuration.veilarbdialogConfig, azureAdClient)
 
     val applicationServer = createHttpServer(
         applicationState = applicationState,
         configuration = configuration,
-        veilarbaktivitetClient = veilarbaktivitetClient
+        veilarbaktivitetClient = veilarbaktivitetClient,
+        veilarbdialogClient = veilarbdialogClient
         )
 
     Runtime.getRuntime().addShutdownHook(Thread {
@@ -59,7 +62,7 @@ fun main(configuration: Configuration) {
 
 
 private fun HttpAuthHeader.getBlob(): String? = when {
-    this is HttpAuthHeader.Single && authScheme.toLowerCase() in listOf("bearer") -> blob
+    this is HttpAuthHeader.Single && authScheme.lowercase() in listOf("bearer") -> blob
     else -> null
 }
 

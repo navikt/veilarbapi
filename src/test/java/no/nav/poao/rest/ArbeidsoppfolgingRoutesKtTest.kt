@@ -6,6 +6,7 @@ import io.ktor.http.*
 import kotlin.test.*
 import io.ktor.server.testing.*
 import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
+import no.nav.poao.veilarbapi.client.VeilarbdialogClient
 import no.nav.poao.veilarbapi.config.Configuration
 import no.nav.poao.veilarbapi.plugins.*
 import no.nav.poao.veilarbapi.plugins.configureRouting
@@ -25,6 +26,10 @@ class ArbeidsoppfolgingRoutesKtTest {
         poaoGcpProxyConfig = Configuration.PoaoGcpProxyConfig(url="http://veilarbaktivitet", clientId = "clientid"),
         azureAdClient = null
     )
+    val veilarbdialogClient = VeilarbdialogClient(
+        Configuration.VeilarbdialogConfig(url="http://veilarbaktivitet", clientId = "clientid"),
+        azureAdClient = null
+    )
     @Test
     fun testMockOppfolgingsperioder() {
         val expectedMockDataFile = "mock/oppfolgingperioder.json"
@@ -34,7 +39,7 @@ class ArbeidsoppfolgingRoutesKtTest {
 
         val expectedOppfolgingsperioder = JSON.deserialize<Array<Oppfolgingsperiode>>(json, Oppfolgingsperiode::class.java.arrayType())
         withTestApplication({
-            configureRouting(false, veilarbaktivitetClient = veilarbaktivitetClient)
+            configureRouting(false, veilarbaktivitetClient = veilarbaktivitetClient, veilarbdialogClient = veilarbdialogClient)
             configureSerialization()
         }) {
             handleRequest(HttpMethod.Get, "/v1/oppfolging/periode") {
@@ -59,7 +64,7 @@ class ArbeidsoppfolgingRoutesKtTest {
 
         val expectedAktiviteter = JSON.deserialize<Array<Aktivitet>>(json, Aktivitet::class.java.arrayType())
         withTestApplication({
-            configureRouting(false, veilarbaktivitetClient = veilarbaktivitetClient)
+            configureRouting(false, veilarbaktivitetClient = veilarbaktivitetClient, veilarbdialogClient = veilarbdialogClient)
             configureSerialization()
         }) {
             handleRequest(HttpMethod.Get, "/v1/oppfolging/aktivitet?aktorId=12345678") {
@@ -83,7 +88,7 @@ class ArbeidsoppfolgingRoutesKtTest {
 
         val expectedOppfolgingsinfo = JSON.deserialize<Oppfolgingsinfo>(json, Oppfolgingsinfo::class.java)
         withTestApplication({
-            configureRouting(false, veilarbaktivitetClient = veilarbaktivitetClient)
+            configureRouting(false, veilarbaktivitetClient = veilarbaktivitetClient, veilarbdialogClient = veilarbdialogClient)
             configureSerialization()
         }) {
             handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=12345678") {

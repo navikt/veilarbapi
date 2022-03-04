@@ -7,22 +7,16 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
+import no.nav.poao.veilarbapi.client.VeilarbdialogClient
 import no.nav.poao.veilarbapi.getAccessToken
 import no.nav.poao.veilarbapi.oauth.MockPayload
-import no.nav.poao.veilarbapi.getTokenInfo
 import no.nav.poao.veilarbapi.plugins.getMockOppfolgingsinfo
 import no.nav.poao.veilarbapi.plugins.getMockOppfolgingsperioder
 
-fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, veilarbaktivitetClient: VeilarbaktivitetClient) {
+fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, veilarbaktivitetClient: VeilarbaktivitetClient, veilarbdialogClient: VeilarbdialogClient) {
     routing() {
         conditionalAuthenticate(useAuthentication) {
             route("/v1/oppfolging/") {
-                get("/tokeninfo") {
-                    when (val tokenInfo = call.getTokenInfo()) {
-                        null -> call.respond(HttpStatusCode.Unauthorized, "Could not find a valid principal")
-                        else -> call.respond(tokenInfo)
-                    }
-                }
                 get("/periode") {
                     val aktorId = call.request.queryParameters["aktorId"]
                     log.info("Hent oppfølgingsperioder for aktorId: {}", aktorId)
@@ -37,6 +31,17 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, veilarbaktiv
                         log.info("Hent aktiviteter for aktorId: {}", aktorId)
                         val aktiviteter = veilarbaktivitetClient.hentAktiviteter(aktorId, token)
                         call.respond(aktiviteter)
+                    }
+                }
+                get("/dialog") {
+                    val aktorId = call.request.queryParameters["aktorId"]
+                    if (aktorId == null) {
+                        call.respond(HttpStatusCode.BadRequest, "Missing aktorId")
+                    } else {
+                        val token = call.getAccessToken()
+                        log.info("Hent aktiviteter for aktorId: {}", aktorId)
+                        val dialoger = veilarbdialogClient.hentDialoger(aktorId, token)
+                        call.respond(dialoger)
                     }
                 }
                 get("info") {

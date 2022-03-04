@@ -54,6 +54,8 @@ spec:
       value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/discovery/v2.0/keys
     - name : VEILARBAKTIVITETAPI_URL
       value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy/veilarbaktivitet
+    - name : VEILARBDIALOGAPI_URL
+      value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy/veilarbdialog
     - name: POAOGCPPROXY_URL
       value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy
     - name: POAOGCPPROXY_CLIENT_ID
