@@ -1,10 +1,11 @@
-package no.nav.poao.veilarbapi.config
+package no.nav.poao.veilarbapi.settup.config
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.natpryce.konfig.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
 import no.nav.poao.veilarbapi.defaultHttpClient
+import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClient
 
 private const val notUsedLocally = ""
 private val defaultProperties by lazy {
@@ -12,9 +13,8 @@ private val defaultProperties by lazy {
         mapOf(
             "NAIS_CLUSTER_NAME" to notUsedLocally,
             "VEILARBAKTIVITETAPI_URL" to notUsedLocally,
-            "VEILARBAKTIVITETAPI_CLIENTID" to notUsedLocally,
             "VEILARBDIALOGAPI_URL" to notUsedLocally,
-            "VEILARBDIALOGAPI_CLIENTID" to notUsedLocally,
+            "VEILARBOPPFOLGINGAPI_URL" to notUsedLocally,
             "POAOGCPPROXY_URL" to notUsedLocally,
             "POAOGCPPROXY_CLIENT_ID" to notUsedLocally,
             "AZURE_APP_CLIENT_SECRET" to notUsedLocally,
@@ -27,6 +27,7 @@ private val defaultProperties by lazy {
 data class Configuration(
     val veilarbaktivitetConfig: VeilarbaktivitetConfig = VeilarbaktivitetConfig(),
     val veilarbdialogConfig: VeilarbdialogConfig = VeilarbdialogConfig(),
+    val veilarboppfolgingConfig: VeilarboppfolgingConfig = VeilarboppfolgingConfig(),
     val poaoGcpProxyConfig: PoaoGcpProxyConfig = PoaoGcpProxyConfig(),
     val clustername: String = config()[Key("NAIS_CLUSTER_NAME", stringType)],
     val azureAd: AzureAd = AzureAd(),
@@ -44,15 +45,15 @@ data class Configuration(
 
     data class VeilarbaktivitetConfig(
         val url: String = config()[Key("VEILARBAKTIVITETAPI_URL", stringType)],
-        val clientId: String = config()[Key("VEILARBAKTIVITETAPI_CLIENTID", stringType)]
     )
     data class PoaoGcpProxyConfig(
         val url: String = config()[Key("POAOGCPPROXY_URL", stringType)],
-        val clientId: String = config()[Key("POAOGCPPROXY_CLIENT_ID", stringType)]
     )
     data class VeilarbdialogConfig(
         val url: String = config()[Key("VEILARBDIALOGAPI_URL", stringType)],
-        val clientId: String = config()[Key("VEILARBDIALOGAPI_CLIENTID", stringType)]
+    )
+    data class VeilarboppfolgingConfig(
+        val url: String = config()[Key("VEILARBOPPFOLGINGAPI_URL", stringType)],
     )
 }
 

@@ -4,17 +4,19 @@ import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
-import no.nav.poao.veilarbapi.client.exceptions.ServerFeilException
-import no.nav.poao.veilarbapi.config.Configuration
-import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
+import no.nav.common.types.identer.AktorId
+import no.nav.poao.veilarbapi.settup.exceptions.ServerFeilException
+import no.nav.poao.veilarbapi.settup.config.Configuration
+import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 import kotlin.test.assertFailsWith
+import kotlin.test.assertTrue
 
 
 class VeilarbaktivitetClientKtTest {
-    val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url="http://localhost:8080/veilarbaktivitet", clientId = "veilarbaktivitetClientId")
-    val poaoGcpProxyConfig = Configuration.PoaoGcpProxyConfig(url="http://localhost:8080/proxu", clientId = "poaoGcpProxyClientId")
+    val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
+    val poaoGcpProxyConfig = Configuration.PoaoGcpProxyConfig(url = "http://localhost:8080/proxu")
 
     @Test
     fun testHentAktiviteterWithMockEngine() {
@@ -32,8 +34,8 @@ class VeilarbaktivitetClientKtTest {
             azureAdClient = null
         )
         runBlocking {
-            val aktiviteter = client.hentAktiviteter("123456789101", null)
-            assertThat(aktiviteter).hasSize(2)
+            val aktiviteter = client.hentAktiviteter(AktorId.of("123456789101"), null)
+            assertThat(aktiviteter.getOrNull()).hasSize(2)
         }
     }
 
@@ -52,10 +54,9 @@ class VeilarbaktivitetClientKtTest {
             engine = mockEngine,
             azureAdClient = null
         )
-        assertFailsWith<ServerFeilException> {
-            runBlocking {
-                client.hentAktiviteter("123456789101", null)
-            }
+        runBlocking {
+            val hentAktiviteter = client.hentAktiviteter(AktorId.of("123456789101"), null)
+            assertTrue(hentAktiviteter.isFailure)
         }
     }
 
