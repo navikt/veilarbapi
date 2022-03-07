@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.oauth
+package no.nav.poao.veilarbapi.settup.oauth
 
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache
 import com.github.benmanes.caffeine.cache.Caffeine

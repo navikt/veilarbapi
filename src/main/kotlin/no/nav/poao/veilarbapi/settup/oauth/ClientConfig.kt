@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.oauth
+package no.nav.poao.veilarbapi.settup.oauth
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
 import io.ktor.client.*
@@ -40,8 +40,8 @@ class ClientConfig(
 
     companion object CommonConfigurationAttributes {
         const val COMMON_PREFIX = "no.nav.security.jwt.client.registration"
-        const val CLIENTS_PATH = "${COMMON_PREFIX}.clients"
-        const val CACHE_PATH = "${COMMON_PREFIX}.cache"
+        const val CLIENTS_PATH = "$COMMON_PREFIX.clients"
+        const val CACHE_PATH = "$COMMON_PREFIX.cache"
         const val CLIENT_NAME = "client_name"
     }
 }

@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.oauth
+package no.nav.poao.veilarbapi.settup.oauth
 
 import com.auth0.jwt.interfaces.Claim
 import com.auth0.jwt.interfaces.Payload

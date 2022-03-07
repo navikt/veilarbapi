@@ -9,10 +9,12 @@ import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.http.auth.*
 import no.nav.common.utils.SslUtils
-import no.nav.poao.veilarbapi.client.VeilarbaktivitetClient
-import no.nav.poao.veilarbapi.client.VeilarbdialogClient
-import no.nav.poao.veilarbapi.config.Configuration
-import no.nav.poao.veilarbapi.oauth.AzureAdClient
+import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
+import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
+import no.nav.poao.veilarbapi.oppfolging.Service
+import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClient
+import no.nav.poao.veilarbapi.settup.config.Configuration
+import no.nav.poao.veilarbapi.settup.oauth.AzureAdClient
 import no.nav.security.token.support.ktor.TokenValidationContextPrincipal
 import org.apache.http.impl.conn.SystemDefaultRoutePlanner
 import org.slf4j.LoggerFactory
@@ -45,13 +47,14 @@ fun main(configuration: Configuration) {
 
     val veilarbaktivitetClient = VeilarbaktivitetClient(configuration.veilarbaktivitetConfig, configuration.poaoGcpProxyConfig, azureAdClient)
     val veilarbdialogClient = VeilarbdialogClient(configuration.veilarbdialogConfig, azureAdClient)
+    val veilarbOppClient = VeilarboppfolgingClient(configuration.veilarboppfolgingConfig, azureAdClient)
+    val service = Service(aktivitet = veilarbaktivitetClient, dialog = veilarbdialogClient, oppfolging =  veilarbOppClient)
 
     val applicationServer = createHttpServer(
         applicationState = applicationState,
         configuration = configuration,
-        veilarbaktivitetClient = veilarbaktivitetClient,
-        veilarbdialogClient = veilarbdialogClient
-        )
+        service = service
+    )
 
     Runtime.getRuntime().addShutdownHook(Thread {
         applicationState.initialized = false

@@ -8,8 +8,6 @@ import no.nav.poao.veilarbapi.dialog.mapDialog
 import no.nav.poao.veilarbapi.dialog.mapDialoger
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import no.nav.poao.veilarbapi.oppfolging.mapOppfolgingsperioder
-import no.nav.veilarbaktivitet.JSON
-import no.nav.veilarbaktivitet.model.Aktivitet
 import no.nav.veilarbapi.model.Egenaktivitet
 import no.nav.veilarbapi.model.Jobbsoeking
 import no.nav.veilarbapi.model.Oppfolgingsperioder

@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.client
+package no.nav.poao.veilarbapi.dialog
 
 
 import com.github.michaelbull.result.get
@@ -8,14 +8,15 @@ import io.ktor.client.engine.apache.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import no.nav.common.types.identer.AktorId
 import no.nav.common.utils.IdUtils
-import no.nav.poao.veilarbapi.oauth.AzureAdClient
-import no.nav.poao.veilarbapi.client.exceptions.IkkePaaLoggetException
-import no.nav.poao.veilarbapi.client.exceptions.ManglerTilgangException
-import no.nav.poao.veilarbapi.client.exceptions.ServerFeilException
+import no.nav.poao.veilarbapi.settup.oauth.AzureAdClient
+import no.nav.poao.veilarbapi.settup.exceptions.IkkePaaLoggetException
+import no.nav.poao.veilarbapi.settup.exceptions.ManglerTilgangException
+import no.nav.poao.veilarbapi.settup.exceptions.ServerFeilException
 import no.nav.veilarbaktivitet.JSON
-import no.nav.poao.veilarbapi.config.Cluster
-import no.nav.poao.veilarbapi.config.Configuration
+import no.nav.poao.veilarbapi.settup.config.Cluster
+import no.nav.poao.veilarbapi.settup.config.Configuration
 import no.nav.veilarbdialog.model.Dialog
 import org.slf4j.MDC
 
@@ -29,7 +30,9 @@ class VeilarbdialogClient constructor(val veilarbdialogConfig: Configuration.Vei
 
     val veilarbdialogUrl = veilarbdialogConfig.url
 
-    suspend fun hentDialoger(aktorId: String, accessToken: String?): Array<Dialog> {
+
+    suspend fun hentDialoger(aktorId: AktorId, accessToken: String?): Result<List<Dialog>> {
+
             val veilarbaktivitetOnBehalfOfAccessToken = accessToken?.let {
                 azureAdClient?.getOnBehalfOfAccessTokenForResource(
                     scopes = listOf(veilarbdialogAuthenticationScope),
@@ -42,16 +45,17 @@ class VeilarbdialogClient constructor(val veilarbdialogConfig: Configuration.Vei
                 )
             }
             val response =
-                client.get<HttpResponse>("$veilarbdialogUrl/internal/api/v1/dialog?aktorId=$aktorId") {
+                client.get<HttpResponse>("$veilarbdialogUrl/internal/api/v1/dialog?aktorId=${aktorId.get()}") {
                     header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
                     header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()?.accessToken}")
                     header("Nav-Call-Id", MDC.get("Nav-Call-Id") ?: IdUtils.generateId())
                     header("Nav-Consumer-Id", "veilarbapi")
                 }
             if (response.status == HttpStatusCode.OK) {
-                return JSON.deserialize<Array<Dialog>>(response.readText(), Dialog::class.java.arrayType())
+                val dialoger = JSON.deserialize<Array<Dialog>>(response.readText(), Dialog::class.java.arrayType())
+                return Result.success(dialoger.toList())
             } else {
-                throw callFailure(response)
+                return Result.failure(callFailure(response))
             }
 
     }
