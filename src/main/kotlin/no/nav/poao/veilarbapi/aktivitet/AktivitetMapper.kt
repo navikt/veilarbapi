@@ -40,7 +40,7 @@ fun mapAktivitet(aktivitet: InternAktivitet, dialog: InternDialog? = null): Akti
 private fun merge(gammelAktivitet: InternAktivitet, nyAktivitet: Baseaktivitet, maybeDialog: Dialog?) {
     nyAktivitet.apply {
         avtaltMedNav = gammelAktivitet.avtaltMedNav
-        status = Baseaktivitet.StatusEnum.valueOf(gammelAktivitet.status!!.value)
+        status = gammelAktivitet.status?.name?.let { Baseaktivitet.StatusEnum.valueOf(it) }
         beskrivelse = gammelAktivitet.beskrivelse
         tittel = gammelAktivitet.tittel
         fraDato = gammelAktivitet.fraDato
@@ -69,7 +69,7 @@ private fun mapTilJobbsoeking(aktivitet: InternJobbsoeking, dialog: Dialog?): Ak
         arbeidsgiver = aktivitet.arbeidsgiver
         stillingsTittel = aktivitet.stillingsTittel
         arbeidssted = aktivitet.arbeidssted
-        stillingsoekEtikett = Jobbsoeking.StillingsoekEtikettEnum.valueOf(aktivitet.stillingsoekEtikett!!.value)
+        stillingsoekEtikett = aktivitet.stillingsoekEtikett?.name?.let { Jobbsoeking.StillingsoekEtikettEnum.valueOf(it) }
         kontaktPerson = aktivitet.kontaktPerson
     }
 
@@ -93,7 +93,7 @@ private fun mapTilSokeavtale(aktivitet: InternSokeavtale, dialog: Dialog?): Akti
 private fun mapTilIjobb(aktivitet: InternIjobb, dialog: Dialog?): Aktivitet {
     val ijobb = Ijobb().apply {
         aktivitetType = "ijobb"
-        jobbStatusType = Ijobb.JobbStatusTypeEnum.valueOf(aktivitet.jobbStatusType!!.value)
+        jobbStatusType = aktivitet.jobbStatusType?.name?.let { Ijobb.JobbStatusTypeEnum.valueOf(it) }
         ansettelsesforhold = aktivitet.ansettelsesforhold
         arbeidstid = aktivitet.arbeidstid
     }
@@ -119,7 +119,7 @@ private fun mapTilMote(aktivitet: InternMote, dialog: Dialog?): Aktivitet {
         aktivitetType = "mote"
         adresse = aktivitet.adresse
         forberedelser = aktivitet.forberedelser
-        kanal = Mote.KanalEnum.valueOf(aktivitet.kanal!!.value)
+        kanal = aktivitet.kanal?.name?.let { Mote.KanalEnum.valueOf(it) }
         referat = aktivitet.referat
     }
 
@@ -131,7 +131,7 @@ private fun mapTilMote(aktivitet: InternMote, dialog: Dialog?): Aktivitet {
 private fun mapTilSamtalereferat(aktivitet: InternSamtalereferat, dialog: Dialog?): Aktivitet {
     val samtalereferat = Samtalereferat().apply {
         aktivitetType = "samtalereferat"
-        kanal = Samtalereferat.KanalEnum.valueOf(aktivitet.kanal!!.value)
+        kanal = aktivitet.kanal?.name?.let { Samtalereferat.KanalEnum.valueOf(it) }
         referat = aktivitet.referat
     }
 
@@ -146,7 +146,7 @@ private fun mapTilStillingFraNav(aktivitet: InternStillingFraNav, dialog: Dialog
             kanDeles = it.kanDeles
             endretTidspunkt = it.endretTidspunkt
             endretAv = it.endretAv
-            endretAvType = StillingFraNavAllOfCvKanDelesData.EndretAvTypeEnum.valueOf(it.endretAvType!!.value)
+            endretAvType = it.endretAvType?.name?.let { StillingFraNavAllOfCvKanDelesData.EndretAvTypeEnum.valueOf(it) }
             avtaltDato = it.avtaltDato
         }
     }
@@ -160,7 +160,7 @@ private fun mapTilStillingFraNav(aktivitet: InternStillingFraNav, dialog: Dialog
         bestillingsId = aktivitet.bestillingsId
         stillingsId = aktivitet.stillingsId
         arbeidssted = aktivitet.arbeidssted
-        soknadsstatus = StillingFraNav.SoknadsstatusEnum.valueOf(aktivitet.soknadsstatus!!.value)
+        soknadsstatus = aktivitet.soknadsstatus?.name?.let { StillingFraNav.SoknadsstatusEnum.valueOf(it) }
     }
 
     merge(aktivitet, stillingFraNav, dialog)

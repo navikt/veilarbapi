@@ -9,13 +9,13 @@ import no.nav.veilarbapi.model.Oppfolgingsperiode
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 
 internal fun mapOppfolgingsperioder(oppfolgingsperioder: List<OppfolgingsperiodeDTO>?, aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog>?): Oppfolgingsperioder {
-    val mappedOppfolgingsperioder = oppfolgingsperioder?.let {  it.map { o ->
+    val mappedOppfolgingsperioder = oppfolgingsperioder?.map { o ->
         mapOppfolgingsperiode(
             o,
             aktiviteter?.filter { a -> a.oppfolgingsperiodeId == o.uuid },
             dialoger?.filter { d -> d.oppfolgingsperiodeId == o.uuid }
         )
-    }} ?: listOf(
+    } ?: listOf(
         mapOppfolgingsperiode(
             OppfolgingsperiodeDTO(startDato = null, sluttDato = null),
             aktiviteter,
