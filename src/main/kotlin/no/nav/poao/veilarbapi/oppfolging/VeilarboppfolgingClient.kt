@@ -31,7 +31,7 @@ class VeilarboppfolgingClient constructor(
             expectSuccess = false
         }
 
-    val veilarbdialogUrl = veilarboppfolgingConfig.url
+    val veilarboppfolgingUrl = veilarboppfolgingConfig.url
 
     suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
         val veilarboppfolgingOnBehalfOfAccessToken = accessToken?.let {
@@ -47,7 +47,7 @@ class VeilarboppfolgingClient constructor(
         }
 
         val response =
-            client.get<HttpResponse>("$veilarbdialogUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
+            client.get<HttpResponse>("$veilarboppfolgingUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
                 header(
                     "Downstream-Authorization",
@@ -64,7 +64,7 @@ class VeilarboppfolgingClient constructor(
 
             return Result.success(perioder)
         } else {
-            return Result.failure(callFailure(response));
+            return Result.failure(callFailure(response))
         }
     }
 
@@ -74,6 +74,77 @@ class VeilarboppfolgingClient constructor(
             HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.readText())
             HttpStatusCode.InternalServerError -> ServerFeilException(response, response.readText())
             else -> Exception("Ukjent statuskode ${response.status}")
+        }
+    }
+
+    suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String?): Result<UnderOppfolgingDTO> {
+        val veilarboppfolgingOnBehalfOfAccessToken = accessToken?.let {
+            azureAdClient?.getOnBehalfOfAccessTokenForResource(
+                scopes = listOf(veilaroppfolgingAuthenticationScope),
+                accessToken = it
+            )
+        }
+        val poaoGcpProxyServiceUserAccessToken = accessToken?.let {
+            azureAdClient?.getAccessTokenForResource(
+                scopes = listOf(poaoProxyAuthenticationScope)
+            )
+        }
+
+        val response =
+            client.get<HttpResponse>("$veilarboppfolgingUrl/api/v2/oppfolging?aktorId=${aktorId.get()}") {
+                header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
+                header(
+                    "Downstream-Authorization",
+                    "Bearer ${veilarboppfolgingOnBehalfOfAccessToken?.get()?.accessToken}"
+                )
+                header("Nav-Call-Id", MDC.get("Nav-Call-Id") ?: IdUtils.generateId())
+                header("Nav-Consumer-Id", "veilarbapi")
+            }
+
+        if (response.status == HttpStatusCode.OK) {
+            val underOppfolgingDTO = JSON.deserialize<UnderOppfolgingDTO>(
+                response.readText(),
+                UnderOppfolgingDTO::class.java
+            )
+
+            return Result.success(underOppfolgingDTO)
+        } else {
+            return Result.failure(callFailure(response))
+        }
+    }
+
+    suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO> {
+        val veilarboppfolgingOnBehalfOfAccessToken = accessToken?.let {
+            azureAdClient?.getOnBehalfOfAccessTokenForResource(
+                scopes = listOf(veilaroppfolgingAuthenticationScope),
+                accessToken = it
+            )
+        }
+        val poaoGcpProxyServiceUserAccessToken = accessToken?.let {
+            azureAdClient?.getAccessTokenForResource(
+                scopes = listOf(poaoProxyAuthenticationScope)
+            )
+        }
+
+        val response =
+            client.get<HttpResponse>("$veilarboppfolgingUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
+                header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
+                header(
+                    "Downstream-Authorization",
+                    "Bearer ${veilarboppfolgingOnBehalfOfAccessToken?.get()?.accessToken}"
+                )
+                header("Nav-Call-Id", MDC.get("Nav-Call-Id") ?: IdUtils.generateId())
+                header("Nav-Consumer-Id", "veilarbapi")
+            }
+
+        if (response.status == HttpStatusCode.OK) {
+            val veilederDTO = JSON.deserialize<VeilederDTO>(
+                response.readText(),
+                VeilederDTO::class.java
+            )
+            return Result.success(veilederDTO)
+        } else {
+            return Result.failure(callFailure(response))
         }
     }
 
