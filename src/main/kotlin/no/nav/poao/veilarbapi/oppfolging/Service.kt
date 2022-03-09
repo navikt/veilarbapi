@@ -3,6 +3,7 @@ package no.nav.poao.veilarbapi.oppfolging
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
+import no.nav.veilarbapi.model.Oppfolgingsinfo
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import no.nav.veilarbapi.model.OppfolgingsperioderFeil
 import no.nav.veilarbapi.model.OppfolgingsperioderFeil.FeilkilderEnum
@@ -42,5 +43,22 @@ class Service(val aktivitet: VeilarbaktivitetClient, val dialog: VeilarbdialogCl
             response.addFeilItem(feil)
         }
         return response
+    }
+
+    suspend fun fetchOppfolgingsInfo(aktorId: AktorId, accessToken: String?): Oppfolgingsinfo {
+        val erUnderOppfolging = oppfolging.hentErUnderOppfolging(aktorId, accessToken)
+        val veileder = oppfolging.hentVeileder(aktorId, accessToken)
+
+        if (erUnderOppfolging.isFailure) {
+            // ikke returner veileder
+            // tomt objekt eller feilmelding?
+            return Oppfolgingsinfo() //TODO fiks dette
+        }
+
+        if (veileder.isFailure) {
+            return mapOppfolgingsInfo(erUnderOppfolging.getOrNull())
+        }
+
+        return mapOppfolgingsInfo(erUnderOppfolging.getOrNull(), veileder.getOrNull())
     }
 }
