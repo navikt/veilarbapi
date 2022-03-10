@@ -4,6 +4,7 @@ import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
 import no.nav.veilarbapi.model.Oppfolgingsinfo
+import no.nav.veilarbapi.model.OppfolgingsinfoFeil
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import no.nav.veilarbapi.model.OppfolgingsperioderFeil
 import no.nav.veilarbapi.model.OppfolgingsperioderFeil.FeilkilderEnum
@@ -13,7 +14,6 @@ class Service(val aktivitet: VeilarbaktivitetClient, val dialog: VeilarbdialogCl
         val dialoger = dialog.hentDialoger(aktorId, accessToken)
         val aktiviteter = aktivitet.hentAktiviteter(aktorId, accessToken)
         val oppfolgingsperioder = oppfolging.hentOppfolgingsperioder(aktorId, accessToken)
-
 
         val response = mapOppfolgingsperioder(
             oppfolgingsperioder = oppfolgingsperioder.getOrNull(),
@@ -45,20 +45,24 @@ class Service(val aktivitet: VeilarbaktivitetClient, val dialog: VeilarbdialogCl
         return response
     }
 
-    suspend fun fetchOppfolgingsInfo(aktorId: AktorId, accessToken: String?): Oppfolgingsinfo {
+    suspend fun fetchOppfolgingsInfo(aktorId: AktorId, accessToken: String?): Result<Oppfolgingsinfo> {
         val erUnderOppfolging = oppfolging.hentErUnderOppfolging(aktorId, accessToken)
         val veileder = oppfolging.hentVeileder(aktorId, accessToken)
 
         if (erUnderOppfolging.isFailure) {
-            // ikke returner veileder
-            // tomt objekt eller feilmelding?
-            return Oppfolgingsinfo() //TODO fiks dette
+            return Result.failure(erUnderOppfolging.exceptionOrNull()!!)
         }
 
         if (veileder.isFailure) {
-            return mapOppfolgingsInfo(erUnderOppfolging.getOrNull())
+            val oppfolgingsinfo = mapOppfolgingsInfo(erUnderOppfolging.getOrNull())
+            val feil = OppfolgingsinfoFeil().apply {
+                feilkilder = "veilederinfo"
+                feilmelding = veileder.exceptionOrNull()?.message
+            }
+            oppfolgingsinfo.addFeilItem(feil)
+            return Result.success(oppfolgingsinfo)
         }
 
-        return mapOppfolgingsInfo(erUnderOppfolging.getOrNull(), veileder.getOrNull())
+        return Result.success(mapOppfolgingsInfo(erUnderOppfolging.getOrNull(), veileder.getOrNull()))
     }
 }

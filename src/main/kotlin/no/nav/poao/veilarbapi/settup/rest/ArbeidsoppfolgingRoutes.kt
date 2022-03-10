@@ -33,7 +33,9 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, service: Ser
                     } else {
                         log.info("Hent oppfølgingsInfo for aktorId: {}", aktorId)
                         val token = call.getAccessToken()
-                        call.respond(service.fetchOppfolgingsInfo(AktorId.of(aktorId), token))
+
+                        val result = service.fetchOppfolgingsInfo(AktorId.of(aktorId), token)
+                        call.respond(result.getOrThrow())
                     }
                 }
             }
