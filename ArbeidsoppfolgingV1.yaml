@@ -1,0 +1,363 @@
+openapi: 3.0.2
+info:
+  title: Arbeidsoppfolging API
+  version: '1.0'
+servers:
+  - url: http://veilarbapi.pto.svc.nais.local:8080
+    description: skal brukes av apper
+#  - url: https://veilarbapi.dev.intern.nav.no
+#    description: manuell testing only
+
+security:
+  - bearerAuth:
+    - read
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT  # optional, for documentation purposes only
+  schemas:
+    Baseaktivitet:
+      type: object
+      required:
+        - aktivitet_type
+      discriminator:
+        propertyName: aktivitet_type
+      properties:
+        aktivitet_type:
+          type: string
+          example: Samtalereferat
+        avtalt_med_nav:
+          type: boolean
+          description: Definer om den definerte aktiviteten er avtalt med NAV
+          example: true
+        status:
+          type: string
+          enum:
+            - PLANLAGT
+            - GJENNOMFORES
+            - FULLFORT
+            - BRUKER_ER_INTERESSERT
+            - AVBRUTT
+          example: FULLFORT
+        beskrivelse:
+          type: string
+          description: Beskrivelse av aktiviteten som er planlagt/gjennomført
+          example: NAV forventer at du søker omtrent 20 stillinger i denne perioden
+        tittel:
+          type: string
+        fra_dato:
+          type: string
+          format: date-time
+        til_dato:
+          type: string
+          format: date-time
+        opprettet_dato:
+          type: string
+          format: date-time
+        endret_dato:
+          type: string
+          format: date-time
+        dialog:
+          $ref: '#/components/schemas/Dialog'
+    Egenaktivitet:
+      allOf:
+        - $ref: '#/components/schemas/Baseaktivitet'
+        - type: object
+          properties:
+            hensikt:
+              type: string
+            oppfolging:
+              type: string
+    Jobbsoeking:
+      allOf:
+        - $ref: '#/components/schemas/Baseaktivitet'
+        - type: object
+          properties:
+            arbeidsgiver:
+              type: string
+            stillingsTittel:
+              type: string
+            arbeidssted:
+              type: string
+            stillingsoekEtikett:
+              type: string
+              enum:
+                - SOKNAD_SENDT
+                - INNKALT_TIL_INTERVJU
+                - AVSLAG
+                - JOBBTILBUD
+            kontaktPerson:
+              type: string
+    Sokeavtale:
+      allOf:
+        - $ref: '#/components/schemas/Baseaktivitet'
+        - type: object
+          properties:
+            antallStillingerIUken:
+              type: integer
+            avtaleOppfolging:
+              type: string
+    Ijobb:
+      allOf:
+        - $ref: '#/components/schemas/Baseaktivitet'
+        - type: object
+          properties:
+            jobbStatusType:
+              type: string
+              enum:
+                - HELTID
+                - DELTID
+            ansettelsesforhold:
+              type: string
+            arbeidstid:
+              type: string
+    Behandling:
+      allOf:
+        - $ref: '#/components/schemas/Baseaktivitet'
+        - type: object
+          properties:
+            behandlingSted:
+              type: string
+    Mote:
+      allOf:
+        - $ref: '#/components/schemas/Baseaktivitet'
+        - type: object
+          properties:
+            adresse:
+              type: string
+            forberedelser:
+              type: string
+            kanal:
+              type: string
+              enum:
+                - OPPMOTE
+                - TELEFON
+                - INTERNETT
+            referat:
+              description: Referatet hvis det er delt med bruker
+              type: string
+    Samtalereferat:
+      allOf:
+        - $ref: '#/components/schemas/Baseaktivitet'
+        - type: object
+          properties:
+            kanal:
+              type: string
+              enum:
+                - OPPMOTE
+                - TELEFON
+                - INTERNETT
+            referat:
+              type: string
+              description: Referatet hvis det er delt med bruker
+    StillingFraNav:
+      allOf:
+        - $ref: '#/components/schemas/Baseaktivitet'
+        - type: object
+          properties:
+            cvKanDelesData:
+              type: object
+              properties:
+                kanDeles:
+                  type: boolean
+                endretTidspunkt:
+                  type: string
+                  format: date-time
+                endretAv:
+                  type: string
+                endretAvType:
+                  type: string
+                  enum:
+                    - BRUKER
+                    - NAV
+                avtaltDato:
+                  type: string
+                  format: date
+            soknadsfrist:
+              type: string
+            svarfrist:
+              type: string
+              format: date
+            arbeidsgiver:
+              type: string
+            bestillingsId:
+              type: string
+            stillingsId:
+              type: string
+            arbeidssted:
+              type: string
+            soknadsstatus:
+              type: string
+              enum:
+                - VENTER
+                - SKAL_PAA_INTERVJU
+                - JOBBTILBUD
+                - AVSLAG
+    Oppfolgingsperioder:
+      type: object
+      properties:
+        oppfolgingsperioder:
+          type: array
+          items:
+            $ref: '#/components/schemas/Oppfolgingsperiode'
+        feil:
+          description: Feilende kilde ved ufullstendige data
+          type: array
+          items:
+            type: object
+            properties:
+              feilkilder:
+                description: Hvilken datakilde vi ikke kunne hente data fra
+                type: string
+                enum:
+                  - OPPFOLGING
+                  - DIALOG
+                  - AKTIVITET
+                  - ANNET
+              feilmelding:
+                description: Feilmelding i klar tekst
+                type: string
+                example: Kunne ikke hente dialoger.
+    Oppfolgingsperiode:
+      type: object
+      properties:
+        startDato:
+          type: string
+          format: date-time
+        sluttDato:
+          type: string
+          format: date-time
+        dialoger:
+          description:  Dialoger som ikke hører til en aktivitet
+          type: array
+          items:
+            $ref: '#/components/schemas/Dialog'
+        aktiviteter:
+          type: array
+          items:
+            $ref: '#/components/schemas/Aktivitet'
+          description: Liste med aktiviteter tilknyttet en oppfølgingsperiode
+    Aktivitet:
+      type: object
+      oneOf:
+        - $ref: '#/components/schemas/Egenaktivitet'
+        - $ref: '#/components/schemas/Jobbsoeking'
+        - $ref: '#/components/schemas/Sokeavtale'
+        - $ref: '#/components/schemas/Ijobb'
+        - $ref: '#/components/schemas/Behandling'
+        - $ref: '#/components/schemas/Mote'
+        - $ref: '#/components/schemas/Samtalereferat'
+        - $ref: '#/components/schemas/StillingFraNav'
+      discriminator:
+        propertyName: aktivitet_type
+
+    Melding:
+      type: object
+      properties:
+        avsenderType:
+          type: string
+          enum:
+            - NAV
+            - BRUKER
+        sendt_dato:
+          type: string
+          format: date-time
+          description: Beskriver når meldingen ble sendt til/fra NAV
+          example: 2022-02-21T08:00:00+02:00
+        lest:
+          type: boolean
+          description: Beskriver om melding er lest av bruker/veileder
+          example: true
+        meldingstekst:
+          type: string
+          description: Fritekstfelt med melding som ble sendt/opprettet
+          example: Lorem ipsum..
+    Dialog:
+      type: object
+      properties:
+        dialog_start:
+          type: string
+          format: date-time
+          description: Beskriver når dialogen med NAV startet.
+          example: 2022-02-21T08:00:00+02:00
+        tittel:
+          type: string
+          description: Beskrivende navn på dialogen/tråden
+          example: 'Stilling fra NAV: Servitør'
+        ventersvarnav:
+          type: boolean
+          description: Beskriver om dialogen er tagget for at den venter på svar fra NAV
+          example: true
+        ventersvarbruker:
+          type: boolean
+          description: Beskriver om dialogen er tagget for at den venter på svar fra bruker
+          example: false
+        meldinger:
+          type: array
+          items:
+            $ref: '#/components/schemas/Melding'
+    Oppfolgingsinfo:
+      type: object
+      properties:
+        underOppfolging:
+          type: boolean
+          description: Definerer om brukeren er under arbeidsrettet oppfølging eller ikke
+          example: true
+        primaerVeileder:
+          type: string
+          description: NAV ident til brukerens veileder for oppfølgingen
+          example: Z999999
+        feil:
+          description: Feilende kilde ved ufullstendige data
+          type: array
+          items:
+            type: object
+            properties:
+              feilkilder:
+                description: Hvilken datakilde vi ikke kunne hente data fra
+                type: string
+              feilmelding:
+                description: Feilmelding i klar tekst
+                type: string
+                example: Kunne ikke hente primærveileder
+
+paths:
+  /v1/oppfolging/periode:
+    get:
+      operationId: hentOppfolgingsperioder
+      description: ''
+      parameters:
+        - name: aktorId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: AktørID til personen man ønsker å hente ut aktivitetsplanen til
+      responses:
+#  TODO andre returkoder
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Oppfolgingsperioder'
+  /v1/oppfolging/info:
+    get:
+      description: Returnerer grunnleggende informasjon om arbeidsrettet oppfølging for brukeren, og hvorvidt brukeren er under oppfølging
+      parameters:
+        - name: aktorId
+          in: query
+          required: true
+          schema:
+            type: string
+          description: AktørID til personen man ønsker å hente ut oppølgingsinfo for
+      responses:
+        200:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Oppfolgingsinfo'
