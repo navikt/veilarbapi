@@ -8,8 +8,11 @@ import kotlin.random.Random
 
 class InternDialogBuilder {
     companion object {
-        fun nyDialog(): InternDialog {
+        fun nyDialog(kvp: Boolean = false): InternDialog {
+            val id = Random.nextLong().toString()
+
             val henvendelse = Henvendelse().apply {
+                dialogId = id
                 avsenderType = Henvendelse.AvsenderTypeEnum.BRUKER
                 avsenderId = "42"
                 sendtDato = OffsetDateTime.now()
@@ -20,7 +23,8 @@ class InternDialogBuilder {
 
             val dialogHenvendelser = listOf(henvendelse)
 
-            return InternDialog().apply {
+            val internDialog = InternDialog().apply {
+                dialogId = id
                 aktivitetId = Random.nextLong().toString()
                 oppfolgingsperiodeId = UUID.randomUUID()
                 overskrift = "overskrift"
@@ -29,6 +33,10 @@ class InternDialogBuilder {
                 opprettetDato = OffsetDateTime.now()
                 henvendelser = dialogHenvendelser
             }
+            if (kvp) {
+                return internDialog.kontorsperreEnhetId(Random.nextInt().toString())
+            }
+            return internDialog
         }
     }
 }

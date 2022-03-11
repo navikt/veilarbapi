@@ -8,6 +8,7 @@ data class OppfolgingsperiodeDTO(
     var aktorId: String? = null,
     var veileder: String? = null,
     var startDato: OffsetDateTime? = null,
-    var sluttDato: OffsetDateTime? = null
+    var sluttDato: OffsetDateTime? = null,
+    var kvpPerioder: List<KvpPeriodeDTO?>? = null
 )
 

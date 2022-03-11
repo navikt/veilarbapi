@@ -8,18 +8,25 @@ import no.nav.veilarbapi.model.Dialog
 import no.nav.veilarbapi.model.Oppfolgingsperiode
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 
-internal fun mapOppfolgingsperioder(oppfolgingsperioder: List<OppfolgingsperiodeDTO>?, aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog>?): Oppfolgingsperioder {
+internal fun mapOppfolgingsperioder(
+    oppfolgingsperioder: List<OppfolgingsperiodeDTO>?,
+    aktiviteter: List<InternAktivitet>?,
+    dialoger: List<InternDialog>?,
+    filtrerKvp: Boolean = true
+): Oppfolgingsperioder {
     val mappedOppfolgingsperioder = oppfolgingsperioder?.map { o ->
         mapOppfolgingsperiode(
             o,
             aktiviteter?.filter { a -> a.oppfolgingsperiodeId == o.uuid },
-            dialoger?.filter { d -> d.oppfolgingsperiodeId == o.uuid }
+            dialoger?.filter { d -> d.oppfolgingsperiodeId == o.uuid },
+            filtrerKvp
         )
     } ?: listOf(
         mapOppfolgingsperiode(
             OppfolgingsperiodeDTO(startDato = null, sluttDato = null),
             aktiviteter,
-            dialoger
+            dialoger,
+            filtrerKvp
         )
     )
 
@@ -28,14 +35,19 @@ internal fun mapOppfolgingsperioder(oppfolgingsperioder: List<Oppfolgingsperiode
     }
 }
 
-private fun mapOppfolgingsperiode(oppfolgingsperiode: OppfolgingsperiodeDTO, aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog>?): Oppfolgingsperiode {
+private fun mapOppfolgingsperiode(
+    oppfolgingsperiode: OppfolgingsperiodeDTO,
+    aktiviteter: List<InternAktivitet>?,
+    dialoger: List<InternDialog>?,
+    filtrerKvp: Boolean = true
+): Oppfolgingsperiode {
     val partition = dialoger?.partition { it.aktivitetId == null }
     val dialogerUtenAktiviteter = partition?.first
     val dialogerMedAktiviteter = partition?.second
 
-    val mappedAktiviteter = mapAktiviteter(aktiviteter, dialogerMedAktiviteter)
+    val mappedAktiviteter = mapAktiviteter(aktiviteter, dialogerMedAktiviteter, filtrerKvp)
 
-    val mappedDialoger: List<Dialog>? = mapDialoger(dialogerUtenAktiviteter)
+    val mappedDialoger: List<Dialog>? = mapDialoger(dialogerUtenAktiviteter, filtrerKvp)
 
     return Oppfolgingsperiode().apply {
         startDato = oppfolgingsperiode.startDato

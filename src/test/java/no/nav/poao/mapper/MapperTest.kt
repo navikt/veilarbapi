@@ -2,13 +2,11 @@ package no.nav.poao.mapper
 
 import no.nav.poao.util.InternAktivitetBuilder
 import no.nav.poao.util.InternDialogBuilder
-import no.nav.poao.veilarbapi.aktivitet.mapAktivitet
 import no.nav.poao.veilarbapi.aktivitet.mapAktiviteter
-import no.nav.poao.veilarbapi.dialog.mapDialog
 import no.nav.poao.veilarbapi.dialog.mapDialoger
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import no.nav.poao.veilarbapi.oppfolging.mapOppfolgingsperioder
-import no.nav.veilarbapi.model.Egenaktivitet
+import no.nav.veilarbapi.model.Aktivitet
 import no.nav.veilarbapi.model.Jobbsoeking
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import org.assertj.core.api.Assertions.assertThat
@@ -21,33 +19,25 @@ class MapperTest {
 
     @Test
     fun testDialogMapper() {
-        val internDialog = InternDialogBuilder.nyDialog()
-        val dialog = mapDialog(internDialog)
-
-        assertThat(dialog.tittel).isEqualTo(internDialog.overskrift)
-
         val internDialoger = listOf(
-                internDialog,
                 InternDialogBuilder.nyDialog(),
+                InternDialogBuilder.nyDialog(true),
                 InternDialogBuilder.nyDialog()
         )
         val dialoger = mapDialoger(internDialoger)
 
-        assertThat(dialoger).hasSize(3)
+        assertThat(dialoger).hasSize(2)
     }
 
     @Test
     fun testAktivitetMapper() {
         val internAktivitet = InternAktivitetBuilder.nyAktivitet("egenaktivitet")
-        val aktivitet = mapAktivitet(internAktivitet)
-
-        assertThat(aktivitet.actualInstance).isInstanceOf(Egenaktivitet::class.java)
 
         val internAktiviteter = listOf(
             internAktivitet,
             InternAktivitetBuilder.nyAktivitet("jobbsoeking").aktivitetId("2"),
             InternAktivitetBuilder.nyAktivitet("sokeavtale").aktivitetId("6"),
-            InternAktivitetBuilder.nyAktivitet("ijobb"),
+            InternAktivitetBuilder.nyAktivitet("ijobb", true).aktivitetId("7"),
             InternAktivitetBuilder.nyAktivitet("behandling"),
             InternAktivitetBuilder.nyAktivitet("mote"),
             InternAktivitetBuilder.nyAktivitet("samtalereferat"),
@@ -55,12 +45,14 @@ class MapperTest {
         )
         val internDialoger = listOf(
             InternDialogBuilder.nyDialog().aktivitetId("2").overskrift("test"),
-            InternDialogBuilder.nyDialog().aktivitetId("6")
+            InternDialogBuilder.nyDialog().aktivitetId("6"),
+            InternDialogBuilder.nyDialog(true).aktivitetId("7"),
+            InternDialogBuilder.nyDialog(true).aktivitetId("99999"),
         )
 
-        val aktiviteter = mapAktiviteter(internAktiviteter)
+        val aktiviteter: List<Aktivitet>? = mapAktiviteter(internAktiviteter)
 
-        assertThat(aktiviteter!!).hasSize(internAktiviteter.size)
+        assertThat(aktiviteter!!).hasSize(7)
         assertThat(aktiviteter[1].actualInstance).isInstanceOf(Jobbsoeking::class.java)
         assertThat(aktiviteter[1].jobbsoeking.dialog).isNull()
 

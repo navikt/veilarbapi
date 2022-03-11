@@ -18,6 +18,8 @@ components:
           example: samtalereferat
         aktivitet_id:
           type: string
+        kontorsperre_enhet_id:
+          type: string
         oppfolgingsperiode_id:
           type: string
           format: uuid

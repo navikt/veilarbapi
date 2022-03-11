@@ -15,13 +15,28 @@ typealias InternSamtalereferat = no.nav.veilarbaktivitet.model.Samtalereferat
 typealias InternStillingFraNav = no.nav.veilarbaktivitet.model.StillingFraNav
 
 
-fun mapAktiviteter(aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog>? = null): List<Aktivitet>? {
+fun mapAktiviteter(
+    aktiviteter: List<InternAktivitet>?,
+    dialoger: List<InternDialog>? = null,
+    filtrerKvp: Boolean = true
+): List<Aktivitet>? {
+    if (filtrerKvp) {
+        val filtrerteAktiviteter = aktiviteter?.filter { it.kontorsperreEnhetId == null }
+        val filtrerteDialoger = dialoger?.filter { it.kontorsperreEnhetId == null }
+
+        return mapAktiviteter(filtrerteAktiviteter, filtrerteDialoger)
+    }
+
+    return mapAktiviteter(aktiviteter, dialoger)
+}
+
+private fun mapAktiviteter(aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog>? = null,): List<Aktivitet>? {
     return aktiviteter?.map { a ->
         mapAktivitet(a, dialoger?.find { d -> d.aktivitetId == a.aktivitetId })
     }
 }
 
-fun mapAktivitet(aktivitet: InternAktivitet, dialog: InternDialog? = null): Aktivitet {
+private fun mapAktivitet(aktivitet: InternAktivitet, dialog: InternDialog? = null): Aktivitet {
     val mappedDialog = dialog?.let { mapDialog(it) }
 
     return when (aktivitet.aktivitetType) {

@@ -5,13 +5,23 @@ import no.nav.veilarbdialog.model.Henvendelse
 
 typealias InternDialog = no.nav.veilarbdialog.model.Dialog
 
-internal fun mapDialoger(dialoger: List<InternDialog>?): List<Dialog>? {
+internal fun mapDialoger(dialoger: List<InternDialog>?, filtrerKvp: Boolean = true): List<Dialog>? {
+    if (filtrerKvp) {
+        val filtreteDialoger = dialoger?.filter { it.kontorsperreEnhetId == null }
+
+        return mapDialoger(filtreteDialoger)
+    }
+
+    return mapDialoger(dialoger)
+}
+
+private fun mapDialoger(dialoger: List<InternDialog>?): List<Dialog>? {
     return dialoger?.map {
         mapDialog(it)
     }
 }
 
-internal fun mapDialog(dialog: InternDialog): Dialog {
+fun mapDialog(dialog: InternDialog): Dialog {
     return Dialog().apply {
         dialogStart = dialog.opprettetDato
         tittel = dialog.overskrift
