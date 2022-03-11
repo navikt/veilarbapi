@@ -3,22 +3,29 @@ package no.nav.poao.veilarbapi.oppfolging
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
-import no.nav.veilarbapi.model.Oppfolgingsinfo
-import no.nav.veilarbapi.model.OppfolgingsinfoFeil
-import no.nav.veilarbapi.model.Oppfolgingsperioder
-import no.nav.veilarbapi.model.OppfolgingsperioderFeil
+import no.nav.veilarbaktivitet.model.Aktivitet
+import no.nav.veilarbapi.model.*
 import no.nav.veilarbapi.model.OppfolgingsperioderFeil.FeilkilderEnum
+import no.nav.veilarbdialog.model.Dialog
 
 class Service(val aktivitet: VeilarbaktivitetClient, val dialog: VeilarbdialogClient, val oppfolging: VeilarboppfolgingClient) {
     suspend fun fetchOppfolgingsPerioder(aktorId: AktorId, accessToken: String?): Oppfolgingsperioder {
         val dialoger = dialog.hentDialoger(aktorId, accessToken)
-        val aktiviteter = aktivitet.hentAktiviteter(aktorId, accessToken)
+        val aktiviteter: Result<List<Aktivitet>> = aktivitet.hentAktiviteter(aktorId, accessToken)
         val oppfolgingsperioder = oppfolging.hentOppfolgingsperioder(aktorId, accessToken)
+
+        val filtrerteAktiviteter = aktiviteter.getOrNull()?.filter { it.kontorsperreEnhetId == null }
+        val filtrerteDialoger: List<Dialog>? = dialoger.getOrNull()
+            ?.filter { it.kontorsperreEnhetId == null }
+            ?.map { dialog ->
+                dialog.henvendelser = dialog.henvendelser?.filter { henvendelse -> henvendelse.kontorsperreEnhetId == null }
+                dialog
+            }
 
         val response = mapOppfolgingsperioder(
             oppfolgingsperioder = oppfolgingsperioder.getOrNull(),
-            aktiviteter = aktiviteter.getOrNull(),
-            dialoger = dialoger.getOrNull()
+            aktiviteter = filtrerteAktiviteter,
+            dialoger = filtrerteDialoger
         )
 
         if(dialoger.isFailure) {
