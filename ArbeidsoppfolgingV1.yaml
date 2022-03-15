@@ -7,8 +7,8 @@ servers:
     description: dev
   - url: https://salesforce.poao.intern.nav.no
     description: prod
-  - url: https://veilarbapi.dev.intern.nav.no
-    description: manuell testing only
+#  - url: https://veilarbapi.dev.intern.nav.no
+#    description: manuell testing only
 
 security:
   - bearerAuth:
