@@ -54,9 +54,9 @@ class InternDialogBuilder {
                 henvendelse.kontorsperreEnhetId(Random.nextInt().toString())
             }
 
-            val test = listOf(henvendelse)
+            val nyHenvendelse = listOf(henvendelse)
             dialog.apply {
-                henvendelser = dialog.henvendelser?.plus(test)
+                henvendelser = dialog.henvendelser?.plus(nyHenvendelse)
             }
         }
     }
