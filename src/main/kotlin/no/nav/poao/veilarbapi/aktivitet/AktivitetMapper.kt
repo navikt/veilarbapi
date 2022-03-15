@@ -53,7 +53,7 @@ private fun merge(gammelAktivitet: InternAktivitet, nyAktivitet: Baseaktivitet, 
 
 private fun mapTilEgenaktivitet(aktivitet: InternEgenaktivitet, dialog: Dialog?): Aktivitet {
     val egenaktivitet = Egenaktivitet().apply {
-        aktivitetType = "egenaktivitet"
+        aktivitetType = "Egenaktivitet"
         hensikt = aktivitet.hensikt
         oppfolging = aktivitet.oppfolging
     }
@@ -65,7 +65,7 @@ private fun mapTilEgenaktivitet(aktivitet: InternEgenaktivitet, dialog: Dialog?)
 
 private fun mapTilJobbsoeking(aktivitet: InternJobbsoeking, dialog: Dialog?): Aktivitet {
     val jobbsoeking = Jobbsoeking().apply {
-        aktivitetType = "jobbsoeking"
+        aktivitetType = "Jobbsoeking"
         arbeidsgiver = aktivitet.arbeidsgiver
         stillingsTittel = aktivitet.stillingsTittel
         arbeidssted = aktivitet.arbeidssted
@@ -80,7 +80,7 @@ private fun mapTilJobbsoeking(aktivitet: InternJobbsoeking, dialog: Dialog?): Ak
 
 private fun mapTilSokeavtale(aktivitet: InternSokeavtale, dialog: Dialog?): Aktivitet {
     val sokeavtale = Sokeavtale().apply {
-        aktivitetType = "sokeavtale"
+        aktivitetType = "Sokeavtale"
         antallStillingerIUken = aktivitet.antallStillingerIUken
         avtaleOppfolging = aktivitet.avtaleOppfolging
     }
@@ -92,7 +92,7 @@ private fun mapTilSokeavtale(aktivitet: InternSokeavtale, dialog: Dialog?): Akti
 
 private fun mapTilIjobb(aktivitet: InternIjobb, dialog: Dialog?): Aktivitet {
     val ijobb = Ijobb().apply {
-        aktivitetType = "ijobb"
+        aktivitetType = "Ijobb"
         jobbStatusType = aktivitet.jobbStatusType?.name?.let { Ijobb.JobbStatusTypeEnum.valueOf(it) }
         ansettelsesforhold = aktivitet.ansettelsesforhold
         arbeidstid = aktivitet.arbeidstid
@@ -105,7 +105,7 @@ private fun mapTilIjobb(aktivitet: InternIjobb, dialog: Dialog?): Aktivitet {
 
 private fun mapTilBehandling(aktivitet: InternBehandling, dialog: Dialog?): Aktivitet {
     val behandling = Behandling().apply {
-        aktivitetType = "behandling"
+        aktivitetType = "Behandling"
         behandlingSted = aktivitet.behandlingSted
     }
 
@@ -116,7 +116,7 @@ private fun mapTilBehandling(aktivitet: InternBehandling, dialog: Dialog?): Akti
 
 private fun mapTilMote(aktivitet: InternMote, dialog: Dialog?): Aktivitet {
     val mote = Mote().apply {
-        aktivitetType = "mote"
+        aktivitetType = "Mote"
         adresse = aktivitet.adresse
         forberedelser = aktivitet.forberedelser
         kanal = aktivitet.kanal?.name?.let { Mote.KanalEnum.valueOf(it) }
@@ -130,7 +130,7 @@ private fun mapTilMote(aktivitet: InternMote, dialog: Dialog?): Aktivitet {
 
 private fun mapTilSamtalereferat(aktivitet: InternSamtalereferat, dialog: Dialog?): Aktivitet {
     val samtalereferat = Samtalereferat().apply {
-        aktivitetType = "samtalereferat"
+        aktivitetType = "Samtalereferat"
         kanal = aktivitet.kanal?.name?.let { Samtalereferat.KanalEnum.valueOf(it) }
         referat = aktivitet.referat
     }
@@ -152,7 +152,7 @@ private fun mapTilStillingFraNav(aktivitet: InternStillingFraNav, dialog: Dialog
     }
 
     val stillingFraNav = StillingFraNav().apply {
-        aktivitetType = "stillingFraNav"
+        aktivitetType = "StillingFraNav"
         cvKanDelesData = stillingFraNavCvKanDelesData
         soknadsfrist = aktivitet.soknadsfrist
         svarfrist = aktivitet.svarfrist

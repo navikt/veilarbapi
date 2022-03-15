@@ -8,7 +8,7 @@ import kotlin.random.Random
 
 class InternDialogBuilder {
     companion object {
-        fun nyDialog(): InternDialog {
+        fun nyDialog(kvpDialog: Boolean = false, kvpHenvendelse: Boolean = false): InternDialog {
             val henvendelse = Henvendelse().apply {
                 avsenderType = Henvendelse.AvsenderTypeEnum.BRUKER
                 avsenderId = "42"
@@ -18,9 +18,13 @@ class InternDialogBuilder {
                 tekst = "tekst"
             }
 
+            if (kvpHenvendelse) {
+                henvendelse.kontorsperreEnhetId(Random.nextInt().toString())
+            }
+
             val dialogHenvendelser = listOf(henvendelse)
 
-            return InternDialog().apply {
+            val dialog = InternDialog().apply {
                 aktivitetId = Random.nextLong().toString()
                 oppfolgingsperiodeId = UUID.randomUUID()
                 overskrift = "overskrift"
@@ -28,6 +32,31 @@ class InternDialogBuilder {
                 venterSvarBruker = false
                 opprettetDato = OffsetDateTime.now()
                 henvendelser = dialogHenvendelser
+            }
+            if (kvpDialog) {
+                dialog.kontorsperreEnhetId(Random.nextInt().toString())
+            }
+            return dialog
+        }
+
+        fun nyHenvendelsePaaDialog(dialog: InternDialog, kvpHenvendelse: Boolean = false) {
+            val henvendelse = Henvendelse().apply {
+                dialogId = dialog.dialogId
+                avsenderType = Henvendelse.AvsenderTypeEnum.BRUKER
+                avsenderId = "42"
+                sendtDato = OffsetDateTime.now()
+                lestAvBruker = true
+                lestAvVeileder = false
+                tekst = "tekst"
+            }
+
+            if (kvpHenvendelse) {
+                henvendelse.kontorsperreEnhetId(Random.nextInt().toString())
+            }
+
+            val nyHenvendelse = listOf(henvendelse)
+            dialog.apply {
+                henvendelser = dialog.henvendelser?.plus(nyHenvendelse)
             }
         }
     }

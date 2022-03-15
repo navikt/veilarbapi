@@ -9,8 +9,8 @@ import kotlin.random.Random
 
 class InternAktivitetBuilder {
     companion object {
-        fun nyAktivitet(type: String): InternAktivitet {
-            return when (type) {
+        fun nyAktivitet(type: String, kvp: Boolean = false): InternAktivitet {
+            val aktivitet = when (type) {
                 "egenaktivitet" -> nyEgenaktivitet()
                 "jobbsoeking" -> nyJobbsoeking()
                 "sokeavtale" -> nySokeavtale()
@@ -21,6 +21,10 @@ class InternAktivitetBuilder {
                 "stilling_fra_nav" -> nyStillingFraNav()
                 else -> throw IllegalArgumentException("Ukjent aktivitetstype")
             }
+            if (kvp) {
+                return aktivitet.kontorsperreEnhetId(Random.nextInt().toString())
+            }
+            return aktivitet
         }
 
         private fun nyAktivitet(aktivitet: InternAktivitet): InternAktivitet {
