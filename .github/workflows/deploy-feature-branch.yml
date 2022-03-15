@@ -1,12 +1,9 @@
-name: Deploy dev og prod
+name: deploy feature branch
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 concurrency:
-  group: deploy
+  group: deploy_feature_branch
   cancel-in-progress: true
 
 env:
