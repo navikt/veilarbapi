@@ -3,8 +3,10 @@ info:
   title: Arbeidsoppfolging API
   version: '1.0'
 servers:
-  - url: http://veilarbapi.pto.svc.nais.local:8080
-    description: skal brukes av apper
+  - url: https://salesforce.poao.dev.intern.nav.no
+    description: dev
+  - url: https://salesforce.poao.intern.nav.no
+    description: prod
 #  - url: https://veilarbapi.dev.intern.nav.no
 #    description: manuell testing only
 
