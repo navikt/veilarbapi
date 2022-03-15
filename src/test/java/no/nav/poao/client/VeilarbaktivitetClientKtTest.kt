@@ -5,12 +5,10 @@ import io.ktor.http.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
 import no.nav.common.types.identer.AktorId
-import no.nav.poao.veilarbapi.settup.exceptions.ServerFeilException
-import no.nav.poao.veilarbapi.settup.config.Configuration
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
+import no.nav.poao.veilarbapi.settup.config.Configuration
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
-import kotlin.test.assertFailsWith
 import kotlin.test.assertTrue
 
 

@@ -38,5 +38,26 @@ class InternDialogBuilder {
             }
             return dialog
         }
+
+        fun nyHenvendelsePaaDialog(dialog: InternDialog, kvpHenvendelse: Boolean = false) {
+            val henvendelse = Henvendelse().apply {
+                dialogId = dialog.dialogId
+                avsenderType = Henvendelse.AvsenderTypeEnum.BRUKER
+                avsenderId = "42"
+                sendtDato = OffsetDateTime.now()
+                lestAvBruker = true
+                lestAvVeileder = false
+                tekst = "tekst"
+            }
+
+            if (kvpHenvendelse) {
+                henvendelse.kontorsperreEnhetId(Random.nextInt().toString())
+            }
+
+            val test = listOf(henvendelse)
+            dialog.apply {
+                henvendelser = dialog.henvendelser?.plus(test)
+            }
+        }
     }
 }
