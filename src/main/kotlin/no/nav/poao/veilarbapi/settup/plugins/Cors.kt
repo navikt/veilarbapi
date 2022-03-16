@@ -10,6 +10,7 @@ fun Application.configureCors() {
         host("navikt.github.io", schemes = listOf("https"))
         header(HttpHeaders.ContentType)
         header(HttpHeaders.Authorization)
+        allowHeadersPrefixed("Nav-")
         method(HttpMethod.Options)
         allowCredentials = true
     }
