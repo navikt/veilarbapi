@@ -6,9 +6,7 @@ import io.ktor.http.*
 
 fun Application.configureCors() {
     install(CORS) {
-        host("localhost:63342")
         host("navikt.github.io", schemes = listOf("https"))
-        header(HttpHeaders.ContentType)
         header(HttpHeaders.Authorization)
         header("Nav-Consumer-Id")
         header("Nav-Call-Id")

@@ -3,6 +3,7 @@ package no.nav.poao.veilarbapi
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.poao.veilarbapi.oppfolging.Service
+import no.nav.poao.veilarbapi.settup.config.Cluster
 import no.nav.poao.veilarbapi.settup.config.Configuration
 import no.nav.poao.veilarbapi.settup.plugins.*
 
@@ -17,7 +18,10 @@ fun createHttpServer(
     configureAuthentication(configuration)
     configureSerialization()
     configureRouting(configuration.useAuthentication, service = service)
-    configureCors()
+
+    if (Cluster.current == Cluster.DEV_GCP) {
+        configureCors()
+    }
 
     applicationState.initialized = true
 }
