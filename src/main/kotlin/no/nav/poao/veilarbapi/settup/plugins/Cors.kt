@@ -8,6 +8,8 @@ fun Application.configureCors() {
     install(CORS) {
         host("localhost:63342")
         host("navikt.github.io/veilarbapi", schemes = listOf("https"))
+        header(HttpHeaders.ContentType)
+        header(HttpHeaders.Authorization)
         method(HttpMethod.Options)
         allowCredentials = true
     }
