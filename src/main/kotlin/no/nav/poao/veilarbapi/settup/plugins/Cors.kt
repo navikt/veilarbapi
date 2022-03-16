@@ -5,7 +5,7 @@ import io.ktor.features.*
 
 fun Application.configureCors() {
     install(CORS) {
-        host(host = "dev.intern.nav.no", schemes = listOf("https"), subDomains = listOf("veilarbapi"))
+        anyHost()
         allowCredentials = true
     }
 }
