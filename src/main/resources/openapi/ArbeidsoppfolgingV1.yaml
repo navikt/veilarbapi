@@ -338,6 +338,16 @@ paths:
           schema:
             type: string
           description: AktørID til personen man ønsker å hente ut aktivitetsplanen til
+        - name: Nav-Consumer-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Nav-Call-Id
+          in: header
+          required: true
+          schema:
+            type: string
       responses:
 #  TODO andre returkoder
         '200':
@@ -356,6 +366,16 @@ paths:
           schema:
             type: string
           description: AktørID til personen man ønsker å hente ut oppølgingsinfo for
+        - name: Nav-Consumer-Id
+          in: header
+          required: true
+          schema:
+            type: string
+        - name: Nav-Call-Id
+          in: header
+          required: true
+          schema:
+            type: string
       responses:
         200:
           description: OK
