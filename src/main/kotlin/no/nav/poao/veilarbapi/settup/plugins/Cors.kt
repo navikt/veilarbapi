@@ -5,7 +5,7 @@ import io.ktor.features.*
 
 fun Application.configureCors() {
     install(CORS) {
-        anyHost()
+        host("localhost:63342")
         allowCredentials = true
     }
 }
