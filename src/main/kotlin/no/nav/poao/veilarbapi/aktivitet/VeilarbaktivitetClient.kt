@@ -4,33 +4,36 @@ package no.nav.poao.veilarbapi.aktivitet
 import com.github.michaelbull.result.get
 import io.ktor.client.*
 import io.ktor.client.engine.*
-import io.ktor.client.engine.apache.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.common.types.identer.AktorId
 import no.nav.common.utils.IdUtils
-import no.nav.poao.veilarbapi.settup.oauth.AzureAdClient
-import no.nav.poao.veilarbapi.settup.exceptions.IkkePaaLoggetException
-import no.nav.poao.veilarbapi.settup.exceptions.ManglerTilgangException
-import no.nav.poao.veilarbapi.settup.exceptions.ServerFeilException
+import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
+import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
+import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
+import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbaktivitet.model.Aktivitet
-import no.nav.poao.veilarbapi.settup.config.Cluster
-import no.nav.poao.veilarbapi.settup.config.Configuration
+import no.nav.poao.veilarbapi.setup.config.Cluster
+import no.nav.poao.veilarbapi.setup.config.Configuration
 import org.slf4j.MDC
 
-class VeilarbaktivitetClient constructor(val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig, val poaoGcpProxyConfig: Configuration.PoaoGcpProxyConfig, val azureAdClient: AzureAdClient?, val engine: HttpClientEngine = Apache.create()) {
+class VeilarbaktivitetClient (
+    val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig,
+    val azureAdClient: AzureAdClient?,
+    val engine: HttpClientEngine = OkHttp.create()
+) {
 
     val json = JSON()
-    val client: HttpClient =
-        HttpClient(engine) {
-            expectSuccess = false
-        }
+    val client: HttpClient = HttpClient(engine) {
+        expectSuccess = false
+    }
 
-    val veilarbaktivitetUrl = veilarbaktivitetConfig.url
-    val veilarbaktivitetResource = veilarbaktivitetAuthenticationScope
-    val poaoGcpProxyResource = poaoProxyAuthenticationScope
+    private val veilarbaktivitetUrl = veilarbaktivitetConfig.url
+    private val veilarbaktivitetResource = veilarbaktivitetAuthenticationScope
+    private val poaoGcpProxyResource = poaoProxyAuthenticationScope
 
     suspend fun hentAktiviteter(aktorId: AktorId, accessToken: String?): Result<List<Aktivitet>> {
             val veilarbaktivitetOnBehalfOfAccessToken = accessToken?.let {

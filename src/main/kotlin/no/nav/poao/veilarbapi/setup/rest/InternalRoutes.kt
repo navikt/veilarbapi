@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.settup.rest
+package no.nav.poao.veilarbapi.setup.rest
 
 import io.ktor.application.*
 import io.ktor.http.*

@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.settup.plugins
+package no.nav.poao.veilarbapi.setup.plugins
 
 import io.ktor.features.*
 import io.ktor.application.*

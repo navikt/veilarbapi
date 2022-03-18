@@ -11,9 +11,9 @@ import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import no.nav.poao.veilarbapi.oppfolging.Service
 import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClient
-import no.nav.poao.veilarbapi.settup.config.Configuration
-import no.nav.poao.veilarbapi.settup.plugins.configureSerialization
-import no.nav.poao.veilarbapi.settup.rest.arbeidsoppfolgingRoutes
+import no.nav.poao.veilarbapi.setup.config.Configuration
+import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
+import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -25,7 +25,6 @@ class ArbeidsoppfolgingRoutesTest {
     private val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
     private val veilarbdialogConfig = Configuration.VeilarbdialogConfig(url = "http://localhost:8080/veilarbdialog")
     private val veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(url = "http://localhost:8080/veilarbaktivitet")
-    private val poaoGcpProxyConfig = Configuration.PoaoGcpProxyConfig(url = "http://localhost:8080/proxu")
 
     init {
         no.nav.veilarbaktivitet.JSON()
@@ -65,21 +64,20 @@ class ArbeidsoppfolgingRoutesTest {
 
         val veilarbaktivitetClient = VeilarbaktivitetClient(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
-            poaoGcpProxyConfig = poaoGcpProxyConfig,
-            engine = createMockEngine(mockAktiviteter),
-            azureAdClient = null
+            azureAdClient = null,
+            engine = createMockEngine(mockAktiviteter)
         )
 
         val veilarbdialogClient = VeilarbdialogClient(
             veilarbdialogConfig = veilarbdialogConfig,
-            engine = createMockEngine(mockDialoger),
-            azureAdClient = null
+            azureAdClient = null,
+            engine = createMockEngine(mockDialoger)
         )
 
         val veilarboppfolgingClient = VeilarboppfolgingClient(
             veilarboppfolgingConfig = veilarboppfolgingConfig,
-            engine = createMockEngine(mockOppfolgingsperioder),
-            azureAdClient = null
+            azureAdClient = null,
+            engine = createMockEngine(mockOppfolgingsperioder)
         )
 
         val mockService = Service(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)

@@ -1,10 +1,9 @@
-package no.nav.poao.veilarbapi.settup.plugins
+package no.nav.poao.veilarbapi.setup.plugins
 
 import io.ktor.application.*
 import no.nav.veilarbapi.JSON
 import no.nav.veilarbapi.model.*
 import org.threeten.bp.OffsetDateTime
-import java.util.*
 
 fun Application.getMockOppfolgingsperioder(fromMockFile: Boolean): Array<Oppfolgingsperiode> {
     if (fromMockFile) {

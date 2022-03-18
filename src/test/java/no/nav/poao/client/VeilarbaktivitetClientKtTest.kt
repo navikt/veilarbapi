@@ -6,15 +6,14 @@ import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
-import no.nav.poao.veilarbapi.settup.config.Configuration
+import no.nav.poao.veilarbapi.setup.config.Configuration
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 
 class VeilarbaktivitetClientKtTest {
-    val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
-    val poaoGcpProxyConfig = Configuration.PoaoGcpProxyConfig(url = "http://localhost:8080/proxu")
+    private val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
 
     @Test
     fun testHentAktiviteterWithMockEngine() {
@@ -27,7 +26,6 @@ class VeilarbaktivitetClientKtTest {
         }
         val client = VeilarbaktivitetClient(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
-            poaoGcpProxyConfig = poaoGcpProxyConfig,
             engine = mockEngine,
             azureAdClient = null
         )
@@ -48,7 +46,6 @@ class VeilarbaktivitetClientKtTest {
         }
         val client = VeilarbaktivitetClient(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
-            poaoGcpProxyConfig = poaoGcpProxyConfig,
             engine = mockEngine,
             azureAdClient = null
         )

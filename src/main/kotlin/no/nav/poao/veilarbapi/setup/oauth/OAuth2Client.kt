@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.settup.oauth
+package no.nav.poao.veilarbapi.setup.oauth
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.benmanes.caffeine.cache.AsyncLoadingCache

@@ -4,34 +4,49 @@ package no.nav.poao.veilarbapi.oppfolging
 import com.github.michaelbull.result.get
 import io.ktor.client.*
 import io.ktor.client.engine.*
-import io.ktor.client.engine.apache.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import no.nav.common.rest.client.RestClient
 import no.nav.common.types.identer.AktorId
+import no.nav.common.types.identer.NavIdent
 import no.nav.common.utils.IdUtils
-import no.nav.poao.veilarbapi.settup.oauth.AzureAdClient
-import no.nav.poao.veilarbapi.settup.exceptions.IkkePaaLoggetException
-import no.nav.poao.veilarbapi.settup.exceptions.ManglerTilgangException
-import no.nav.poao.veilarbapi.settup.exceptions.ServerFeilException
+import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
+import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
+import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
+import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.veilarbaktivitet.JSON
-import no.nav.poao.veilarbapi.settup.config.Cluster
-import no.nav.poao.veilarbapi.settup.config.Configuration
+import no.nav.poao.veilarbapi.setup.config.Cluster
+import no.nav.poao.veilarbapi.setup.config.Configuration
+import okhttp3.OkHttpClient
 import org.slf4j.MDC
+import org.threeten.bp.OffsetDateTime
+import java.util.*
+
+data class OppfolgingsperiodeDTO(
+    var uuid: UUID? = null,
+    var aktorId: String? = null,
+    var veileder: String? = null,
+    var startDato: OffsetDateTime? = null,
+    var sluttDato: OffsetDateTime? = null
+)
+data class UnderOppfolgingDTO(var erUnderOppfolging: Boolean? = null)
+data class VeilederDTO(var veilederIdent: NavIdent? = null)
 
 class VeilarboppfolgingClient constructor(
     val veilarboppfolgingConfig: Configuration.VeilarboppfolgingConfig,
     val azureAdClient: AzureAdClient?,
-    val engine: HttpClientEngine = Apache.create()
+    val engine: HttpClientEngine = OkHttp.create()
 ) {
 
     val json = JSON()
-    val client: HttpClient =
-        HttpClient(engine) {
-            expectSuccess = false
-        }
+    val client: HttpClient = HttpClient(engine) {
+        expectSuccess = false
 
-    val veilarboppfolgingUrl = veilarboppfolgingConfig.url
+    }
+
+    private val veilarboppfolgingUrl = veilarboppfolgingConfig.url
 
     suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
         val veilarboppfolgingOnBehalfOfAccessToken = accessToken?.let {

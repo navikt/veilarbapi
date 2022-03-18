@@ -18,9 +18,9 @@ plugins {
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
-dependencyLocking {
-    lockAllConfigurations()
-}
+//dependencyLocking {
+//    lockAllConfigurations()
+//}
 
 //configurations.all { resolutionStrategy.failOnVersionConflict() }
 
@@ -132,7 +132,7 @@ dependencies {
     implementation("io.ktor:ktor-client-core:$ktor_version")
     implementation("io.ktor:ktor-client-gson:$ktor_version")
     implementation("io.ktor:ktor-client-java:$ktor_version")
-    implementation("io.ktor:ktor-client-apache:$ktor_version")
+    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
     // Azure client
     implementation("io.ktor:ktor-client-jackson:$ktor_version")
     // Rest Client END

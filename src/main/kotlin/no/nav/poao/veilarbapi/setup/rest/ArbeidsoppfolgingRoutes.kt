@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.settup.rest
+package no.nav.poao.veilarbapi.setup.rest
 
 import io.ktor.application.*
 import io.ktor.auth.*
@@ -9,8 +9,7 @@ import io.ktor.routing.*
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.getAccessToken
 import no.nav.poao.veilarbapi.oppfolging.Service
-import no.nav.poao.veilarbapi.settup.oauth.MockPayload
-import no.nav.poao.veilarbapi.settup.plugins.getMockOppfolgingsinfo
+import no.nav.poao.veilarbapi.setup.oauth.MockPayload
 
 fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, service: Service) {
     routing() {

@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.settup.oauth
+package no.nav.poao.veilarbapi.setup.oauth
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.JsonNode
@@ -15,7 +15,7 @@ import io.ktor.client.statement.readText
 import io.ktor.http.HttpHeaders
 import io.ktor.http.Parameters
 import io.ktor.util.*
-import no.nav.poao.veilarbapi.settup.config.Configuration
+import no.nav.poao.veilarbapi.setup.config.Configuration
 
 import no.nav.poao.veilarbapi.defaultHttpClient
 import org.slf4j.LoggerFactory

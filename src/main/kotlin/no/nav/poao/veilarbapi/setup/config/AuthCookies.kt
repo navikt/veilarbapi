@@ -1,4 +1,4 @@
-package no.nav.poao.veilarbapi.settup.config
+package no.nav.poao.veilarbapi.setup.config
 
 enum class AuthCookies(val cookieName: String) {
     OPEN_AM("ID_token"),

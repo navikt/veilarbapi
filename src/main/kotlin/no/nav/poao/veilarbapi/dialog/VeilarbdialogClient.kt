@@ -4,31 +4,33 @@ package no.nav.poao.veilarbapi.dialog
 import com.github.michaelbull.result.get
 import io.ktor.client.*
 import io.ktor.client.engine.*
-import io.ktor.client.engine.apache.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.common.types.identer.AktorId
 import no.nav.common.utils.IdUtils
-import no.nav.poao.veilarbapi.settup.oauth.AzureAdClient
-import no.nav.poao.veilarbapi.settup.exceptions.IkkePaaLoggetException
-import no.nav.poao.veilarbapi.settup.exceptions.ManglerTilgangException
-import no.nav.poao.veilarbapi.settup.exceptions.ServerFeilException
+import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
+import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
+import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
+import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.veilarbaktivitet.JSON
-import no.nav.poao.veilarbapi.settup.config.Cluster
-import no.nav.poao.veilarbapi.settup.config.Configuration
+import no.nav.poao.veilarbapi.setup.config.Cluster
+import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.veilarbdialog.model.Dialog
 import org.slf4j.MDC
 
-class VeilarbdialogClient constructor(val veilarbdialogConfig: Configuration.VeilarbdialogConfig, val azureAdClient: AzureAdClient?, val engine: HttpClientEngine = Apache.create()) {
+class VeilarbdialogClient(
+    val veilarbdialogConfig: Configuration.VeilarbdialogConfig,
+    val azureAdClient: AzureAdClient?,
+    val engine: HttpClientEngine = OkHttp.create()
+) {
 
     val json = JSON()
-    val client: HttpClient =
-        HttpClient(engine) {
-            expectSuccess = false
-        }
-
-    val veilarbdialogUrl = veilarbdialogConfig.url
+    val client: HttpClient = HttpClient(engine) {
+        expectSuccess = false
+    }
+    private val veilarbdialogUrl = veilarbdialogConfig.url
 
 
     suspend fun hentDialoger(aktorId: AktorId, accessToken: String?): Result<List<Dialog>> {
