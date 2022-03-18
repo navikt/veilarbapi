@@ -106,6 +106,7 @@ components:
               type: string
             kanal:
               type: string
+              example: Telefonmøte
             referat:
               description: Referatet hvis det er delt med bruker
               type: string
@@ -116,6 +117,7 @@ components:
           properties:
             kanal:
               type: string
+              example: Telefonmøte
             referat:
               type: string
               description: Referatet hvis det er delt med bruker
@@ -129,6 +131,7 @@ components:
               properties:
                 kanDeles:
                   type: boolean
+                  description: Samtykke fra bruker om at NAV får lov til å dele deres CV
                 endretTidspunkt:
                   type: string
                   format: date-time
@@ -157,6 +160,7 @@ components:
               type: string
             soknadsstatus:
               type: string
+              example: Venter på å bli kontaktet av NAV eller arbeidsgiver
     Oppfolgingsperioder:
       type: object
       properties:
