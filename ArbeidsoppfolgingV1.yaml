@@ -7,8 +7,8 @@ servers:
     description: dev
   - url: https://salesforce.poao.intern.nav.no
     description: prod
-  - url: https://veilarbapi.dev.intern.nav.no
-    description: manuell testing only
+#  - url: https://veilarbapi.dev.intern.nav.no
+#    description: manuell testing only
 
 security:
   - bearerAuth:
@@ -25,12 +25,15 @@ components:
       type: object
       required:
         - aktivitet_type
+        - aktivitet_type_navn
       discriminator:
         propertyName: aktivitet_type
       properties:
         aktivitet_type:
           type: string
-          example: Samtalereferat
+        aktivitet_type_navn:
+          type: string
+          example: Stilling fra NAV
         avtalt_med_nav:
           type: boolean
           description: Definer om den definerte aktiviteten er avtalt med NAV
@@ -44,6 +47,8 @@ components:
             - BRUKER_ER_INTERESSERT
             - AVBRUTT
           example: FULLFORT
+        status_navn:
+          type: string
         beskrivelse:
           type: string
           description: Beskrivelse av aktiviteten som er planlagt/gjennomført
@@ -64,35 +69,6 @@ components:
           format: date-time
         dialog:
           $ref: '#/components/schemas/Dialog'
-    Egenaktivitet:
-      allOf:
-        - $ref: '#/components/schemas/Baseaktivitet'
-        - type: object
-          properties:
-            hensikt:
-              type: string
-            oppfolging:
-              type: string
-    Jobbsoeking:
-      allOf:
-        - $ref: '#/components/schemas/Baseaktivitet'
-        - type: object
-          properties:
-            arbeidsgiver:
-              type: string
-            stillingsTittel:
-              type: string
-            arbeidssted:
-              type: string
-            stillingsoekEtikett:
-              type: string
-              enum:
-                - SOKNAD_SENDT
-                - INNKALT_TIL_INTERVJU
-                - AVSLAG
-                - JOBBTILBUD
-            kontaktPerson:
-              type: string
     Sokeavtale:
       allOf:
         - $ref: '#/components/schemas/Baseaktivitet'
@@ -101,20 +77,6 @@ components:
             antallStillingerIUken:
               type: integer
             avtaleOppfolging:
-              type: string
-    Ijobb:
-      allOf:
-        - $ref: '#/components/schemas/Baseaktivitet'
-        - type: object
-          properties:
-            jobbStatusType:
-              type: string
-              enum:
-                - HELTID
-                - DELTID
-            ansettelsesforhold:
-              type: string
-            arbeidstid:
               type: string
     Behandling:
       allOf:
@@ -134,10 +96,7 @@ components:
               type: string
             kanal:
               type: string
-              enum:
-                - OPPMOTE
-                - TELEFON
-                - INTERNETT
+              example: Telefonmøte
             referat:
               description: Referatet hvis det er delt med bruker
               type: string
@@ -148,10 +107,7 @@ components:
           properties:
             kanal:
               type: string
-              enum:
-                - OPPMOTE
-                - TELEFON
-                - INTERNETT
+              example: Telefonmøte
             referat:
               type: string
               description: Referatet hvis det er delt med bruker
@@ -165,6 +121,7 @@ components:
               properties:
                 kanDeles:
                   type: boolean
+                  description: Samtykke fra bruker om at NAV får lov til å dele deres CV
                 endretTidspunkt:
                   type: string
                   format: date-time
@@ -193,11 +150,7 @@ components:
               type: string
             soknadsstatus:
               type: string
-              enum:
-                - VENTER
-                - SKAL_PAA_INTERVJU
-                - JOBBTILBUD
-                - AVSLAG
+              example: Skal på intervju
     Oppfolgingsperioder:
       type: object
       properties:
@@ -245,10 +198,7 @@ components:
     Aktivitet:
       type: object
       oneOf:
-        - $ref: '#/components/schemas/Egenaktivitet'
-        - $ref: '#/components/schemas/Jobbsoeking'
         - $ref: '#/components/schemas/Sokeavtale'
-        - $ref: '#/components/schemas/Ijobb'
         - $ref: '#/components/schemas/Behandling'
         - $ref: '#/components/schemas/Mote'
         - $ref: '#/components/schemas/Samtalereferat'
@@ -338,16 +288,6 @@ paths:
           schema:
             type: string
           description: AktørID til personen man ønsker å hente ut aktivitetsplanen til
-        - name: Nav-Consumer-Id
-          in: header
-          required: true
-          schema:
-            type: string
-        - name: Nav-Call-Id
-          in: header
-          required: true
-          schema:
-            type: string
       responses:
 #  TODO andre returkoder
         '200':
@@ -366,16 +306,6 @@ paths:
           schema:
             type: string
           description: AktørID til personen man ønsker å hente ut oppølgingsinfo for
-        - name: Nav-Consumer-Id
-          in: header
-          required: true
-          schema:
-            type: string
-        - name: Nav-Call-Id
-          in: header
-          required: true
-          schema:
-            type: string
       responses:
         200:
           description: OK
