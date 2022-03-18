@@ -24,11 +24,22 @@ components:
     Baseaktivitet:
       type: object
       required:
-        - aktivitet_type
+        - aktivitet_type_navn
       discriminator:
-        propertyName: aktivitet_type
+        propertyName: aktivitet_type_navn
       properties:
         aktivitet_type:
+          type: string
+          enum:
+            - egenaktivitet
+            - jobbsoeking
+            - sokeavtale
+            - ijobb
+            - behandling
+            - mote
+            - samtalereferat
+            - stilling_fra_nav
+        aktivitet_type_navn:
           type: string
           example: Samtalereferat
         avtalt_med_nav:
@@ -44,6 +55,8 @@ components:
             - BRUKER_ER_INTERESSERT
             - AVBRUTT
           example: FULLFORT
+        status_navn:
+          type: string
         beskrivelse:
           type: string
           description: Beskrivelse av aktiviteten som er planlagt/gjennomført
@@ -64,35 +77,6 @@ components:
           format: date-time
         dialog:
           $ref: '#/components/schemas/Dialog'
-    Egenaktivitet:
-      allOf:
-        - $ref: '#/components/schemas/Baseaktivitet'
-        - type: object
-          properties:
-            hensikt:
-              type: string
-            oppfolging:
-              type: string
-    Jobbsoeking:
-      allOf:
-        - $ref: '#/components/schemas/Baseaktivitet'
-        - type: object
-          properties:
-            arbeidsgiver:
-              type: string
-            stillingsTittel:
-              type: string
-            arbeidssted:
-              type: string
-            stillingsoekEtikett:
-              type: string
-              enum:
-                - SOKNAD_SENDT
-                - INNKALT_TIL_INTERVJU
-                - AVSLAG
-                - JOBBTILBUD
-            kontaktPerson:
-              type: string
     Sokeavtale:
       allOf:
         - $ref: '#/components/schemas/Baseaktivitet'
@@ -101,20 +85,6 @@ components:
             antallStillingerIUken:
               type: integer
             avtaleOppfolging:
-              type: string
-    Ijobb:
-      allOf:
-        - $ref: '#/components/schemas/Baseaktivitet'
-        - type: object
-          properties:
-            jobbStatusType:
-              type: string
-              enum:
-                - HELTID
-                - DELTID
-            ansettelsesforhold:
-              type: string
-            arbeidstid:
               type: string
     Behandling:
       allOf:
@@ -134,10 +104,6 @@ components:
               type: string
             kanal:
               type: string
-              enum:
-                - OPPMOTE
-                - TELEFON
-                - INTERNETT
             referat:
               description: Referatet hvis det er delt med bruker
               type: string
@@ -148,10 +114,6 @@ components:
           properties:
             kanal:
               type: string
-              enum:
-                - OPPMOTE
-                - TELEFON
-                - INTERNETT
             referat:
               type: string
               description: Referatet hvis det er delt med bruker
@@ -193,11 +155,6 @@ components:
               type: string
             soknadsstatus:
               type: string
-              enum:
-                - VENTER
-                - SKAL_PAA_INTERVJU
-                - JOBBTILBUD
-                - AVSLAG
     Oppfolgingsperioder:
       type: object
       properties:
@@ -245,16 +202,13 @@ components:
     Aktivitet:
       type: object
       oneOf:
-        - $ref: '#/components/schemas/Egenaktivitet'
-        - $ref: '#/components/schemas/Jobbsoeking'
         - $ref: '#/components/schemas/Sokeavtale'
-        - $ref: '#/components/schemas/Ijobb'
         - $ref: '#/components/schemas/Behandling'
         - $ref: '#/components/schemas/Mote'
         - $ref: '#/components/schemas/Samtalereferat'
         - $ref: '#/components/schemas/StillingFraNav'
       discriminator:
-        propertyName: aktivitet_type
+        propertyName: aktivitet_type_navn
 
     Melding:
       type: object
