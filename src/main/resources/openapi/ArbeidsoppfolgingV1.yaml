@@ -24,9 +24,10 @@ components:
     Baseaktivitet:
       type: object
       required:
+        - aktivitet_type
         - aktivitet_type_navn
       discriminator:
-        propertyName: aktivitet_type_navn
+        propertyName: aktivitet_type
       properties:
         aktivitet_type:
           type: string
@@ -39,9 +40,10 @@ components:
             - mote
             - samtalereferat
             - stilling_fra_nav
+          example: stilling_fra_nav
         aktivitet_type_navn:
           type: string
-          example: Samtalereferat
+          example: Stilling fra NAV
         avtalt_med_nav:
           type: boolean
           description: Definer om den definerte aktiviteten er avtalt med NAV
