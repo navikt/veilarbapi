@@ -31,16 +31,6 @@ components:
       properties:
         aktivitet_type:
           type: string
-          enum:
-            - egenaktivitet
-            - jobbsoeking
-            - sokeavtale
-            - ijobb
-            - behandling
-            - mote
-            - samtalereferat
-            - stilling_fra_nav
-          example: stilling_fra_nav
         aktivitet_type_navn:
           type: string
           example: Stilling fra NAV
@@ -160,7 +150,7 @@ components:
               type: string
             soknadsstatus:
               type: string
-              example: Venter på å bli kontaktet av NAV eller arbeidsgiver
+              example: Skal på intervju
     Oppfolgingsperioder:
       type: object
       properties:

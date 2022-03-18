@@ -5,18 +5,17 @@ import no.nav.poao.veilarbapi.dialog.mapDialog
 import no.nav.veilarbapi.model.*
 
 typealias InternAktivitet = no.nav.veilarbaktivitet.model.Aktivitet
-typealias InternEgenaktivitet = no.nav.veilarbaktivitet.model.Egenaktivitet
-typealias InternJobbsoeking = no.nav.veilarbaktivitet.model.Jobbsoeking
 typealias InternSokeavtale = no.nav.veilarbaktivitet.model.Sokeavtale
-typealias InternIjobb = no.nav.veilarbaktivitet.model.Ijobb
 typealias InternBehandling = no.nav.veilarbaktivitet.model.Behandling
 typealias InternMote = no.nav.veilarbaktivitet.model.Mote
 typealias InternSamtalereferat = no.nav.veilarbaktivitet.model.Samtalereferat
 typealias InternStillingFraNav = no.nav.veilarbaktivitet.model.StillingFraNav
 
+private val FILTER_AKTIVITETSTYPER = listOf("egenaktivitet", "jobbsoeking", "ijobb")
 
 fun mapAktiviteter(aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog>? = null): List<Aktivitet>? {
-    return aktiviteter?.map { a ->
+    val filtrerteAktiviteter = aktiviteter?.filter { it.aktivitetType !in FILTER_AKTIVITETSTYPER }
+    return filtrerteAktiviteter?.map { a ->
         mapAktivitet(a, dialoger?.find { d -> d.aktivitetId == a.aktivitetId })
     }
 }
@@ -25,10 +24,7 @@ fun mapAktivitet(aktivitet: InternAktivitet, dialog: InternDialog? = null): Akti
     val mappedDialog = dialog?.let { mapDialog(it) }
 
     return when (aktivitet.aktivitetType) {
-        "egenaktivitet" -> mapTilEgenaktivitet(aktivitet as InternEgenaktivitet, mappedDialog)
-        "jobbsoeking" -> mapTilJobbsoeking(aktivitet as InternJobbsoeking, mappedDialog)
         "sokeavtale" -> mapTilSokeavtale(aktivitet as InternSokeavtale, mappedDialog)
-        "ijobb" -> mapTilIjobb(aktivitet as InternIjobb, mappedDialog)
         "behandling" -> mapTilBehandling(aktivitet as InternBehandling, mappedDialog)
         "mote" -> mapTilMote(aktivitet as InternMote, mappedDialog)
         "samtalereferat" -> mapTilSamtalereferat(aktivitet as InternSamtalereferat, mappedDialog)
@@ -51,36 +47,10 @@ private fun merge(gammelAktivitet: InternAktivitet, nyAktivitet: Baseaktivitet, 
     }
 }
 
-private fun mapTilEgenaktivitet(aktivitet: InternEgenaktivitet, dialog: Dialog?): Aktivitet {
-    val egenaktivitet = Egenaktivitet().apply {
-        aktivitetType = "Egenaktivitet"
-        hensikt = aktivitet.hensikt
-        oppfolging = aktivitet.oppfolging
-    }
-
-    merge(aktivitet, egenaktivitet, dialog)
-
-    return Aktivitet(egenaktivitet)
-}
-
-private fun mapTilJobbsoeking(aktivitet: InternJobbsoeking, dialog: Dialog?): Aktivitet {
-    val jobbsoeking = Jobbsoeking().apply {
-        aktivitetType = "Jobbsoeking"
-        arbeidsgiver = aktivitet.arbeidsgiver
-        stillingsTittel = aktivitet.stillingsTittel
-        arbeidssted = aktivitet.arbeidssted
-        stillingsoekEtikett = aktivitet.stillingsoekEtikett?.name?.let { Jobbsoeking.StillingsoekEtikettEnum.valueOf(it) }
-        kontaktPerson = aktivitet.kontaktPerson
-    }
-
-    merge(aktivitet, jobbsoeking, dialog)
-
-    return Aktivitet(jobbsoeking)
-}
-
 private fun mapTilSokeavtale(aktivitet: InternSokeavtale, dialog: Dialog?): Aktivitet {
     val sokeavtale = Sokeavtale().apply {
         aktivitetType = "Sokeavtale"
+        aktivitetTypeNavn = "Søkeavtale"
         antallStillingerIUken = aktivitet.antallStillingerIUken
         avtaleOppfolging = aktivitet.avtaleOppfolging
     }
@@ -90,22 +60,11 @@ private fun mapTilSokeavtale(aktivitet: InternSokeavtale, dialog: Dialog?): Akti
     return Aktivitet(sokeavtale)
 }
 
-private fun mapTilIjobb(aktivitet: InternIjobb, dialog: Dialog?): Aktivitet {
-    val ijobb = Ijobb().apply {
-        aktivitetType = "Ijobb"
-        jobbStatusType = aktivitet.jobbStatusType?.name?.let { Ijobb.JobbStatusTypeEnum.valueOf(it) }
-        ansettelsesforhold = aktivitet.ansettelsesforhold
-        arbeidstid = aktivitet.arbeidstid
-    }
-
-    merge(aktivitet, ijobb, dialog)
-
-    return Aktivitet(ijobb)
-}
 
 private fun mapTilBehandling(aktivitet: InternBehandling, dialog: Dialog?): Aktivitet {
     val behandling = Behandling().apply {
         aktivitetType = "Behandling"
+        aktivitetTypeNavn = "Medisinsk behandling"
         behandlingSted = aktivitet.behandlingSted
     }
 
@@ -115,11 +74,19 @@ private fun mapTilBehandling(aktivitet: InternBehandling, dialog: Dialog?): Akti
 }
 
 private fun mapTilMote(aktivitet: InternMote, dialog: Dialog?): Aktivitet {
+    val moteform = when (aktivitet.kanal) {
+        no.nav.veilarbaktivitet.model.Mote.KanalEnum.OPPMOTE -> "Oppmøte"
+        no.nav.veilarbaktivitet.model.Mote.KanalEnum.TELEFON -> "Telefonmøte"
+        no.nav.veilarbaktivitet.model.Mote.KanalEnum.INTERNETT -> "Videomøte"
+        else -> null
+    }
+
     val mote = Mote().apply {
         aktivitetType = "Mote"
+        aktivitetTypeNavn = "Møte med NAV"
         adresse = aktivitet.adresse
         forberedelser = aktivitet.forberedelser
-        kanal = aktivitet.kanal?.name?.let { Mote.KanalEnum.valueOf(it) }
+        kanal = moteform
         referat = aktivitet.referat
     }
 
@@ -129,9 +96,17 @@ private fun mapTilMote(aktivitet: InternMote, dialog: Dialog?): Aktivitet {
 }
 
 private fun mapTilSamtalereferat(aktivitet: InternSamtalereferat, dialog: Dialog?): Aktivitet {
+    val moteform = when (aktivitet.kanal) {
+        no.nav.veilarbaktivitet.model.Samtalereferat.KanalEnum.OPPMOTE -> "Oppmøte"
+        no.nav.veilarbaktivitet.model.Samtalereferat.KanalEnum.TELEFON -> "Telefonmøte"
+        no.nav.veilarbaktivitet.model.Samtalereferat.KanalEnum.INTERNETT -> "Videomøte"
+        else -> null
+    }
+
     val samtalereferat = Samtalereferat().apply {
         aktivitetType = "Samtalereferat"
-        kanal = aktivitet.kanal?.name?.let { Samtalereferat.KanalEnum.valueOf(it) }
+        aktivitetTypeNavn = "Samtalereferat"
+        kanal = moteform
         referat = aktivitet.referat
     }
 
@@ -141,6 +116,14 @@ private fun mapTilSamtalereferat(aktivitet: InternSamtalereferat, dialog: Dialog
 }
 
 private fun mapTilStillingFraNav(aktivitet: InternStillingFraNav, dialog: Dialog?): Aktivitet {
+    val sfnSoknadsstatus = when (aktivitet.soknadsstatus) {
+        no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.VENTER -> "Venter på å bli kontaktet av NAV eller arbeidsgiver"
+        no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.SKAL_PAA_INTERVJU -> "Skal på intervju"
+        no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.JOBBTILBUD -> "Fått jobbtilbud"
+        no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.AVSLAG -> "Fått avslag"
+        else -> null
+    }
+
     val stillingFraNavCvKanDelesData: StillingFraNavAllOfCvKanDelesData? = aktivitet.cvKanDelesData?.let {
         StillingFraNavAllOfCvKanDelesData().apply {
             kanDeles = it.kanDeles
@@ -153,6 +136,7 @@ private fun mapTilStillingFraNav(aktivitet: InternStillingFraNav, dialog: Dialog
 
     val stillingFraNav = StillingFraNav().apply {
         aktivitetType = "StillingFraNav"
+        aktivitetTypeNavn = "Stilling fra NAV"
         cvKanDelesData = stillingFraNavCvKanDelesData
         soknadsfrist = aktivitet.soknadsfrist
         svarfrist = aktivitet.svarfrist
@@ -160,7 +144,7 @@ private fun mapTilStillingFraNav(aktivitet: InternStillingFraNav, dialog: Dialog
         bestillingsId = aktivitet.bestillingsId
         stillingsId = aktivitet.stillingsId
         arbeidssted = aktivitet.arbeidssted
-        soknadsstatus = aktivitet.soknadsstatus?.name?.let { StillingFraNav.SoknadsstatusEnum.valueOf(it) }
+        soknadsstatus = sfnSoknadsstatus
     }
 
     merge(aktivitet, stillingFraNav, dialog)

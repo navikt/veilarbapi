@@ -44,8 +44,9 @@ class ArbeidsoppfolgingRoutesTest {
         )
 
         val internAktiviteter = listOf(
-            InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid1).aktivitetId("3").tittel("ikke kvp"),
-            InternAktivitetBuilder.nyAktivitet("ijobb", true).oppfolgingsperiodeId(uuid1).aktivitetId("6"),
+            InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid1),
+            InternAktivitetBuilder.nyAktivitet("behandling").oppfolgingsperiodeId(uuid1).aktivitetId("3").tittel("ikke kvp"),
+            InternAktivitetBuilder.nyAktivitet("sokeavtale", true).oppfolgingsperiodeId(uuid1).aktivitetId("6"),
             InternAktivitetBuilder.nyAktivitet("stilling_fra_nav").oppfolgingsperiodeId(uuid2).aktivitetId("9"),
         )
 
@@ -96,8 +97,8 @@ class ArbeidsoppfolgingRoutesTest {
 
                 assertThat(oppfolgingsperioder.oppfolgingsperioder).hasSize(2)
                 assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter).hasSize(1)
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].egenaktivitet.tittel).isEqualTo("ikke kvp")
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].egenaktivitet.dialog!!.meldinger!!).hasSize(1)
+                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.tittel).isEqualTo("ikke kvp")
+                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.dialog!!.meldinger!!).hasSize(1)
                 assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter).hasSize(1)
                 assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter!![0].stillingFraNav.dialog).isNull()
             }
