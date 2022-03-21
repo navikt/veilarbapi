@@ -1,5 +1,6 @@
 package no.nav.poao.veilarbapi.oppfolging
 
+import OppfolgingsperiodeDTO
 import no.nav.poao.veilarbapi.aktivitet.InternAktivitet
 import no.nav.poao.veilarbapi.aktivitet.mapAktiviteter
 import no.nav.poao.veilarbapi.dialog.InternDialog
