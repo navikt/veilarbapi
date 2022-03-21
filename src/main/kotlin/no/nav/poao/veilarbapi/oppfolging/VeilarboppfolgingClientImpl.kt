@@ -1,7 +1,6 @@
 package no.nav.poao.veilarbapi.oppfolging
 
 
-import com.github.michaelbull.result.get
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -13,12 +12,12 @@ import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
-import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
 import no.nav.veilarbaktivitet.JSON
 
 class VeilarboppfolgingClientImpl(
     val veilarboppfolgingConfig: Configuration.VeilarboppfolgingConfig,
-    val azureAdClient: AzureAdClient?,
+    private val veilarboppfolgingTokenProvider: suspend (String?) -> String?,
+    private val proxyTokenProvider: suspend (String?) -> String?,
     val client: HttpClient = baseClient()
 ) : VeilarboppfolgingClient {
 
@@ -27,25 +26,10 @@ class VeilarboppfolgingClientImpl(
     private val veilarboppfolgingUrl = veilarboppfolgingConfig.url
 
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
-        val veilarboppfolgingOnBehalfOfAccessToken = accessToken?.let {
-            azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(veilaroppfolgingAuthenticationScope),
-                accessToken = it
-            )
-        }
-        val poaoGcpProxyServiceUserAccessToken = accessToken?.let {
-            azureAdClient?.getAccessTokenForResource(
-                scopes = listOf(poaoProxyAuthenticationScope)
-            )
-        }
-
         val response =
             client.get<HttpResponse>("$veilarboppfolgingUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
-                header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
-                header(
-                    "Downstream-Authorization",
-                    "Bearer ${veilarboppfolgingOnBehalfOfAccessToken?.get()?.accessToken}"
-                )
+                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
+                header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
         if (response.status == HttpStatusCode.OK) {
             val perioder = JSON.deserialize<Array<OppfolgingsperiodeDTO>>(
@@ -60,25 +44,10 @@ class VeilarboppfolgingClientImpl(
     }
 
     override suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String?): Result<UnderOppfolgingDTO> {
-        val veilarboppfolgingOnBehalfOfAccessToken = accessToken?.let {
-            azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(veilaroppfolgingAuthenticationScope),
-                accessToken = it
-            )
-        }
-        val poaoGcpProxyServiceUserAccessToken = accessToken?.let {
-            azureAdClient?.getAccessTokenForResource(
-                scopes = listOf(poaoProxyAuthenticationScope)
-            )
-        }
-
         val response =
             client.get<HttpResponse>("$veilarboppfolgingUrl/api/v2/oppfolging?aktorId=${aktorId.get()}") {
-                header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
-                header(
-                    "Downstream-Authorization",
-                    "Bearer ${veilarboppfolgingOnBehalfOfAccessToken?.get()?.accessToken}"
-                )
+                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
+                header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
@@ -94,25 +63,10 @@ class VeilarboppfolgingClientImpl(
     }
 
     override suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO> {
-        val veilarboppfolgingOnBehalfOfAccessToken = accessToken?.let {
-            azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(veilaroppfolgingAuthenticationScope),
-                accessToken = it
-            )
-        }
-        val poaoGcpProxyServiceUserAccessToken = accessToken?.let {
-            azureAdClient?.getAccessTokenForResource(
-                scopes = listOf(poaoProxyAuthenticationScope)
-            )
-        }
-
         val response =
             client.get<HttpResponse>("$veilarboppfolgingUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
-                header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
-                header(
-                    "Downstream-Authorization",
-                    "Bearer ${veilarboppfolgingOnBehalfOfAccessToken?.get()?.accessToken}"
-                )
+                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
+                header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
@@ -136,8 +90,7 @@ class VeilarboppfolgingClientImpl(
     }
 
     companion object {
-        val poaoProxyAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.poao-gcp-proxy/.default" }
-        val veilaroppfolgingAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarboppfolging/.default" }
+        val veilarboppfolgingAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarboppfolging/.default" }
     }
 
 }

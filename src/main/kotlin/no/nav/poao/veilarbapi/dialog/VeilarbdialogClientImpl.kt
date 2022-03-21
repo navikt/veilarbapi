@@ -1,7 +1,6 @@
 package no.nav.poao.veilarbapi.dialog
 
 
-import com.github.michaelbull.result.get
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -13,13 +12,13 @@ import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
-import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
 import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbdialog.model.Dialog
 
 class VeilarbdialogClientImpl(
     val veilarbdialogConfig: Configuration.VeilarbdialogConfig,
-    val azureAdClient: AzureAdClient?,
+    private val veilarbdialogTokenProvider: suspend (String?) -> String?,
+    private val proxyTokenProvider: suspend (String?) -> String?,
     val client: HttpClient = baseClient()
 ) : VeilarbdialogClient {
 
@@ -28,30 +27,17 @@ class VeilarbdialogClientImpl(
     private val veilarbdialogUrl = veilarbdialogConfig.url
 
     override suspend fun hentDialoger(aktorId: AktorId, accessToken: String?): Result<List<Dialog>> {
-
-            val veilarbaktivitetOnBehalfOfAccessToken = accessToken?.let {
-                azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                    scopes = listOf(veilarbdialogAuthenticationScope),
-                    accessToken = it
-                )
+        val response =
+            client.get<HttpResponse>("$veilarbdialogUrl/internal/api/v1/dialog?aktorId=${aktorId.get()}") {
+                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
+                header("Downstream-Authorization", "Bearer ${veilarbdialogTokenProvider(accessToken)}")
             }
-            val poaoGcpProxyServiceUserAccessToken = accessToken?.let {
-                azureAdClient?.getAccessTokenForResource(
-                    scopes = listOf(poaoProxyAuthenticationScope)
-                )
-            }
-            val response =
-                client.get<HttpResponse>("$veilarbdialogUrl/internal/api/v1/dialog?aktorId=${aktorId.get()}") {
-                    header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
-                    header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()?.accessToken}")
-                }
-            if (response.status == HttpStatusCode.OK) {
-                val dialoger = JSON.deserialize<Array<Dialog>>(response.readText(), Dialog::class.java.arrayType())
-                return Result.success(dialoger.toList())
-            } else {
-                return Result.failure(callFailure(response))
-            }
-
+        if (response.status == HttpStatusCode.OK) {
+            val dialoger = JSON.deserialize<Array<Dialog>>(response.readText(), Dialog::class.java.arrayType())
+            return Result.success(dialoger.toList())
+        } else {
+            return Result.failure(callFailure(response))
+        }
     }
 
     private suspend fun callFailure(response: HttpResponse): Exception {
@@ -64,7 +50,6 @@ class VeilarbdialogClientImpl(
     }
 
     companion object {
-        val poaoProxyAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.poao-gcp-proxy/.default" }
         val veilarbdialogAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarbdialog/.default" }
     }
 }

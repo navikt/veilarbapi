@@ -21,9 +21,9 @@ fun mainTest(): ApplicationEngine {
 
     val applicationState = ApplicationState()
 
-    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig, azureAdClient = null)
-    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig, azureAdClient = null)
-    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig, azureAdClient = null)
+    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig, { "VEILARBAKTIVITET_TOKEN" }, { "PROXY_TOKEN" })
+    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig, { "VEILARBDIALOG_TOKEN" }, { "PROXY_TOKEN" })
+    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig, { "VEILARBOPPFOLGING_TOKEN" }, { "PROXY_TOKEN" })
 
     val oppfolgingService = OppfolgingService(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
     val applicationServer = createHttpServer(

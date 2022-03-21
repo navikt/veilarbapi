@@ -27,7 +27,8 @@ class VeilarbaktivitetClientKtTest {
         }
         val client = VeilarbaktivitetClientImpl(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
-            azureAdClient = null,
+            veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
             client = baseClient(mockEngine)
         )
         runBlocking {
@@ -47,7 +48,8 @@ class VeilarbaktivitetClientKtTest {
         }
         val client = VeilarbaktivitetClientImpl(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
-            azureAdClient = null,
+            veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
             client = baseClient(mockEngine)
         )
         runBlocking {

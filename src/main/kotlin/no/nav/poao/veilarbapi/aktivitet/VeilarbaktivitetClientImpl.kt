@@ -1,7 +1,6 @@
 package no.nav.poao.veilarbapi.aktivitet
 
 
-import com.github.michaelbull.result.get
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -13,13 +12,13 @@ import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
-import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
 import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbaktivitet.model.Aktivitet
 
 class VeilarbaktivitetClientImpl (
     val veilarbaktivitetConfig: Configuration.VeilarbaktivitetConfig,
-    val azureAdClient: AzureAdClient?,
+    private val veilarbaktivitetTokenProvider: suspend (String?) -> String?,
+    private val proxyTokenProvider: suspend (String?) -> String?,
     val client: HttpClient = baseClient()
 ) : VeilarbaktivitetClient {
 
@@ -28,23 +27,12 @@ class VeilarbaktivitetClientImpl (
     private val veilarbaktivitetUrl = veilarbaktivitetConfig.url
 
     override suspend fun hentAktiviteter(aktorId: AktorId, accessToken: String?): Result<List<Aktivitet>> {
-        val veilarbaktivitetOnBehalfOfAccessToken = accessToken?.let {
-            azureAdClient?.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(veilarbaktivitetAuthenticationScope),
-                accessToken = it
-            )
-        }
-        val poaoGcpProxyServiceUserAccessToken = accessToken?.let {
-            azureAdClient?.getAccessTokenForResource(
-                scopes = listOf(poaoProxyAuthenticationScope)
-            )
-        }
-
         val response =
             client.get<HttpResponse>("$veilarbaktivitetUrl/internal/api/v1/aktivitet?aktorId=${aktorId.get()}") {
-                header(HttpHeaders.Authorization, "Bearer ${poaoGcpProxyServiceUserAccessToken?.get()?.accessToken}")
-                header("Downstream-Authorization", "Bearer ${veilarbaktivitetOnBehalfOfAccessToken?.get()?.accessToken}")
+                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
+                header("Downstream-Authorization", "Bearer ${veilarbaktivitetTokenProvider(accessToken)}")
             }
+
         if (response.status == HttpStatusCode.OK) {
             val aktiviteter = JSON.deserialize<Array<Aktivitet>?>(response.readText(), Aktivitet::class.java.arrayType())
             return Result.success(aktiviteter.toList())
@@ -63,7 +51,6 @@ class VeilarbaktivitetClientImpl (
     }
 
     companion object {
-        val poaoProxyAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.poao-gcp-proxy/.default" }
         val veilarbaktivitetAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarbaktivitet/.default" }
     }
 }

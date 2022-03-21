@@ -65,19 +65,22 @@ class ArbeidsoppfolgingRoutesTest {
 
         val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
-            azureAdClient = null,
+            veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
             client = baseClient(createMockEngine(mockAktiviteter))
         )
 
         val veilarbdialogClient = VeilarbdialogClientImpl(
             veilarbdialogConfig = veilarbdialogConfig,
-            azureAdClient = null,
+            veilarbdialogTokenProvider = { "VEILARBDIALOG_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
             client = baseClient(createMockEngine(mockDialoger))
         )
 
         val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
             veilarboppfolgingConfig = veilarboppfolgingConfig,
-            azureAdClient = null,
+            veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
             client = baseClient(createMockEngine(mockOppfolgingsperioder))
         )
 
