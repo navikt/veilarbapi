@@ -1,5 +1,7 @@
 package no.nav.poao.veilarbapi.oppfolging
 
+import UnderOppfolgingDTO
+import VeilederDTO
 import no.nav.veilarbapi.model.Oppfolgingsinfo
 
 internal fun mapOppfolgingsInfo(underOppfolgingDTO: UnderOppfolgingDTO?, veilederDTO: VeilederDTO? = null): Oppfolgingsinfo {

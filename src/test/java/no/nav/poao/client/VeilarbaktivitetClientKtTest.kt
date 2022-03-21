@@ -5,7 +5,7 @@ import io.ktor.http.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
 import no.nav.common.types.identer.AktorId
-import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
+import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
 import no.nav.poao.veilarbapi.setup.config.Configuration
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
@@ -24,7 +24,7 @@ class VeilarbaktivitetClientKtTest {
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )
         }
-        val client = VeilarbaktivitetClient(
+        val client = VeilarbaktivitetClientImpl(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
             engine = mockEngine,
             azureAdClient = null
@@ -44,7 +44,7 @@ class VeilarbaktivitetClientKtTest {
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )
         }
-        val client = VeilarbaktivitetClient(
+        val client = VeilarbaktivitetClientImpl(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
             engine = mockEngine,
             azureAdClient = null

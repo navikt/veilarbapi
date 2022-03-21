@@ -8,10 +8,10 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.getAccessToken
-import no.nav.poao.veilarbapi.oppfolging.Service
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
 import no.nav.poao.veilarbapi.setup.oauth.MockPayload
 
-fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, service: Service) {
+fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, oppfolgingService: OppfolgingService) {
     routing() {
         conditionalAuthenticate(useAuthentication) {
             route("/v1/oppfolging/") {
@@ -22,7 +22,7 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, service: Ser
                     } else {
                         log.info("Hent oppfølgingsperioder for aktorId: {}", aktorId)
                         val token = call.getAccessToken()
-                        call.respond(service.fetchOppfolgingsPerioder(AktorId.of(aktorId), token))
+                        call.respond(oppfolgingService.fetchOppfolgingsPerioder(AktorId.of(aktorId), token))
                     }
                 }
                 get("info") {
@@ -33,7 +33,7 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, service: Ser
                         log.info("Hent oppfølgingsInfo for aktorId: {}", aktorId)
                         val token = call.getAccessToken()
 
-                        val result = service.fetchOppfolgingsInfo(AktorId.of(aktorId), token)
+                        val result = oppfolgingService.fetchOppfolgingsInfo(AktorId.of(aktorId), token)
                         call.respond(result.getOrThrow())
                     }
                 }

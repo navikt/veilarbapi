@@ -1,16 +1,16 @@
 package no.nav.poao.rest
 
+import OppfolgingsperiodeDTO
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.utils.io.*
 import no.nav.poao.util.InternAktivitetBuilder
 import no.nav.poao.util.InternDialogBuilder
-import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
-import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
-import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
-import no.nav.poao.veilarbapi.oppfolging.Service
-import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClient
+import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
+import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
+import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClientImpl
 import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
 import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
@@ -62,28 +62,28 @@ class ArbeidsoppfolgingRoutesTest {
         val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
         val mockOppfolgingsperioder = no.nav.veilarbapi.JSON.getGson().toJson(oppfolgingsperiodeDTOer)
 
-        val veilarbaktivitetClient = VeilarbaktivitetClient(
+        val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
             azureAdClient = null,
             engine = createMockEngine(mockAktiviteter)
         )
 
-        val veilarbdialogClient = VeilarbdialogClient(
+        val veilarbdialogClient = VeilarbdialogClientImpl(
             veilarbdialogConfig = veilarbdialogConfig,
             azureAdClient = null,
             engine = createMockEngine(mockDialoger)
         )
 
-        val veilarboppfolgingClient = VeilarboppfolgingClient(
+        val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
             veilarboppfolgingConfig = veilarboppfolgingConfig,
             azureAdClient = null,
             engine = createMockEngine(mockOppfolgingsperioder)
         )
 
-        val mockService = Service(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
+        val mockOppfolgingService = OppfolgingService(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
 
         withTestApplication({
-            arbeidsoppfolgingRoutes(false, mockService)
+            arbeidsoppfolgingRoutes(false, mockOppfolgingService)
             configureSerialization()
         }) {
             handleRequest(HttpMethod.Get, "/v1/oppfolging/periode?aktorId=123").apply {

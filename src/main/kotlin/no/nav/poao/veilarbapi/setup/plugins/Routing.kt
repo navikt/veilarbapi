@@ -1,11 +1,11 @@
 package no.nav.poao.veilarbapi.setup.plugins
 
 import io.ktor.application.*
-import no.nav.poao.veilarbapi.oppfolging.Service
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
 import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
 import no.nav.poao.veilarbapi.setup.rest.internalRoutes
 
-fun Application.configureRouting(useAuthentication: Boolean, service: Service) {
+fun Application.configureRouting(useAuthentication: Boolean, oppfolgingService: OppfolgingService) {
     internalRoutes()
-    arbeidsoppfolgingRoutes(useAuthentication, service = service)
+    arbeidsoppfolgingRoutes(useAuthentication, oppfolgingService = oppfolgingService)
 }
