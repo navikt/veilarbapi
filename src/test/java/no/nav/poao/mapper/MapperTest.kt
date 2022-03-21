@@ -2,14 +2,12 @@ package no.nav.poao.mapper
 
 import no.nav.poao.util.InternAktivitetBuilder
 import no.nav.poao.util.InternDialogBuilder
-import no.nav.poao.veilarbapi.aktivitet.mapAktivitet
 import no.nav.poao.veilarbapi.aktivitet.mapAktiviteter
 import no.nav.poao.veilarbapi.dialog.mapDialog
 import no.nav.poao.veilarbapi.dialog.mapDialoger
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import no.nav.poao.veilarbapi.oppfolging.mapOppfolgingsperioder
-import no.nav.veilarbapi.model.Egenaktivitet
-import no.nav.veilarbapi.model.Jobbsoeking
+import no.nav.veilarbapi.model.Behandling
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
@@ -38,36 +36,33 @@ class MapperTest {
 
     @Test
     fun testAktivitetMapper() {
-        val internAktivitet = InternAktivitetBuilder.nyAktivitet("egenaktivitet")
-        val aktivitet = mapAktivitet(internAktivitet)
-
-        assertThat(aktivitet.actualInstance).isInstanceOf(Egenaktivitet::class.java)
-
         val internAktiviteter = listOf(
-            internAktivitet,
+            InternAktivitetBuilder.nyAktivitet("egenaktivitet"),
             InternAktivitetBuilder.nyAktivitet("jobbsoeking").aktivitetId("2"),
             InternAktivitetBuilder.nyAktivitet("sokeavtale").aktivitetId("6"),
             InternAktivitetBuilder.nyAktivitet("ijobb"),
-            InternAktivitetBuilder.nyAktivitet("behandling"),
+            InternAktivitetBuilder.nyAktivitet("behandling").aktivitetId("8"),
             InternAktivitetBuilder.nyAktivitet("mote"),
             InternAktivitetBuilder.nyAktivitet("samtalereferat"),
             InternAktivitetBuilder.nyAktivitet("stilling_fra_nav")
         )
+
         val internDialoger = listOf(
-            InternDialogBuilder.nyDialog().aktivitetId("2").overskrift("test"),
-            InternDialogBuilder.nyDialog().aktivitetId("6")
+            InternDialogBuilder.nyDialog().aktivitetId("2"),
+            InternDialogBuilder.nyDialog().aktivitetId("6"),
+            InternDialogBuilder.nyDialog().aktivitetId("8").overskrift("overskrift"),
         )
 
         val aktiviteter = mapAktiviteter(internAktiviteter)
 
-        assertThat(aktiviteter!!).hasSize(internAktiviteter.size)
-        assertThat(aktiviteter[1].actualInstance).isInstanceOf(Jobbsoeking::class.java)
-        assertThat(aktiviteter[1].jobbsoeking.dialog).isNull()
+        assertThat(aktiviteter!!).hasSize(5) // mapperen filtrerer vekk noen typer
+        assertThat(aktiviteter[1].actualInstance).isInstanceOf(Behandling::class.java)
+        assertThat(aktiviteter[1].behandling.dialog).isNull()
 
         val aktiviteter2 = mapAktiviteter(internAktiviteter, internDialoger)
 
-        assertThat(aktiviteter2!![1].jobbsoeking.dialog).isNotNull
-        assertThat(aktiviteter2[1].jobbsoeking.dialog?.tittel).isEqualTo("test")
+        assertThat(aktiviteter2!![1].behandling.dialog).isNotNull
+        assertThat(aktiviteter2[1].behandling.dialog?.tittel).isEqualTo("overskrift")
     }
 
     @Test
@@ -93,9 +88,10 @@ class MapperTest {
             assertThat(oppfolgingsperioder1.feil).isNull()
         }.assertAll()
 
-        val internAktivitet = InternAktivitetBuilder.nyAktivitet("ijobb").oppfolgingsperiodeId(uuid2)
+        val internAktivitet = InternAktivitetBuilder.nyAktivitet("sokeavtale").oppfolgingsperiodeId(uuid2)
         val interneAktiviteter = listOf(
             InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid1),
+            InternAktivitetBuilder.nyAktivitet("behandling").oppfolgingsperiodeId(uuid1),
             InternAktivitetBuilder.nyAktivitet("mote").oppfolgingsperiodeId(uuid1),
             internAktivitet
         )
@@ -110,7 +106,7 @@ class MapperTest {
 
         assertThat(oppfolgingsperioder2.oppfolgingsperioder!![0].aktiviteter).hasSize(2)
         assertThat(oppfolgingsperioder2.oppfolgingsperioder!![1].aktiviteter).hasSize(1)
-        assertThat(oppfolgingsperioder2.oppfolgingsperioder!![1].aktiviteter!![0].ijobb.dialog).isNotNull
+        assertThat(oppfolgingsperioder2.oppfolgingsperioder!![1].aktiviteter!![0].sokeavtale.dialog).isNotNull
 
         val oppfolgingsperioder3: Oppfolgingsperioder =
             mapOppfolgingsperioder(null, interneAktiviteter, interneDialoger)
