@@ -1,3 +1,5 @@
+package no.nav.poao.veilarbapi.oppfolging
+
 import no.nav.common.types.identer.AktorId
 import no.nav.common.types.identer.NavIdent
 import org.threeten.bp.OffsetDateTime
@@ -18,5 +20,7 @@ data class OppfolgingsperiodeDTO(
     var startDato: OffsetDateTime? = null,
     var sluttDato: OffsetDateTime? = null
 )
+
 data class UnderOppfolgingDTO(var erUnderOppfolging: Boolean? = null)
+
 data class VeilederDTO(var veilederIdent: NavIdent? = null)

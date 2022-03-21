@@ -1,3 +1,5 @@
+package no.nav.poao.veilarbapi.aktivitet
+
 import no.nav.common.types.identer.AktorId
 import no.nav.veilarbaktivitet.model.Aktivitet
 

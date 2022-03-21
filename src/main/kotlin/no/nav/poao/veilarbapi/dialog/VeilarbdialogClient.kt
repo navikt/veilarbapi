@@ -1,3 +1,5 @@
+package no.nav.poao.veilarbapi.dialog
+
 import no.nav.common.types.identer.AktorId
 import no.nav.veilarbdialog.model.Dialog
 

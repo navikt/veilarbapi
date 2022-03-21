@@ -1,6 +1,6 @@
 package no.nav.poao.rest
 
-import OppfolgingsperiodeDTO
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
@@ -12,6 +12,7 @@ import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
 import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClientImpl
 import no.nav.poao.veilarbapi.setup.config.Configuration
+import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
 import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
 import no.nav.veilarbapi.model.Oppfolgingsperioder
@@ -65,19 +66,19 @@ class ArbeidsoppfolgingRoutesTest {
         val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
             azureAdClient = null,
-            engine = createMockEngine(mockAktiviteter)
+            client = baseClient(createMockEngine(mockAktiviteter))
         )
 
         val veilarbdialogClient = VeilarbdialogClientImpl(
             veilarbdialogConfig = veilarbdialogConfig,
             azureAdClient = null,
-            engine = createMockEngine(mockDialoger)
+            client = baseClient(createMockEngine(mockDialoger))
         )
 
         val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
             veilarboppfolgingConfig = veilarboppfolgingConfig,
             azureAdClient = null,
-            engine = createMockEngine(mockOppfolgingsperioder)
+            client = baseClient(createMockEngine(mockOppfolgingsperioder))
         )
 
         val mockOppfolgingService = OppfolgingService(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)

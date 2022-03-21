@@ -1,10 +1,8 @@
 package no.nav.poao.veilarbapi.dialog
 
 
-import VeilarbdialogClient
 import com.github.michaelbull.result.get
 import io.ktor.client.*
-import io.ktor.client.engine.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
@@ -15,7 +13,6 @@ import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
-import no.nav.poao.veilarbapi.setup.http.baseEngine
 import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
 import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbdialog.model.Dialog
@@ -23,11 +20,11 @@ import no.nav.veilarbdialog.model.Dialog
 class VeilarbdialogClientImpl(
     val veilarbdialogConfig: Configuration.VeilarbdialogConfig,
     val azureAdClient: AzureAdClient?,
-    val engine: HttpClientEngine = baseEngine()
+    val client: HttpClient = baseClient()
 ) : VeilarbdialogClient {
 
     init { JSON() }
-    val client: HttpClient = baseClient(engine)
+
     private val veilarbdialogUrl = veilarbdialogConfig.url
 
     override suspend fun hentDialoger(aktorId: AktorId, accessToken: String?): Result<List<Dialog>> {
@@ -66,10 +63,8 @@ class VeilarbdialogClientImpl(
         }
     }
 
-
     companion object {
         val poaoProxyAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.poao-gcp-proxy/.default" }
         val veilarbdialogAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarbdialog/.default" }
     }
-
 }

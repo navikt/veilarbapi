@@ -1,8 +1,7 @@
 package no.nav.poao.veilarbapi.oppfolging
 
-import VeilarbaktivitetClient
-import VeilarbdialogClient
-import VeilarboppfolgingClient
+import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
+import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
 import no.nav.common.types.identer.AktorId
 import no.nav.veilarbaktivitet.model.Aktivitet
 import no.nav.veilarbapi.model.Oppfolgingsinfo

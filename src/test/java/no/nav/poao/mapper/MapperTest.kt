@@ -1,6 +1,6 @@
 package no.nav.poao.mapper
 
-import OppfolgingsperiodeDTO
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import no.nav.poao.util.InternAktivitetBuilder
 import no.nav.poao.util.InternDialogBuilder
 import no.nav.poao.veilarbapi.aktivitet.mapAktivitet

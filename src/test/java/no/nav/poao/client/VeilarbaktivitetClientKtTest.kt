@@ -7,6 +7,7 @@ import kotlinx.coroutines.runBlocking
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
 import no.nav.poao.veilarbapi.setup.config.Configuration
+import no.nav.poao.veilarbapi.setup.http.baseClient
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -26,8 +27,8 @@ class VeilarbaktivitetClientKtTest {
         }
         val client = VeilarbaktivitetClientImpl(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
-            engine = mockEngine,
-            azureAdClient = null
+            azureAdClient = null,
+            client = baseClient(mockEngine)
         )
         runBlocking {
             val aktiviteter = client.hentAktiviteter(AktorId.of("123456789101"), null)
@@ -46,8 +47,8 @@ class VeilarbaktivitetClientKtTest {
         }
         val client = VeilarbaktivitetClientImpl(
             veilarbaktivitetConfig = veilarbaktivitetConfig,
-            engine = mockEngine,
-            azureAdClient = null
+            azureAdClient = null,
+            client = baseClient(mockEngine)
         )
         runBlocking {
             val hentAktiviteter = client.hentAktiviteter(AktorId.of("123456789101"), null)
