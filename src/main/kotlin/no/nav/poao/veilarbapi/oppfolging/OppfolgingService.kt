@@ -69,7 +69,7 @@ class OppfolgingService(
         }
 
         if (veileder.isFailure) {
-            val oppfolgingsinfo = mapOppfolgingsInfo(erUnderOppfolging.getOrNull())
+            val oppfolgingsinfo = mapOppfolgingsinfo(erUnderOppfolging.getOrNull())
             val feil = OppfolgingsinfoFeil().apply {
                 feilkilder = "veilederinfo"
                 feilmelding = veileder.exceptionOrNull()?.message
@@ -78,6 +78,6 @@ class OppfolgingService(
             return Result.success(oppfolgingsinfo)
         }
 
-        return Result.success(mapOppfolgingsInfo(erUnderOppfolging.getOrNull(), veileder.getOrNull()))
+        return Result.success(mapOppfolgingsinfo(erUnderOppfolging.getOrNull(), veileder.getOrNull()))
     }
 }

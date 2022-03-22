@@ -18,7 +18,7 @@ class VeilarbaktivitetClientKtTest {
 
     @Test
     fun testHentAktiviteterWithMockEngine() {
-        val mockEngine = MockEngine { request ->
+        val mockEngine = MockEngine {
             respond(
                 content = ByteReadChannel(mockAktiviteterJson),
                 status = HttpStatusCode.OK,
@@ -39,7 +39,7 @@ class VeilarbaktivitetClientKtTest {
 
     @Test
     fun testServerErrorWithMockEngine() {
-        val mockEngine = MockEngine { request ->
+        val mockEngine = MockEngine {
             respond(
                 content = ByteReadChannel(mockServerError),
                 status = HttpStatusCode.InternalServerError,
