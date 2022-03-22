@@ -64,21 +64,21 @@ class ArbeidsoppfolgingRoutesTest {
         val mockOppfolgingsperioder = no.nav.veilarbapi.JSON.getGson().toJson(oppfolgingsperiodeDTOer)
 
         val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
-            veilarbaktivitetConfig = veilarbaktivitetConfig,
+            baseUrl = veilarbaktivitetConfig.url,
             veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
             proxyTokenProvider = { "PROXY_TOKEN" },
             client = baseClient(createMockEngine(mockAktiviteter))
         )
 
         val veilarbdialogClient = VeilarbdialogClientImpl(
-            veilarbdialogConfig = veilarbdialogConfig,
+            baseUrl = veilarbdialogConfig.url,
             veilarbdialogTokenProvider = { "VEILARBDIALOG_TOKEN" },
             proxyTokenProvider = { "PROXY_TOKEN" },
             client = baseClient(createMockEngine(mockDialoger))
         )
 
         val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
-            veilarboppfolgingConfig = veilarboppfolgingConfig,
+            baseUrl = veilarboppfolgingConfig.url,
             veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
             proxyTokenProvider = { "PROXY_TOKEN" },
             client = baseClient(createMockEngine(mockOppfolgingsperioder))

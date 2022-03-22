@@ -7,9 +7,9 @@ import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.common.types.identer.AktorId
-import no.nav.poao.veilarbapi.getAccessToken
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
 import no.nav.poao.veilarbapi.setup.oauth.MockPayload
+import no.nav.poao.veilarbapi.setup.util.getAccessToken
 
 fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, oppfolgingService: OppfolgingService) {
     routing() {

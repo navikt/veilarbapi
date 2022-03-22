@@ -3,7 +3,7 @@ package no.nav.poao
 import io.ktor.server.engine.*
 import no.nav.poao.veilarbapi.ApplicationState
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
-import no.nav.poao.veilarbapi.createHttpServer
+import no.nav.poao.veilarbapi.setup.http.createHttpServer
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
 import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClientImpl
@@ -21,9 +21,9 @@ fun mainTest(): ApplicationEngine {
 
     val applicationState = ApplicationState()
 
-    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig, { "VEILARBAKTIVITET_TOKEN" }, { "PROXY_TOKEN" })
-    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig, { "VEILARBDIALOG_TOKEN" }, { "PROXY_TOKEN" })
-    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig, { "VEILARBOPPFOLGING_TOKEN" }, { "PROXY_TOKEN" })
+    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig.url, { "VEILARBAKTIVITET_TOKEN" }, { "PROXY_TOKEN" })
+    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig.url, { "VEILARBDIALOG_TOKEN" }, { "PROXY_TOKEN" })
+    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig.url, { "VEILARBOPPFOLGING_TOKEN" }, { "PROXY_TOKEN" })
 
     val oppfolgingService = OppfolgingService(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
     val applicationServer = createHttpServer(

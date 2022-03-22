@@ -6,8 +6,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import no.nav.common.types.identer.AktorId
-import no.nav.poao.veilarbapi.setup.config.Cluster
-import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
@@ -15,19 +13,17 @@ import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.veilarbaktivitet.JSON
 
 class VeilarboppfolgingClientImpl(
-    val veilarboppfolgingConfig: Configuration.VeilarboppfolgingConfig,
+    private val baseUrl: String,
     private val veilarboppfolgingTokenProvider: suspend (String?) -> String?,
     private val proxyTokenProvider: suspend (String?) -> String?,
-    val client: HttpClient = baseClient()
+    private val client: HttpClient = baseClient()
 ) : VeilarboppfolgingClient {
 
     init { JSON() }
 
-    private val veilarboppfolgingUrl = veilarboppfolgingConfig.url
-
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
         val response =
-            client.get<HttpResponse>("$veilarboppfolgingUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
+            client.get<HttpResponse>("$baseUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
@@ -45,7 +41,7 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String?): Result<UnderOppfolgingDTO> {
         val response =
-            client.get<HttpResponse>("$veilarboppfolgingUrl/api/v2/oppfolging?aktorId=${aktorId.get()}") {
+            client.get<HttpResponse>("$baseUrl/api/v2/oppfolging?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
@@ -64,7 +60,7 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO> {
         val response =
-            client.get<HttpResponse>("$veilarboppfolgingUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
+            client.get<HttpResponse>("$baseUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
@@ -88,9 +84,4 @@ class VeilarboppfolgingClientImpl(
             else -> Exception("Ukjent statuskode ${response.status}")
         }
     }
-
-    companion object {
-        val veilarboppfolgingAuthenticationScope by lazy { "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarboppfolging/.default" }
-    }
-
 }

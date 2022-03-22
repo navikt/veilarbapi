@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.natpryce.konfig.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
-import no.nav.poao.veilarbapi.defaultHttpClient
+import no.nav.poao.veilarbapi.setup.http.defaultHttpClient
 
 private const val notUsedLocally = ""
 private val defaultProperties by lazy {
@@ -14,8 +14,6 @@ private val defaultProperties by lazy {
             "VEILARBAKTIVITETAPI_URL" to notUsedLocally,
             "VEILARBDIALOGAPI_URL" to notUsedLocally,
             "VEILARBOPPFOLGINGAPI_URL" to notUsedLocally,
-            "POAOGCPPROXY_URL" to notUsedLocally,
-            "POAOGCPPROXY_CLIENT_ID" to notUsedLocally,
             "AZURE_APP_CLIENT_SECRET" to notUsedLocally,
             "AZURE_APP_CLIENT_ID" to notUsedLocally,
             "AZURE_APP_WELL_KNOWN_URL" to "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration"
@@ -42,17 +40,20 @@ data class Configuration(
         }
     )
 
+    data class PoaoGcpProxyConfig(
+        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.poao-gcp-proxy/.default"
+    )
     data class VeilarbaktivitetConfig(
         val url: String = config()[Key("VEILARBAKTIVITETAPI_URL", stringType)],
-    )
-    data class PoaoGcpProxyConfig(
-        val url: String = config()[Key("POAOGCPPROXY_URL", stringType)],
+        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarbaktivitet/.default"
     )
     data class VeilarbdialogConfig(
         val url: String = config()[Key("VEILARBDIALOGAPI_URL", stringType)],
+        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarbdialog/.default"
     )
     data class VeilarboppfolgingConfig(
         val url: String = config()[Key("VEILARBOPPFOLGINGAPI_URL", stringType)],
+        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarboppfolging/.default"
     )
 }
 

@@ -17,7 +17,7 @@ import io.ktor.http.Parameters
 import io.ktor.util.*
 import no.nav.poao.veilarbapi.setup.config.Configuration
 
-import no.nav.poao.veilarbapi.defaultHttpClient
+import no.nav.poao.veilarbapi.setup.http.defaultHttpClient
 import org.slf4j.LoggerFactory
 
 private val logger = LoggerFactory.getLogger(AzureAdClient::class.java)

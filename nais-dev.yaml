@@ -62,7 +62,5 @@ spec:
       value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy/veilarbdialog
     - name : VEILARBOPPFOLGINGAPI_URL
       value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy/veilarboppfolging
-    - name: POAOGCPPROXY_URL
-      value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy
     - name: POAOGCPPROXY_CLIENT_ID
       value: 1fbc8405-3eae-4f2f-9af8-7c7ba303cd52
