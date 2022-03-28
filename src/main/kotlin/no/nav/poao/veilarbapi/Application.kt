@@ -1,39 +1,16 @@
 package no.nav.poao.veilarbapi
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
-import io.ktor.application.*
-import io.ktor.auth.*
-import io.ktor.client.*
-import io.ktor.client.engine.apache.*
-import io.ktor.client.features.json.*
-import io.ktor.http.auth.*
+import com.github.michaelbull.result.get
 import no.nav.common.utils.SslUtils
-import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
-import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
-import no.nav.poao.veilarbapi.oppfolging.Service
-import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClient
-import no.nav.poao.veilarbapi.settup.config.Configuration
-import no.nav.poao.veilarbapi.settup.oauth.AzureAdClient
-import no.nav.security.token.support.ktor.TokenValidationContextPrincipal
-import org.apache.http.impl.conn.SystemDefaultRoutePlanner
-import org.slf4j.LoggerFactory
-import java.net.ProxySelector
-private val logger = LoggerFactory.getLogger("Application")
+import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
+import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
+import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClientImpl
+import no.nav.poao.veilarbapi.setup.config.Configuration
+import no.nav.poao.veilarbapi.setup.http.createHttpServer
+import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
 
 data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
-
-internal val defaultHttpClient = HttpClient(Apache) {
-    install(JsonFeature) {
-        serializer = JacksonSerializer {
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        }
-    }
-    engine {
-        customizeClient { setRoutePlanner(SystemDefaultRoutePlanner(ProxySelector.getDefault())) }
-    }
-}
 
 fun main() {
     main(Configuration())
@@ -45,15 +22,51 @@ fun main(configuration: Configuration) {
 
     val azureAdClient = AzureAdClient(configuration.azureAd)
 
-    val veilarbaktivitetClient = VeilarbaktivitetClient(configuration.veilarbaktivitetConfig, configuration.poaoGcpProxyConfig, azureAdClient)
-    val veilarbdialogClient = VeilarbdialogClient(configuration.veilarbdialogConfig, azureAdClient)
-    val veilarbOppClient = VeilarboppfolgingClient(configuration.veilarboppfolgingConfig, azureAdClient)
-    val service = Service(aktivitet = veilarbaktivitetClient, dialog = veilarbdialogClient, oppfolging =  veilarbOppClient)
+    val proxyTokenProvider: suspend (String?) -> String? = { accessToken ->
+        accessToken?.let {
+            azureAdClient.getAccessTokenForResource(
+                scopes = listOf(configuration.poaoGcpProxyConfig.authenticationScope)
+            ).get()?.accessToken
+        }
+    }
+
+    val veilarbaktivitetTokenProvider: suspend (String?) -> String? = { accessToken ->
+        accessToken?.let {
+            azureAdClient.getOnBehalfOfAccessTokenForResource(
+                scopes = listOf(configuration.veilarbaktivitetConfig.authenticationScope),
+                accessToken = it
+            ).get()?.accessToken
+        }
+    }
+
+    val veilarbdialogTokenProvider: suspend (String?) -> String? = { accessToken ->
+        accessToken?.let {
+            azureAdClient.getOnBehalfOfAccessTokenForResource(
+                scopes = listOf(configuration.veilarbdialogConfig.authenticationScope),
+                accessToken = it
+            ).get()?.accessToken
+        }
+    }
+
+    val veilarboppfolgingTokenProvider: suspend (String?) -> String? = { accessToken ->
+        accessToken?.let {
+            azureAdClient.getOnBehalfOfAccessTokenForResource(
+                scopes = listOf(configuration.veilarboppfolgingConfig.authenticationScope),
+                accessToken = it
+            ).get()?.accessToken
+        }
+    }
+
+    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig.url, veilarbaktivitetTokenProvider, proxyTokenProvider)
+    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig.url, veilarbdialogTokenProvider, proxyTokenProvider)
+    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig.url, veilarboppfolgingTokenProvider, proxyTokenProvider)
+
+    val oppfolgingService = OppfolgingService(veilarbaktivitetClient = veilarbaktivitetClient, veilarbdialogClient = veilarbdialogClient, veilarboppfolgingClient =  veilarboppfolgingClient)
 
     val applicationServer = createHttpServer(
         applicationState = applicationState,
         configuration = configuration,
-        service = service
+        oppfolgingService = oppfolgingService
     )
 
     Runtime.getRuntime().addShutdownHook(Thread {
@@ -62,18 +75,3 @@ fun main(configuration: Configuration) {
 
     applicationServer.start(wait = configuration.httpServerWait)
 }
-
-
-private fun HttpAuthHeader.getBlob(): String? = when {
-    this is HttpAuthHeader.Single && authScheme.lowercase() in listOf("bearer") -> blob
-    else -> null
-}
-
-fun ApplicationCall.getAccessToken(): String? = request.parseAuthorizationHeader()?.getBlob()
-fun ApplicationCall.getTokenInfo(): Map<String, String>? = authentication
-    .principal<TokenValidationContextPrincipal>()
-    ?.let { principal ->
-        logger.debug("found principal $principal")
-        principal.context.firstValidToken.get().jwtTokenClaims.allClaims.entries
-            .associate { claim -> claim.key to claim.value.toString() }
-    }

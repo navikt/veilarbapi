@@ -1,11 +1,11 @@
 package no.nav.poao.mapper
 
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import no.nav.poao.util.InternAktivitetBuilder
 import no.nav.poao.util.InternDialogBuilder
 import no.nav.poao.veilarbapi.aktivitet.mapAktiviteter
 import no.nav.poao.veilarbapi.dialog.mapDialog
 import no.nav.poao.veilarbapi.dialog.mapDialoger
-import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import no.nav.poao.veilarbapi.oppfolging.mapOppfolgingsperioder
 import no.nav.veilarbapi.model.Behandling
 import no.nav.veilarbapi.model.Oppfolgingsperioder

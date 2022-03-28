@@ -5,31 +5,31 @@ import io.ktor.http.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.runBlocking
 import no.nav.common.types.identer.AktorId
-import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
-import no.nav.poao.veilarbapi.settup.config.Configuration
+import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
+import no.nav.poao.veilarbapi.setup.config.Configuration
+import no.nav.poao.veilarbapi.setup.http.baseClient
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
 
 class VeilarbaktivitetClientKtTest {
-    val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
-    val poaoGcpProxyConfig = Configuration.PoaoGcpProxyConfig(url = "http://localhost:8080/proxu")
+    private val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
 
     @Test
     fun testHentAktiviteterWithMockEngine() {
-        val mockEngine = MockEngine { request ->
+        val mockEngine = MockEngine {
             respond(
                 content = ByteReadChannel(mockAktiviteterJson),
                 status = HttpStatusCode.OK,
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )
         }
-        val client = VeilarbaktivitetClient(
-            veilarbaktivitetConfig = veilarbaktivitetConfig,
-            poaoGcpProxyConfig = poaoGcpProxyConfig,
-            engine = mockEngine,
-            azureAdClient = null
+        val client = VeilarbaktivitetClientImpl(
+            baseUrl = veilarbaktivitetConfig.url,
+            veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
+            client = baseClient(mockEngine)
         )
         runBlocking {
             val aktiviteter = client.hentAktiviteter(AktorId.of("123456789101"), null)
@@ -39,18 +39,18 @@ class VeilarbaktivitetClientKtTest {
 
     @Test
     fun testServerErrorWithMockEngine() {
-        val mockEngine = MockEngine { request ->
+        val mockEngine = MockEngine {
             respond(
                 content = ByteReadChannel(mockServerError),
                 status = HttpStatusCode.InternalServerError,
                 headers = headersOf(HttpHeaders.ContentType, "application/json")
             )
         }
-        val client = VeilarbaktivitetClient(
-            veilarbaktivitetConfig = veilarbaktivitetConfig,
-            poaoGcpProxyConfig = poaoGcpProxyConfig,
-            engine = mockEngine,
-            azureAdClient = null
+        val client = VeilarbaktivitetClientImpl(
+            baseUrl = veilarbaktivitetConfig.url,
+            veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
+            client = baseClient(mockEngine)
         )
         runBlocking {
             val hentAktiviteter = client.hentAktiviteter(AktorId.of("123456789101"), null)

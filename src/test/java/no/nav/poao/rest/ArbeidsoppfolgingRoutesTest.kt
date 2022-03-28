@@ -1,19 +1,20 @@
 package no.nav.poao.rest
 
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.utils.io.*
 import no.nav.poao.util.InternAktivitetBuilder
 import no.nav.poao.util.InternDialogBuilder
-import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
-import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
-import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
-import no.nav.poao.veilarbapi.oppfolging.Service
-import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClient
-import no.nav.poao.veilarbapi.settup.config.Configuration
-import no.nav.poao.veilarbapi.settup.plugins.configureSerialization
-import no.nav.poao.veilarbapi.settup.rest.arbeidsoppfolgingRoutes
+import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
+import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
+import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClientImpl
+import no.nav.poao.veilarbapi.setup.config.Configuration
+import no.nav.poao.veilarbapi.setup.http.baseClient
+import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
+import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -25,7 +26,6 @@ class ArbeidsoppfolgingRoutesTest {
     private val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
     private val veilarbdialogConfig = Configuration.VeilarbdialogConfig(url = "http://localhost:8080/veilarbdialog")
     private val veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(url = "http://localhost:8080/veilarbaktivitet")
-    private val poaoGcpProxyConfig = Configuration.PoaoGcpProxyConfig(url = "http://localhost:8080/proxu")
 
     init {
         no.nav.veilarbaktivitet.JSON()
@@ -64,29 +64,31 @@ class ArbeidsoppfolgingRoutesTest {
         val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
         val mockOppfolgingsperioder = no.nav.veilarbapi.JSON.getGson().toJson(oppfolgingsperiodeDTOer)
 
-        val veilarbaktivitetClient = VeilarbaktivitetClient(
-            veilarbaktivitetConfig = veilarbaktivitetConfig,
-            poaoGcpProxyConfig = poaoGcpProxyConfig,
-            engine = createMockEngine(mockAktiviteter),
-            azureAdClient = null
+        val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
+            baseUrl = veilarbaktivitetConfig.url,
+            veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
+            client = baseClient(createMockEngine(mockAktiviteter))
         )
 
-        val veilarbdialogClient = VeilarbdialogClient(
-            veilarbdialogConfig = veilarbdialogConfig,
-            engine = createMockEngine(mockDialoger),
-            azureAdClient = null
+        val veilarbdialogClient = VeilarbdialogClientImpl(
+            baseUrl = veilarbdialogConfig.url,
+            veilarbdialogTokenProvider = { "VEILARBDIALOG_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
+            client = baseClient(createMockEngine(mockDialoger))
         )
 
-        val veilarboppfolgingClient = VeilarboppfolgingClient(
-            veilarboppfolgingConfig = veilarboppfolgingConfig,
-            engine = createMockEngine(mockOppfolgingsperioder),
-            azureAdClient = null
+        val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
+            baseUrl = veilarboppfolgingConfig.url,
+            veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
+            client = baseClient(createMockEngine(mockOppfolgingsperioder))
         )
 
-        val mockService = Service(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
+        val mockOppfolgingService = OppfolgingService(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
 
         withTestApplication({
-            arbeidsoppfolgingRoutes(false, mockService)
+            arbeidsoppfolgingRoutes(false, mockOppfolgingService)
             configureSerialization()
         }) {
             handleRequest(HttpMethod.Get, "/v1/oppfolging/periode?aktorId=123").apply {

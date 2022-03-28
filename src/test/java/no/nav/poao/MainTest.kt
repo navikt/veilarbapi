@@ -2,12 +2,12 @@ package no.nav.poao
 
 import io.ktor.server.engine.*
 import no.nav.poao.veilarbapi.ApplicationState
-import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
-import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
-import no.nav.poao.veilarbapi.settup.config.Configuration
-import no.nav.poao.veilarbapi.createHttpServer
-import no.nav.poao.veilarbapi.oppfolging.Service
-import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClient
+import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
+import no.nav.poao.veilarbapi.setup.http.createHttpServer
+import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
+import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClientImpl
+import no.nav.poao.veilarbapi.setup.config.Configuration
 
 
 fun mainTest(): ApplicationEngine {
@@ -21,15 +21,15 @@ fun mainTest(): ApplicationEngine {
 
     val applicationState = ApplicationState()
 
-    val veilarbaktivitetClient = VeilarbaktivitetClient(configuration.veilarbaktivitetConfig, poaoGcpProxyConfig = configuration.poaoGcpProxyConfig, azureAdClient = null)
-    val veilarbdialogClient = VeilarbdialogClient(configuration.veilarbdialogConfig, azureAdClient = null)
-    val veilarboppfolgingClient = VeilarboppfolgingClient(configuration.veilarboppfolgingConfig, azureAdClient = null)
+    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig.url, { "VEILARBAKTIVITET_TOKEN" }, { "PROXY_TOKEN" })
+    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig.url, { "VEILARBDIALOG_TOKEN" }, { "PROXY_TOKEN" })
+    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig.url, { "VEILARBOPPFOLGING_TOKEN" }, { "PROXY_TOKEN" })
 
-    val service = Service(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
+    val oppfolgingService = OppfolgingService(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
     val applicationServer = createHttpServer(
         applicationState = applicationState,
         configuration = configuration,
-        service = service
+        oppfolgingService = oppfolgingService
     )
 
     Runtime.getRuntime().addShutdownHook(Thread {
