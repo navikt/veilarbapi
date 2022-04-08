@@ -10,6 +10,7 @@ import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
 import no.nav.poao.veilarbapi.setup.oauth.MockPayload
 import no.nav.poao.veilarbapi.setup.util.getAccessToken
+import no.nav.veilarbapi.model.Oppfolgingsinfo
 
 fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, oppfolgingService: OppfolgingService) {
     routing() {
@@ -33,8 +34,14 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, oppfolgingSe
                         log.info("Hent oppfølgingsInfo for aktorId: {}", aktorId)
                         val token = call.getAccessToken()
 
-                        val result = oppfolgingService.fetchOppfolgingsInfo(AktorId.of(aktorId), token)
-                        call.respond(result.getOrThrow())
+                        val result: Result<Oppfolgingsinfo?> = oppfolgingService.fetchOppfolgingsInfo(AktorId.of(aktorId), token)
+
+                        val resultSuccess = result.getOrThrow()
+                        if (resultSuccess == null) {
+                            call.respond(HttpStatusCode.NoContent)
+                        } else {
+                            call.respond(resultSuccess)
+                        }
                     }
                 }
             }

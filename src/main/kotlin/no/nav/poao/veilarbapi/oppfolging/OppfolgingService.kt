@@ -60,9 +60,15 @@ class OppfolgingService(
         return response
     }
 
-    suspend fun fetchOppfolgingsInfo(aktorId: AktorId, accessToken: String?): Result<Oppfolgingsinfo> {
+    suspend fun fetchOppfolgingsInfo(aktorId: AktorId, accessToken: String?): Result<Oppfolgingsinfo?> {
         val erUnderOppfolging = veilarboppfolgingClient.hentErUnderOppfolging(aktorId, accessToken)
         val veileder = veilarboppfolgingClient.hentVeileder(aktorId, accessToken)
+        val oppfolgingsenhet = veilarboppfolgingClient.hentOppfolgingsenhet(aktorId, accessToken)
+
+        if (oppfolgingsenhet.isSuccess && oppfolgingsenhet.getOrNull() == null) {
+
+            return Result.success(null)
+        }
 
         if (erUnderOppfolging.isFailure) {
             return Result.failure(erUnderOppfolging.exceptionOrNull()!!)
