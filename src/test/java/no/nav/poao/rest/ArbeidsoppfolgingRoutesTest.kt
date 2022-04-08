@@ -1,5 +1,6 @@
 package no.nav.poao.rest
 
+import io.ktor.client.*
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
@@ -15,6 +16,7 @@ import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
 import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
+import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -23,9 +25,11 @@ import java.util.*
 import kotlin.test.assertEquals
 
 class ArbeidsoppfolgingRoutesTest {
-    private val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
+    private val veilarbaktivitetConfig =
+        Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
     private val veilarbdialogConfig = Configuration.VeilarbdialogConfig(url = "http://localhost:8080/veilarbdialog")
-    private val veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(url = "http://localhost:8080/veilarbaktivitet")
+    private val veilarboppfolgingConfig =
+        Configuration.VeilarboppfolgingConfig(url = "http://localhost:8080/veilarbaktivitet")
 
     init {
         no.nav.veilarbaktivitet.JSON()
@@ -35,17 +39,67 @@ class ArbeidsoppfolgingRoutesTest {
 
     @Test
     fun testHentPeriodeRoute() { // todo - sett opp mockoauth2server
+        val mockOppfolgingService = oppfolgingService()
+
+        withTestApplication({
+            arbeidsoppfolgingRoutes(false, mockOppfolgingService)
+            configureSerialization()
+        }) {
+            handleRequest(HttpMethod.Get, "/v1/oppfolging/periode?aktorId=123").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val oppfolgingsperioder =
+                    no.nav.veilarbapi.JSON.deserialize<Oppfolgingsperioder>(
+                        response.content,
+                        Oppfolgingsperioder::class.java
+                    )
+
+                assertThat(oppfolgingsperioder.oppfolgingsperioder).hasSize(2)
+                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter).hasSize(1)
+                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.tittel).isEqualTo("ikke kvp")
+                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.dialog!!.meldinger!!).hasSize(
+                    1
+                )
+                assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter).hasSize(1)
+                assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter!![0].stillingFraNav.dialog).isNull()
+            }
+        }
+    }
+
+    @Test
+    fun testHentOppfolingsInfo() {
+        val mockOppfolgingService = oppfolgingService()
+
+        withTestApplication({
+            arbeidsoppfolgingRoutes(false, mockOppfolgingService)
+            configureSerialization()
+        }) {
+            handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+            }
+        }
+    }
+
+
+    private fun oppfolgingService(): OppfolgingService {
         val uuid1 = UUID.randomUUID()
         val uuid2 = UUID.randomUUID()
 
         val oppfolgingsperiodeDTOer = listOf(
-            OppfolgingsperiodeDTO(uuid1, "aktorid", null, OffsetDateTime.now().minusDays(4), OffsetDateTime.now().minusDays(2)),
+            OppfolgingsperiodeDTO(
+                uuid1,
+                "aktorid",
+                null,
+                OffsetDateTime.now().minusDays(4),
+                OffsetDateTime.now().minusDays(2)
+            ),
             OppfolgingsperiodeDTO(uuid2, "aktorid", null, OffsetDateTime.now().minusDays(1), null)
         )
 
         val internAktiviteter = listOf(
             InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid1),
-            InternAktivitetBuilder.nyAktivitet("behandling").oppfolgingsperiodeId(uuid1).aktivitetId("3").tittel("ikke kvp"),
+            InternAktivitetBuilder.nyAktivitet("behandling").oppfolgingsperiodeId(uuid1).aktivitetId("3")
+                .tittel("ikke kvp"),
             InternAktivitetBuilder.nyAktivitet("sokeavtale", true).oppfolgingsperiodeId(uuid1).aktivitetId("6"),
             InternAktivitetBuilder.nyAktivitet("stilling_fra_nav").oppfolgingsperiodeId(uuid2).aktivitetId("9"),
         )
@@ -60,7 +114,7 @@ class ArbeidsoppfolgingRoutesTest {
             internDialog2
         )
 
-        val mockAktiviteter = no.nav.veilarbaktivitet.JSON.getGson().toJson(internAktiviteter)
+        val mockAktiviteter = JSON.getGson().toJson(internAktiviteter)
         val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
         val mockOppfolgingsperioder = no.nav.veilarbapi.JSON.getGson().toJson(oppfolgingsperiodeDTOer)
 
@@ -82,29 +136,49 @@ class ArbeidsoppfolgingRoutesTest {
             baseUrl = veilarboppfolgingConfig.url,
             veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
             proxyTokenProvider = { "PROXY_TOKEN" },
-            client = baseClient(createMockEngine(mockOppfolgingsperioder))
+            client = createOppfolingMockEngine()
         )
 
-        val mockOppfolgingService = OppfolgingService(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
+        val mockOppfolgingService =
+            OppfolgingService(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
+        return mockOppfolgingService
+    }
 
-        withTestApplication({
-            arbeidsoppfolgingRoutes(false, mockOppfolgingService)
-            configureSerialization()
-        }) {
-            handleRequest(HttpMethod.Get, "/v1/oppfolging/periode?aktorId=123").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val oppfolgingsperioder =
-                    no.nav.veilarbapi.JSON.deserialize<Oppfolgingsperioder>(response.content, Oppfolgingsperioder::class.java)
-
-                assertThat(oppfolgingsperioder.oppfolgingsperioder).hasSize(2)
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter).hasSize(1)
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.tittel).isEqualTo("ikke kvp")
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.dialog!!.meldinger!!).hasSize(1)
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter).hasSize(1)
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter!![0].stillingFraNav.dialog).isNull()
+    private fun createOppfolingMockEngine() {
+        return HttpClient(MockEngine) {
+            engine {
+                addHandler { request ->
+                    if (request.url.encodedPath == "/veilarboppfolging/api/v2/oppfolging/perioder") {
+                        respond( kake(), HttpStatusCode.OK)
+                    } else if (request.url.encodedPath == "/veilarboppfolging/api/v2/oppfolging") {
+                        respond("asdf", HttpStatusCode.OK)
+                    } else if (request.url.encodedPath == "/veilarboppfolging/api/v2/veileder") {
+                        respond("kake", HttpStatusCode.OK)
+                    } else if (request.url.encodedPath == "/veilarboppfolging/api/person/oppfolgingsenhet") {
+                        respond("nisse", HttpStatusCode.OK)
+                    } else {
+                        error("Unhandled ${request.url.encodedPath}")
+                    }
+                }
             }
         }
+    }
+
+    private fun kake(): String {
+        val uuid1 = UUID.randomUUID()
+        val uuid2 = UUID.randomUUID()
+        val oppfolgingsperiodeDTOer = listOf(
+            OppfolgingsperiodeDTO(
+                uuid1,
+                "aktorid",
+                null,
+                OffsetDateTime.now().minusDays(4),
+                OffsetDateTime.now().minusDays(2)
+            ),
+            OppfolgingsperiodeDTO(uuid2, "aktorid", null, OffsetDateTime.now().minusDays(1), null)
+        )
+        val mockOppfolgingsperioder = no.nav.veilarbapi.JSON.getGson().toJson(oppfolgingsperiodeDTOer)
+        return mockOppfolgingsperioder
     }
 
     private fun createMockEngine(json: String): MockEngine {

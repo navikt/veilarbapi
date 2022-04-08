@@ -66,7 +66,6 @@ class OppfolgingService(
         val oppfolgingsenhet = veilarboppfolgingClient.hentOppfolgingsenhet(aktorId, accessToken)
 
         if (oppfolgingsenhet.isSuccess && oppfolgingsenhet.getOrNull() == null) {
-
             return Result.success(null)
         }
 
@@ -74,16 +73,24 @@ class OppfolgingService(
             return Result.failure(erUnderOppfolging.exceptionOrNull()!!)
         }
 
-        if (veileder.isFailure) {
-            val oppfolgingsinfo = mapOppfolgingsinfo(erUnderOppfolging.getOrNull())
+        val oppfolgingsinfo = mapOppfolgingsinfo(erUnderOppfolging.getOrNull(), veileder.getOrNull(), oppfolgingsenhet.getOrNull())
+
+        veileder.exceptionOrNull()?.let { exception ->
             val feil = OppfolgingsinfoFeil().apply {
                 feilkilder = "veilederinfo"
-                feilmelding = veileder.exceptionOrNull()?.message
+                feilmelding = exception.message
             }
             oppfolgingsinfo.addFeilItem(feil)
-            return Result.success(oppfolgingsinfo)
         }
 
-        return Result.success(mapOppfolgingsinfo(erUnderOppfolging.getOrNull(), veileder.getOrNull()))
+        oppfolgingsenhet.exceptionOrNull()?.let { exception ->
+            val feil = OppfolgingsinfoFeil().apply {
+                feilkilder = "oppfolingsenhet"
+                feilmelding = exception?.message
+            }
+            oppfolgingsinfo.addFeilItem(feil)
+        }
+
+        return Result.success(oppfolgingsinfo)
     }
 }

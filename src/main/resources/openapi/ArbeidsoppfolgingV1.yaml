@@ -254,6 +254,16 @@ components:
     Oppfolgingsinfo:
       type: object
       properties:
+        OppfolgingsEnhet:
+          type: object
+          description: Nav enhet med oppfølgingsansvar for bruker
+          properties:
+            enhetId:
+              type: string
+              example: 1234
+            navn:
+              type: string
+              example: NAV hamar
         underOppfolging:
           type: boolean
           description: Definerer om brukeren er under arbeidsrettet oppfølging eller ikke
