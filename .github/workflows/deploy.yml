@@ -3,7 +3,6 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 concurrency:
   group: deploy
@@ -49,9 +48,24 @@ jobs:
           RESOURCE: nais-dev.yaml
           VAR: version=${{ env.IMAGE_TAG }}
 
+  deploy-prod:
+    name: Deploy application to GCP prod
+    needs: deploy-dev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Deploy application
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: prod-gcp
+          RESOURCE: nais.yaml
+          VAR: version=${{ env.IMAGE_TAG }}
+
   deploy-gh-pages:
     name: Deploy to GitHub Pages
-    needs: deploy-dev # bytt til deploy-prod senere
+    needs: deploy-prod
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

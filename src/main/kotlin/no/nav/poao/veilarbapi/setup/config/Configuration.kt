@@ -16,7 +16,7 @@ private val defaultProperties by lazy {
             "VEILARBOPPFOLGINGAPI_URL" to notUsedLocally,
             "AZURE_APP_CLIENT_SECRET" to notUsedLocally,
             "AZURE_APP_CLIENT_ID" to notUsedLocally,
-            "AZURE_APP_WELL_KNOWN_URL" to "https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration"
+            "AZURE_APP_WELL_KNOWN_URL" to notUsedLocally
         )
     )
 }

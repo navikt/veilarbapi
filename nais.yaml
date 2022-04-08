@@ -3,14 +3,13 @@ apiVersion: nais.io/v1alpha1
 metadata:
   name: veilarbapi
   namespace: pto
-  cluster: dev-gcp
+  cluster: prod-gcp
   labels:
     team: pto
 spec:
   image: docker.pkg.github.com/navikt/veilarbapi/veilarbapi:{{version}}
   ingresses:
-    - https://veilarbapi.dev.intern.nav.no
-    - https://salesforce.poao.dev.ekstern.nav.no
+    - https://salesforce.poao.ekstern.nav.no
   port: 8080
   prometheus:
     enabled: true
@@ -47,18 +46,15 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: ida
-          namespace: traktor
-          cluster: prod-fss
         - application: salesforce
           namespace: teamcrm
-          cluster: dev-external
+          cluster: prod-external
   env:
     - name: AZURE_APP_WELL_KNOWN_URL
-      value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration
+      value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration
     - name : VEILARBAKTIVITETAPI_URL
-      value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy/veilarbaktivitet
+      value: https://poao-gcp-proxy.prod-fss-pub.nais.io/proxy/veilarbaktivitet
     - name : VEILARBDIALOGAPI_URL
-      value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy/veilarbdialog
+      value: https://poao-gcp-proxy.prod-fss-pub.nais.io/proxy/veilarbdialog
     - name : VEILARBOPPFOLGINGAPI_URL
-      value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy/veilarboppfolging
+      value: https://poao-gcp-proxy.prod-fss-pub.nais.io/proxy/veilarboppfolging
