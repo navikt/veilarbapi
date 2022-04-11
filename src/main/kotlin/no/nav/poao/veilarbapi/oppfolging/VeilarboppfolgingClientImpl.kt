@@ -1,6 +1,8 @@
 package no.nav.poao.veilarbapi.oppfolging
 
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -19,7 +21,7 @@ class VeilarboppfolgingClientImpl(
     private val client: HttpClient = baseClient()
 ) : VeilarboppfolgingClient {
 
-    init { JSON() }
+    val json = Gson()
 
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
         val response =
@@ -28,10 +30,8 @@ class VeilarboppfolgingClientImpl(
                 header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
         if (response.status == HttpStatusCode.OK) {
-            val perioder = JSON.deserialize<Array<OppfolgingsperiodeDTO>>(
-                response.readText(),
-                OppfolgingsperiodeDTO::class.java.arrayType()
-            ).toList()
+            val type = object : TypeToken<List<OppfolgingsperiodeDTO>>() {}.type
+            val perioder = json.fromJson<List<OppfolgingsperiodeDTO>>(response.readText(), type)
 
             return Result.success(perioder)
         } else {
@@ -47,10 +47,7 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val underOppfolgingDTO = JSON.deserialize<UnderOppfolgingDTO>(
-                response.readText(),
-                UnderOppfolgingDTO::class.java
-            )
+            val underOppfolgingDTO: UnderOppfolgingDTO = json.fromJson(response.readText(), UnderOppfolgingDTO::class.java)
 
             return Result.success(underOppfolgingDTO)
         } else {
@@ -66,11 +63,26 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val veilederDTO = JSON.deserialize<VeilederDTO>(
-                response.readText(),
-                VeilederDTO::class.java
-            )
+            val veilederDTO = json.fromJson(response.readText(), VeilederDTO::class.java)
             return Result.success(veilederDTO)
+        } else {
+            return Result.failure(callFailure(response))
+        }
+    }
+
+    override suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String?): Result<OppfolgingsenhetDTO?> {
+        val response =
+            client.get<HttpResponse>("$baseUrl/api/person/oppfolgingsenhet?aktorId=${aktorId.get()}") {
+                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
+                header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
+            }
+
+        if (response.status == HttpStatusCode.OK) {
+            val oppfolgingsenhetDTO = json.fromJson(response.readText(), OppfolgingsenhetDTO::class.java)
+
+            return Result.success(oppfolgingsenhetDTO)
+        } else if (response.status == HttpStatusCode.NotFound) {
+            return Result.success(null)
         } else {
             return Result.failure(callFailure(response))
         }

@@ -11,6 +11,8 @@ interface VeilarboppfolgingClient {
     suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String?): Result<UnderOppfolgingDTO>
 
     suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO>
+
+    suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String?): Result<OppfolgingsenhetDTO?>
 }
 
 data class OppfolgingsperiodeDTO(
@@ -24,3 +26,8 @@ data class OppfolgingsperiodeDTO(
 data class UnderOppfolgingDTO(var erUnderOppfolging: Boolean? = null)
 
 data class VeilederDTO(var veilederIdent: NavIdent? = null)
+
+data class OppfolgingsenhetDTO(
+    var navn: String? = null,
+    var enhetId: String? = null
+)

@@ -17,6 +17,7 @@ plugins {
     id ("org.openapi.generator") version "5.4.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("org.sonarqube") version "3.3"
+    id ("jacoco")
 }
 
 sonarqube {
@@ -24,6 +25,17 @@ sonarqube {
         property ("sonar.projectKey", "navikt_veilarbapi")
         property ("sonar.organization", "navit")
         property ("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
+tasks.sonarqube {
+    dependsOn(tasks.jacocoTestReport)
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test)
+    reports {
+        xml.required.set(true)
     }
 }
 
@@ -118,6 +130,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeine_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     implementation("no.nav.security:token-validation-ktor:$token_support_version")
     implementation("no.nav.security:token-client-core:$token_support_version")
     api("javax.validation:validation-api:2.0.1.Final")
@@ -158,5 +171,5 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
     // avhengigheter i generert kode SLUTT
-
 }
+

@@ -60,24 +60,43 @@ class OppfolgingService(
         return response
     }
 
-    suspend fun fetchOppfolgingsInfo(aktorId: AktorId, accessToken: String?): Result<Oppfolgingsinfo> {
+    suspend fun fetchOppfolgingsInfo(aktorId: AktorId, accessToken: String?): Result<Oppfolgingsinfo?> {
         val erUnderOppfolging = veilarboppfolgingClient.hentErUnderOppfolging(aktorId, accessToken)
         val veileder = veilarboppfolgingClient.hentVeileder(aktorId, accessToken)
+        val oppfolgingsenhet = veilarboppfolgingClient.hentOppfolgingsenhet(aktorId, accessToken)
+
+        if (oppfolgingsenhet.isSuccess && nullOrEmpty(oppfolgingsenhet.getOrNull())) {
+            return Result.success(null)
+        }
 
         if (erUnderOppfolging.isFailure) {
             return Result.failure(erUnderOppfolging.exceptionOrNull()!!)
         }
 
-        if (veileder.isFailure) {
-            val oppfolgingsinfo = mapOppfolgingsinfo(erUnderOppfolging.getOrNull())
+        val oppfolgingsinfo = mapOppfolgingsinfo(erUnderOppfolging.getOrNull(), veileder.getOrNull(), oppfolgingsenhet.getOrNull())
+
+        veileder.exceptionOrNull()?.let { exception ->
             val feil = OppfolgingsinfoFeil().apply {
                 feilkilder = "veilederinfo"
-                feilmelding = veileder.exceptionOrNull()?.message
+                feilmelding = exception.message
             }
             oppfolgingsinfo.addFeilItem(feil)
-            return Result.success(oppfolgingsinfo)
         }
 
-        return Result.success(mapOppfolgingsinfo(erUnderOppfolging.getOrNull(), veileder.getOrNull()))
+        oppfolgingsenhet.exceptionOrNull()?.let { exception ->
+            val feil = OppfolgingsinfoFeil().apply {
+                feilkilder = "oppfolgingsenhet"
+                feilmelding = exception.message
+            }
+            oppfolgingsinfo.addFeilItem(feil)
+        }
+
+        return Result.success(oppfolgingsinfo)
+    }
+
+    private fun nullOrEmpty(oppfolgingsenhetDTO: OppfolgingsenhetDTO?): Boolean {
+        if (oppfolgingsenhetDTO == null) return true
+        if (oppfolgingsenhetDTO.enhetId == null) return true
+        return false
     }
 }

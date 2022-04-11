@@ -3,12 +3,9 @@ package no.nav.poao.veilarbapi.setup.http
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.poao.veilarbapi.ApplicationState
-import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
-import no.nav.poao.veilarbapi.setup.plugins.configureAuthentication
-import no.nav.poao.veilarbapi.setup.plugins.configureMonitoring
-import no.nav.poao.veilarbapi.setup.plugins.configureRouting
-import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
+import no.nav.poao.veilarbapi.setup.config.Configuration
+import no.nav.poao.veilarbapi.setup.plugins.*
 
 fun createHttpServer(
     applicationState: ApplicationState,
@@ -21,6 +18,8 @@ fun createHttpServer(
     configureAuthentication(configuration)
     configureSerialization()
     configureRouting(configuration.useAuthentication, oppfolgingService = oppfolgingService)
+    configureExceptionHandler()
+
 
     applicationState.initialized = true
 }
