@@ -65,7 +65,7 @@ class OppfolgingService(
         val veileder = veilarboppfolgingClient.hentVeileder(aktorId, accessToken)
         val oppfolgingsenhet = veilarboppfolgingClient.hentOppfolgingsenhet(aktorId, accessToken)
 
-        if (oppfolgingsenhet.isSuccess && oppfolgingsenhet.getOrNull() == null) {
+        if (oppfolgingsenhet.isSuccess && nullOrEmpty(oppfolgingsenhet.getOrNull())) {
             return Result.success(null)
         }
 
@@ -85,12 +85,18 @@ class OppfolgingService(
 
         oppfolgingsenhet.exceptionOrNull()?.let { exception ->
             val feil = OppfolgingsinfoFeil().apply {
-                feilkilder = "oppfolingsenhet"
-                feilmelding = exception?.message
+                feilkilder = "oppfolgingsenhet"
+                feilmelding = exception.message
             }
             oppfolgingsinfo.addFeilItem(feil)
         }
 
         return Result.success(oppfolgingsinfo)
+    }
+
+    private fun nullOrEmpty(oppfolgingsenhetDTO: OppfolgingsenhetDTO?): Boolean {
+        if (oppfolgingsenhetDTO == null) return true
+        if (oppfolgingsenhetDTO.enhetId == null) return true
+        return false
     }
 }
