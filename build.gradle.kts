@@ -17,6 +17,7 @@ plugins {
     id ("org.openapi.generator") version "5.4.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("org.sonarqube") version "3.3"
+    id ("jacoco")
 }
 
 sonarqube {
@@ -24,6 +25,12 @@ sonarqube {
         property ("sonar.projectKey", "navikt_veilarbapi")
         property ("sonar.organization", "navit")
         property ("sonar.host.url", "https://sonarcloud.io")
+    }
+}
+
+tasks.jacocoTestReport {
+    reports {
+        xml.required.set(true)
     }
 }
 
