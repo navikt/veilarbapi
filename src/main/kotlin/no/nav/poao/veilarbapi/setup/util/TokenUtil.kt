@@ -18,6 +18,7 @@ fun ApplicationCall.getTokenInfo(): Map<String, String>? = authentication
             .associate { claim -> claim.key to claim.value.toString() }
     }
 
+
 private fun HttpAuthHeader.getBlob(): String? = when {
     this is HttpAuthHeader.Single && authScheme.lowercase() in listOf("bearer") -> blob
     else -> null

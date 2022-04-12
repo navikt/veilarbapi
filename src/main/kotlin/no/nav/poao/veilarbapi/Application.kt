@@ -9,6 +9,7 @@ import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClientImpl
 import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.poao.veilarbapi.setup.http.createHttpServer
 import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
+import no.nav.poao.veilarbapi.setup.util.TokenProviders
 
 data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
 
@@ -22,44 +23,11 @@ fun main(configuration: Configuration) {
 
     val azureAdClient = AzureAdClient(configuration.azureAd)
 
-    val proxyTokenProvider: suspend (String?) -> String? = { accessToken ->
-        accessToken?.let {
-            azureAdClient.getAccessTokenForResource(
-                scopes = listOf(configuration.poaoGcpProxyConfig.authenticationScope)
-            ).get()?.accessToken
-        }
-    }
+    val tokenProviders = TokenProviders(azureAdClient, configuration)
 
-    val veilarbaktivitetTokenProvider: suspend (String?) -> String? = { accessToken ->
-        accessToken?.let {
-            azureAdClient.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(configuration.veilarbaktivitetConfig.authenticationScope),
-                accessToken = it
-            ).get()?.accessToken
-        }
-    }
-
-    val veilarbdialogTokenProvider: suspend (String?) -> String? = { accessToken ->
-        accessToken?.let {
-            azureAdClient.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(configuration.veilarbdialogConfig.authenticationScope),
-                accessToken = it
-            ).get()?.accessToken
-        }
-    }
-
-    val veilarboppfolgingTokenProvider: suspend (String?) -> String? = { accessToken ->
-        accessToken?.let {
-            azureAdClient.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(configuration.veilarboppfolgingConfig.authenticationScope),
-                accessToken = it
-            ).get()?.accessToken
-        }
-    }
-
-    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig.url, veilarbaktivitetTokenProvider, proxyTokenProvider)
-    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig.url, veilarbdialogTokenProvider, proxyTokenProvider)
-    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig.url, veilarboppfolgingTokenProvider, proxyTokenProvider)
+    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig.url, tokenProviders.veilarbaktivitetTokenProvider, tokenProviders.proxyTokenProvider)
+    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig.url, tokenProviders.veilarbdialogTokenProvider, tokenProviders.proxyTokenProvider)
+    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig.url, tokenProviders.veilarboppfolgingTokenProvider, tokenProviders.proxyTokenProvider)
 
     val oppfolgingService = OppfolgingService(veilarbaktivitetClient = veilarbaktivitetClient, veilarbdialogClient = veilarbdialogClient, veilarboppfolgingClient =  veilarboppfolgingClient)
 

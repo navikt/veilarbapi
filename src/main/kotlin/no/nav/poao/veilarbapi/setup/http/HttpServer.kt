@@ -15,7 +15,7 @@ fun createHttpServer(
 ) : ApplicationEngine = embeddedServer(Netty, port, "0.0.0.0") {
 
     configureMonitoring()
-    configureAuthentication(configuration)
+    configureAuthentication(configuration.useAuthentication, configuration.azureAd)
     configureSerialization()
     configureRouting(configuration.useAuthentication, oppfolgingService = oppfolgingService)
     configureExceptionHandler()
