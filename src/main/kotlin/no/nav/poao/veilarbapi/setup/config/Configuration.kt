@@ -41,19 +41,19 @@ data class Configuration(
     )
 
     data class PoaoGcpProxyConfig(
-        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.poao-gcp-proxy/.default"
+        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.poao-gcp-proxy/.default"
     )
     data class VeilarbaktivitetConfig(
         val url: String = config()[Key("VEILARBAKTIVITETAPI_URL", stringType)],
-        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarbaktivitet/.default"
+        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarbaktivitet/.default"
     )
     data class VeilarbdialogConfig(
         val url: String = config()[Key("VEILARBDIALOGAPI_URL", stringType)],
-        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarbdialog/.default"
+        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarbdialog/.default"
     )
     data class VeilarboppfolgingConfig(
         val url: String = config()[Key("VEILARBOPPFOLGINGAPI_URL", stringType)],
-        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarboppfolging/.default"
+        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarboppfolging/.default"
     )
 }
 

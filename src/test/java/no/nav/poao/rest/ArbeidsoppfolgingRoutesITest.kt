@@ -1,11 +1,13 @@
 package no.nav.poao.rest
 
+import com.auth0.jwt.JWT
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.get
 import com.google.gson.Gson
 import com.nimbusds.jwt.SignedJWT
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
+import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.runBlocking
@@ -20,9 +22,7 @@ import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
 import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
 import no.nav.poao.veilarbapi.setup.util.TokenProviders
 import no.nav.security.mock.oauth2.MockOAuth2Server
-import no.nav.security.mock.oauth2.token.DefaultOAuth2TokenCallback
-import no.nav.security.mock.oauth2.withMockOAuth2Server
-import org.junit.AfterClass
+import org.assertj.core.api.Assertions
 import org.junit.Test
 import org.mockito.kotlin.mock
 import kotlin.test.assertEquals
@@ -33,17 +33,18 @@ class ArbeidsoppfolgingRoutesITest {
     companion object {
         private val server = MockOAuth2Server()
 
-        private val configuration = Configuration(
-            veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet"),
-            veilarbdialogConfig = Configuration.VeilarbdialogConfig(url = "http://localhost:8080/veilarbdialog"),
-            veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(url = "http://localhost:8080/veilarboppfolging", authenticationScope = "api://test.ns.app/.default"),
-            azureAd = Configuration.AzureAd(clientId = "client_id", wellKnownConfigurationUrl = server.wellKnownUrl("azuread").toString())
-        )
-
         init {
             server.start()
         }
     }
+
+    private val configuration = Configuration(
+        veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet"),
+        veilarbdialogConfig = Configuration.VeilarbdialogConfig(url = "http://localhost:8080/veilarbdialog"),
+        veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(url = "http://localhost:8080/veilarboppfolging"),
+        azureAd = Configuration.AzureAd(clientId = "client_id", clientSecret="supersecret", wellKnownConfigurationUrl = server.wellKnownUrl("azuread").toString())
+    )
+
 
     @Test
     fun `hent oppfolgingsinfo`() {
@@ -60,7 +61,10 @@ class ArbeidsoppfolgingRoutesITest {
             engine {
                 addHandler { request ->
                     when (request.url.encodedPath) {
-                        "/veilarboppfolging/api/v2/oppfolging" -> respondOk(underOppfolgingMock)
+                        "/veilarboppfolging/api/v2/oppfolging" -> {
+                            checkTokenContent(request)
+                            respondOk(underOppfolgingMock)
+                        }
                         "/veilarboppfolging/api/v2/veileder" -> respondOk(veilederMock)
                         "/veilarboppfolging/api/person/oppfolgingsenhet" -> respondOk(oppfolgingsenhetMock)
                         else -> error("Unhandled ${request.url.encodedPath}")
@@ -86,13 +90,7 @@ class ArbeidsoppfolgingRoutesITest {
             veilarboppfolgingClient = veilarboppfolgingClient
         )
 
-//            val azureAdConfig = Configuration.AzureAd(
-//                clientId = "client_id",
-//                wellKnownConfigurationUrl = this.wellKnownUrl("azuread").toString()
-//            )
-
         val initialToken: SignedJWT = server.issueToken(subject = "enduser")
-
 
 
         val tokenResponse: Result<AccessToken, ThrowableErrorMessage> = runBlocking {
@@ -101,16 +99,6 @@ class ArbeidsoppfolgingRoutesITest {
                 accessToken = initialToken.serialize()
             )
         }
-//                url = tokenEndpointUrl,
-//                auth = Auth.PrivateKeyJwt(
-//                    keyPair = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }.generateKeyPair(),
-//                    clientId = "client1",
-//                    tokenEndpoint = tokenEndpointUrl
-//                ),
-//                token = initialToken.serialize(),
-//                scope = "targetScope"
-
-
 
         withTestApplication({
             configureAuthentication(true, configuration.azureAd)
@@ -124,5 +112,18 @@ class ArbeidsoppfolgingRoutesITest {
             }
         }
 
+
+    }
+
+    fun checkTokenContent(request: HttpRequestData) {
+        val downstreamAuthString = request.headers.get("Downstream-Authorization")?.substringAfter("Bearer ")
+        val downstreamAuthJwt = JWT.decode(downstreamAuthString)
+        Assertions.assertThat(downstreamAuthJwt.subject).isEqualTo("enduser")
+        Assertions.assertThat(downstreamAuthJwt.audience).containsExactly("api://local.pto.veilarboppfolging/.default")
+
+        val authString = request.headers.get("Authorization")?.substringAfter("Bearer ")
+        val authJwt = JWT.decode(authString)
+        Assertions.assertThat(authJwt.subject).isEqualTo("client_id")
+        Assertions.assertThat(authJwt.audience).containsExactly("api://local.pto.poao-gcp-proxy/.default")
     }
 }

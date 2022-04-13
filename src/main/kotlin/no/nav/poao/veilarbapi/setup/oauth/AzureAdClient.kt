@@ -1,20 +1,14 @@
 package no.nav.poao.veilarbapi.setup.oauth
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.JsonNode
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
-import com.github.michaelbull.result.andThen
 import io.ktor.client.HttpClient
 import io.ktor.client.features.ResponseException
 import io.ktor.client.request.forms.submitForm
-import io.ktor.client.request.get
-import io.ktor.client.request.header
 import io.ktor.client.statement.readText
-import io.ktor.http.HttpHeaders
 import io.ktor.http.Parameters
-import io.ktor.util.*
 import no.nav.poao.veilarbapi.setup.config.Configuration
 
 import no.nav.poao.veilarbapi.setup.http.defaultHttpClient
@@ -38,16 +32,6 @@ class AzureAdClient(
             onFailure = { error -> error.handleError("Could not fetch access token from authority endpoint") }
         )
 
-    private suspend inline fun get(url: String, oboAccessToken: AccessToken): Result<JsonNode, ThrowableErrorMessage> =
-        runCatching {
-            httpClient.get<JsonNode>(url) {
-                header(HttpHeaders.Authorization, "Bearer ${oboAccessToken.accessToken}")
-            }
-        }.fold(
-            onSuccess = { result -> Ok(result) },
-            onFailure = { error -> error.handleError("Could not GET $url") }
-        )
-
     private suspend fun Throwable.handleError(message: String): Err<ThrowableErrorMessage> {
         val responseBody: String? = when (this) {
             is ResponseException -> this.response.readText()
@@ -59,8 +43,6 @@ class AzureAdClient(
     }
 
     // Service-to-service access token request (client credentials grant)
-
-    @OptIn(InternalAPI::class)
     suspend fun getAccessTokenForResource(scopes: List<String>): Result<AccessToken, ThrowableErrorMessage> =
         fetchAccessToken(
             Parameters.build {
@@ -71,9 +53,7 @@ class AzureAdClient(
             }
         )
 
-    // Service-to-service access token request (on-behalf-of flow)
-
-    @OptIn(InternalAPI::class)
+    // (on-behalf-of flow)
     suspend fun getOnBehalfOfAccessTokenForResource(scopes: List<String>, accessToken: String): Result<AccessToken, ThrowableErrorMessage> =
         fetchAccessToken(
             Parameters.build {
@@ -86,16 +66,6 @@ class AzureAdClient(
                 append("assertion_type", "urn:ietf:params:oauth:client-assertion-type:jwt-bearer")
             }
         )
-
-    // Graph API lookup (on-behalf-of flow)
-
-    suspend fun getUserInfoFromGraph(accessToken: String): Result<JsonNode, ThrowableErrorMessage> {
-        val queryProperties = "onPremisesSamAccountName,displayName,givenName,mail,officeLocation,surname,userPrincipalName,id,jobTitle"
-        val url = "https://graph.microsoft.com/v1.0/me?\$select=$queryProperties"
-        val scopes = listOf("https://graph.microsoft.com/.default")
-        return getOnBehalfOfAccessTokenForResource(scopes, accessToken)
-            .andThen { oboAccessToken -> get(url, oboAccessToken) }
-    }
 }
 
 data class AccessToken(
