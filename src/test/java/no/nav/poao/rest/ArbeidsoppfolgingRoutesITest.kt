@@ -42,7 +42,7 @@ class ArbeidsoppfolgingRoutesITest {
         veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet"),
         veilarbdialogConfig = Configuration.VeilarbdialogConfig(url = "http://localhost:8080/veilarbdialog"),
         veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(url = "http://localhost:8080/veilarboppfolging"),
-        azureAd = Configuration.AzureAd(clientId = "client_id", clientSecret="supersecret", wellKnownConfigurationUrl = server.wellKnownUrl("azuread").toString())
+        azureAd = Configuration.AzureAd(clientId = "client_id", clientSecret="supersecret", wellKnownConfigurationUrl = server.wellKnownUrl("default").toString())
     )
 
 

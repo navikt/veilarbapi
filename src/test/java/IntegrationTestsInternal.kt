@@ -14,17 +14,12 @@ import kotlin.test.Test
 
 
 class IntegrationTestsInternal {
-    var applicationEngine: ApplicationEngine = mainTest()
 
-    @BeforeTest
-    fun startServer() {
-        applicationEngine.start(wait = false)
+    init {
+        mainTest()
     }
 
-    @AfterTest
-    fun stopServer() {
-        applicationEngine.stop(0,0)
-    }
+
 
     @Test
     fun testIsAlive() {
