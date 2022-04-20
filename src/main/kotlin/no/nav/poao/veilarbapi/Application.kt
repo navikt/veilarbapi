@@ -1,6 +1,5 @@
 package no.nav.poao.veilarbapi
 
-import com.github.michaelbull.result.get
 import no.nav.common.utils.SslUtils
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl

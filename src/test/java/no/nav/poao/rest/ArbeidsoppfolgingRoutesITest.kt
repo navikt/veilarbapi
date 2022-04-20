@@ -1,50 +1,34 @@
 package no.nav.poao.rest
 
 import com.auth0.jwt.JWT
-import com.github.michaelbull.result.Result
-import com.github.michaelbull.result.get
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.matching.StringValuePattern
 import com.google.gson.Gson
-import com.nimbusds.jwt.SignedJWT
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.engine.mock.*
+import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlinx.coroutines.runBlocking
 import no.nav.common.types.identer.NavIdent
+import no.nav.poao.IntegrasjonsTest
 import no.nav.poao.veilarbapi.oppfolging.*
-import no.nav.poao.veilarbapi.setup.config.Configuration
-import no.nav.poao.veilarbapi.setup.oauth.AccessToken
-import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
-import no.nav.poao.veilarbapi.setup.oauth.ThrowableErrorMessage
-import no.nav.poao.veilarbapi.setup.plugins.configureAuthentication
-import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
-import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
-import no.nav.poao.veilarbapi.setup.util.TokenProviders
-import no.nav.security.mock.oauth2.MockOAuth2Server
+import no.nav.security.mock.oauth2.withMockOAuth2Server
+import no.nav.veilarbapi.model.Oppfolgingsinfo
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import org.mockito.kotlin.mock
-import kotlin.test.assertEquals
+import java.util.concurrent.TimeUnit
 
 class ArbeidsoppfolgingRoutesITest {
 
-
     companion object {
-        private val server = MockOAuth2Server()
-
         init {
-            server.start()
+            IntegrasjonsTest.setup()
         }
     }
-
-    private val configuration = Configuration(
-        veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet"),
-        veilarbdialogConfig = Configuration.VeilarbdialogConfig(url = "http://localhost:8080/veilarbdialog"),
-        veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(url = "http://localhost:8080/veilarboppfolging"),
-        azureAd = Configuration.AzureAd(clientId = "client_id", clientSecret="supersecret", wellKnownConfigurationUrl = server.wellKnownUrl("default").toString())
-    )
-
 
     @Test
     fun `hent oppfolgingsinfo`() {
@@ -57,62 +41,46 @@ class ArbeidsoppfolgingRoutesITest {
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO("NAV Grünerløkka", "1234")
         val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
 
-        val httpClient = HttpClient(MockEngine) {
-            engine {
-                addHandler { request ->
-                    when (request.url.encodedPath) {
-                        "/veilarboppfolging/api/v2/oppfolging" -> {
-                            checkTokenContent(request)
-                            respondOk(underOppfolgingMock)
-                        }
-                        "/veilarboppfolging/api/v2/veileder" -> respondOk(veilederMock)
-                        "/veilarboppfolging/api/person/oppfolgingsenhet" -> respondOk(oppfolgingsenhetMock)
-                        else -> error("Unhandled ${request.url.encodedPath}")
-                    }
-                }
-            }
-        }
-
-        val azureAdClient = AzureAdClient(configuration.azureAd)
-
-        val tokenProviders = TokenProviders(azureAdClient, configuration)
-
-        val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
-            baseUrl = configuration.veilarboppfolgingConfig.url,
-            veilarboppfolgingTokenProvider = tokenProviders.veilarboppfolgingTokenProvider,
-            proxyTokenProvider = tokenProviders.proxyTokenProvider,
-            client = httpClient
+        IntegrasjonsTest.wireMockServer.stubFor(
+            WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/oppfolging"))
+                .withQueryParam("aktorId", WireMock.equalTo("123"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(200)
+                        .withBody(underOppfolgingMock)
+                )
         )
 
-        val oppfolgingService = OppfolgingService(
-            veilarbaktivitetClient = mock {},
-            veilarbdialogClient = mock {},
-            veilarboppfolgingClient = veilarboppfolgingClient
+        IntegrasjonsTest.wireMockServer.stubFor(
+            WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/veileder"))
+                .withQueryParam("aktorId", WireMock.equalTo("123"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(200)
+                        .withBody(veilederMock)
+                )
         )
 
-        val initialToken: SignedJWT = server.issueToken(subject = "enduser")
+        IntegrasjonsTest.wireMockServer.stubFor(
+            WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/person/oppfolgingsenhet"))
+                .withQueryParam("aktorId", WireMock.equalTo("123"))
+                .willReturn(
+                    WireMock.aResponse()
+                        .withStatus(200)
+                        .withBody(oppfolgingsenhetMock)
+                )
+        )
 
+        val token = IntegrasjonsTest.mockOauth2Server.issueToken(subject = "enduser", audience = "clientid")
 
-        val tokenResponse: Result<AccessToken, ThrowableErrorMessage> = runBlocking {
-            azureAdClient.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(configuration.azureAd.clientId),
-                accessToken = initialToken.serialize()
-            )
-        }
-
-        withTestApplication({
-            configureAuthentication(true, configuration.azureAd)
-            configureSerialization()
-            arbeidsoppfolgingRoutes(oppfolgingService = oppfolgingService)
-        }) {
-            handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123") {
-                this.addHeader("Authorization", "Bearer ${tokenResponse.get()?.accessToken}")
-            }.apply {
-                assertEquals(HttpStatusCode.OK, response.status())
+        val client = HttpClient(OkHttp)
+        runBlocking {
+            val response = client.get<HttpResponse>("http://0.0.0.0:8080/v1/oppfolging/info?aktorId=123") {
+                header("Authorization", "Bearer ${token.serialize()}")
             }
+            Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+            val oppfolgingsinfo = response.receive<Oppfolgingsinfo>()
         }
-
-
     }
 
     fun checkTokenContent(request: HttpRequestData) {

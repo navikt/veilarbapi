@@ -171,5 +171,7 @@ dependencies {
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
     // avhengigheter i generert kode SLUTT
+
+    testImplementation("com.github.tomakehurst:wiremock-jre8:2.33.1")
 }
 

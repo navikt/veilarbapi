@@ -1,30 +1,41 @@
 package no.nav.poao
 
-import io.ktor.server.engine.*
+import com.github.tomakehurst.wiremock.WireMockServer
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import no.nav.poao.veilarbapi.main
 import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.security.mock.oauth2.MockOAuth2Server
 
+class IntegrasjonsTest {
 
-fun mainTest() {
-    val mockOAuth2Server = MockOAuth2Server()
-    mockOAuth2Server.start()
+    companion object {
+        var mockOauth2Server = MockOAuth2Server();
+        val wireMockServer: WireMockServer = WireMockServer(WireMockConfiguration.options().dynamicPort())
 
-    System.setProperty("NAIS_APP_NAME", "local")
-    System.setProperty("AZURE_APP_WELL_KNOWN_URL", "${mockOAuth2Server.wellKnownUrl("default")}")
-    System.setProperty("AZURE_APP_CLIENT_ID", "clientid")
-    System.setProperty("AZURE_APP_CLIENT_SECRET", "supersecret")
-    System.setProperty("VEILARBAKTIVITETAPI_URL", "http://localhost:8080/veilarbaktivitet")
-    System.setProperty("VEILARBDIALOGAPI_URL", "http://localhost:8080/veilarbdialog")
-    System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:8080/veilarboppfolging")
+        fun setup() {
+            wireMockServer.start()
+            mockOauth2Server.start()
 
-    val configuration = Configuration(
-    )
+            System.setProperty("NAIS_APP_NAME", "local")
+            System.setProperty("AZURE_APP_WELL_KNOWN_URL", "${mockOauth2Server.wellKnownUrl("default")}")
+            System.setProperty("AZURE_APP_CLIENT_ID", "clientid")
+            System.setProperty("AZURE_APP_CLIENT_SECRET", "supersecret")
+            System.setProperty("VEILARBAKTIVITETAPI_URL", "http://localhost:${wireMockServer.port()}/veilarbaktivitet")
+            System.setProperty("VEILARBDIALOGAPI_URL", "http://localhost:${wireMockServer.port()}/veilarbdialog")
+            System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:${wireMockServer.port()}/veilarboppfolging")
 
-   main(configuration)
+            val configuration = Configuration(httpServerWait = false)
 
-    Runtime.getRuntime().addShutdownHook(Thread {
-        mockOAuth2Server.shutdown()
-    })
+            main(configuration)
+
+            Runtime.getRuntime().addShutdownHook(Thread {
+                mockOauth2Server.shutdown()
+            })
+        }
+    }
+
+
+
 
 }
+

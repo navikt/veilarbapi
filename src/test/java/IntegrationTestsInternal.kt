@@ -4,22 +4,19 @@ import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.server.engine.*
 import kotlinx.coroutines.runBlocking
-import no.nav.poao.mainTest
+import no.nav.poao.IntegrasjonsTest
 import org.assertj.core.api.Assertions.assertThat
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 
 class IntegrationTestsInternal {
 
-    init {
-        mainTest()
+    private companion object {
+        init {
+            IntegrasjonsTest.setup()
+        }
     }
-
-
 
     @Test
     fun testIsAlive() {
