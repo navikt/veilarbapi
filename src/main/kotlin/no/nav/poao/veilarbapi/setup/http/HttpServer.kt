@@ -11,7 +11,7 @@ fun createHttpServer(
     applicationState: ApplicationState,
     port: Int = 8080,
     configuration: Configuration,
-    oppfolgingService: OppfolgingService
+    oppfolgingService: OppfolgingService,
 ) : ApplicationEngine = embeddedServer(Netty, port, "0.0.0.0") {
 
     configureMonitoring()
