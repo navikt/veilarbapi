@@ -9,6 +9,7 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import no.nav.common.types.identer.NavIdent
+import no.nav.poao.util.setupEnvironment
 import no.nav.poao.veilarbapi.module
 import no.nav.poao.veilarbapi.oppfolging.*
 import no.nav.poao.veilarbapi.setup.config.Configuration
@@ -69,16 +70,6 @@ class ArbeidsoppfolgingRoutesITest2 {
             }
         }
 
-    }
-
-    private fun setupEnvironment(server: MockOAuth2Server) {
-        System.setProperty("NAIS_APP_NAME", "local")
-        System.setProperty("AZURE_APP_WELL_KNOWN_URL", "${server.wellKnownUrl("default")}")
-        System.setProperty("AZURE_APP_CLIENT_ID", "client_id")
-        System.setProperty("AZURE_APP_CLIENT_SECRET", "supersecret")
-        System.setProperty("VEILARBAKTIVITETAPI_URL", "http://localhost:8080/veilarbaktivitet")
-        System.setProperty("VEILARBDIALOGAPI_URL", "http://localhost:8080/veilarbdialog")
-        System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:8080/veilarboppfolging")
     }
 
     private fun checkDownstreamTokenContent(request: HttpRequestData) {
