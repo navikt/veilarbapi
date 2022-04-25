@@ -2,6 +2,7 @@ package no.nav.poao.util
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.google.gson.Gson
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsenhetDTO
 import no.nav.poao.veilarbapi.oppfolging.UnderOppfolgingDTO
@@ -10,7 +11,7 @@ import no.nav.poao.veilarbapi.oppfolging.VeilederDTO
 internal fun <R> withWiremockServer(
     test: WireMockServer.() -> R
 ): R {
-    val server = WireMockServer(0)
+    val server = WireMockServer(WireMockConfiguration.DYNAMIC_PORT)
     server.start()
     try {
         return server.test()
@@ -20,9 +21,9 @@ internal fun <R> withWiremockServer(
 }
 
 
-fun stubVeileder(veilederDTO: VeilederDTO) {
+fun stubVeileder(wireMockServer: WireMockServer, veilederDTO: VeilederDTO) {
     val veilederMock = Gson().toJson(veilederDTO)
-    WireMock.stubFor(
+    wireMockServer.stubFor(
         WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/veileder"))
             .withQueryParam("aktorId", WireMock.equalTo("123"))
             .willReturn(
@@ -33,9 +34,9 @@ fun stubVeileder(veilederDTO: VeilederDTO) {
     )
 }
 
-fun stubUnderOppfolging(underOppfolgingDTO: UnderOppfolgingDTO) {
+fun stubUnderOppfolging(wireMockServer: WireMockServer, underOppfolgingDTO: UnderOppfolgingDTO) {
     val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
-    WireMock.stubFor(
+    wireMockServer.stubFor(
         WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/oppfolging"))
             .withQueryParam("aktorId", WireMock.equalTo("123"))
             .willReturn(
@@ -46,9 +47,9 @@ fun stubUnderOppfolging(underOppfolgingDTO: UnderOppfolgingDTO) {
     )
 }
 
-fun stubOppfolgingsEnhet(oppfolgingsenhetDTO: OppfolgingsenhetDTO) {
+fun stubOppfolgingsEnhet(wireMockServer: WireMockServer, oppfolgingsenhetDTO: OppfolgingsenhetDTO) {
     val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
-    WireMock.stubFor(
+    wireMockServer.stubFor(
         WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/person/oppfolgingsenhet"))
             .withQueryParam("aktorId", WireMock.equalTo("123"))
             .willReturn(

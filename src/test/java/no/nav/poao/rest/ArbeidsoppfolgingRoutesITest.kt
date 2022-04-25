@@ -26,22 +26,24 @@ import kotlin.test.assertEquals
 class ArbeidsoppfolgingRoutesITest {
 
 
+
     @Test
     fun `hent oppfolgingsinfo med wiremock for eksterne kall`() {
-
         val underOppfolgingDto = UnderOppfolgingDTO(true)
         val veilederDTO = VeilederDTO(NavIdent("z999999"))
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO(navn = "Nav Grunerløkka", "1234")
 
         withWiremockServer {
+            stubUnderOppfolging(this, underOppfolgingDto)
+            stubVeileder(this, veilederDTO)
+            stubOppfolgingsEnhet(this, oppfolgingsenhetDTO)
+
             withMockOAuth2Server {
                 val token = this.issueToken(subject = "enduser", audience = "client_id")
+
                 withTestApplication({
                     setupEnvironment(this@withMockOAuth2Server, this@withWiremockServer)
                     module()
-                    stubUnderOppfolging(underOppfolgingDto)
-                    stubVeileder(veilederDTO)
-                    stubOppfolgingsEnhet(oppfolgingsenhetDTO)
                 }) {
                     with(handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123") {
                         addHeader(HttpHeaders.Authorization, "Bearer ${token.serialize()}")
