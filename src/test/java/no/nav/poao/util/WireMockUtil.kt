@@ -10,7 +10,7 @@ import no.nav.poao.veilarbapi.oppfolging.VeilederDTO
 internal fun <R> withWiremockServer(
     test: WireMockServer.() -> R
 ): R {
-    val server = WireMockServer()
+    val server = WireMockServer(0)
     server.start()
     try {
         return server.test()
