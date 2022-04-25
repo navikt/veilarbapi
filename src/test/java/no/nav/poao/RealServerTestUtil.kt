@@ -3,13 +3,12 @@ package no.nav.poao
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import no.nav.poao.veilarbapi.main
-import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.security.mock.oauth2.MockOAuth2Server
 
-class IntegrasjonsTest {
+class RealServerTestUtil {
 
     companion object {
-        var mockOauth2Server = MockOAuth2Server();
+        var mockOauth2Server = MockOAuth2Server()
         val wireMockServer: WireMockServer = WireMockServer(WireMockConfiguration.options().dynamicPort())
 
         fun setup() {
@@ -24,18 +23,15 @@ class IntegrasjonsTest {
             System.setProperty("VEILARBDIALOGAPI_URL", "http://localhost:${wireMockServer.port()}/veilarbdialog")
             System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:${wireMockServer.port()}/veilarboppfolging")
 
-            val configuration = Configuration(httpServerWait = false)
 
-    //        main(configuration)
+
+            main()
 
             Runtime.getRuntime().addShutdownHook(Thread {
                 mockOauth2Server.shutdown()
             })
         }
     }
-
-
-
 
 }
 

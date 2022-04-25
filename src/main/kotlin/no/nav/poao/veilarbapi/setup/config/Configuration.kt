@@ -30,7 +30,6 @@ data class Configuration(
     val poaoGcpProxyConfig: PoaoGcpProxyConfig = PoaoGcpProxyConfig(),
     val clustername: String = config()[Key("NAIS_CLUSTER_NAME", stringType)],
     val azureAd: AzureAd = AzureAd(),
-    val httpServerWait: Boolean = true,
     val useAuthentication: Boolean = true
 ) {
     data class AzureAd(

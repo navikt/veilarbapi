@@ -24,14 +24,3 @@ internal fun setupEnvironment(mockOAuth2Server: MockOAuth2Server, wireMockServer
     System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:${wiremockServerPort}/veilarboppfolging")
 }
 
-internal fun <R> withWiremockServer(
-    test: WireMockServer.() -> R
-): R {
-    val server = WireMockServer()
-    server.start()
-    try {
-        return server.test()
-    } finally {
-        server.shutdown()
-    }
-}

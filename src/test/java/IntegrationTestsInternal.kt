@@ -5,7 +5,7 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.coroutines.runBlocking
-import no.nav.poao.IntegrasjonsTest
+import no.nav.poao.RealServerTestUtil
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
@@ -14,7 +14,7 @@ class IntegrationTestsInternal {
 
     private companion object {
         init {
-            IntegrasjonsTest.setup()
+            RealServerTestUtil.setup()
         }
     }
 

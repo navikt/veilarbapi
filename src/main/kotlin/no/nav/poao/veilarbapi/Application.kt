@@ -8,25 +8,20 @@ import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
 import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClientImpl
+import no.nav.poao.veilarbapi.setup.config.Cluster
 import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
 import no.nav.poao.veilarbapi.setup.plugins.*
 import no.nav.poao.veilarbapi.setup.util.TokenProviders
 
-data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
 
 fun main() {
     SslUtils.setupTruststore()
-    val applicationState = ApplicationState()
 
-    Runtime.getRuntime().addShutdownHook(Thread {
-        applicationState.initialized = false
-    })
+    val httpServerWait = Cluster.current != Cluster.LOKAL
 
-    embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0") {
-        module()
-        applicationState.initialized = true
-    }.start(wait = true)
+    embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0", module = Application::module)
+    .start(wait =  httpServerWait)
 }
 
 fun Application.module(configuration: Configuration = Configuration()) {
