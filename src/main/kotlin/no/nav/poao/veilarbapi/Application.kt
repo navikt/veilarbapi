@@ -1,77 +1,44 @@
 package no.nav.poao.veilarbapi
 
-import com.github.michaelbull.result.get
+import io.ktor.application.*
+import io.ktor.server.engine.*
+import io.ktor.server.netty.*
 import no.nav.common.utils.SslUtils
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
 import no.nav.poao.veilarbapi.oppfolging.VeilarboppfolgingClientImpl
+import no.nav.poao.veilarbapi.setup.config.Cluster
 import no.nav.poao.veilarbapi.setup.config.Configuration
-import no.nav.poao.veilarbapi.setup.http.createHttpServer
 import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
+import no.nav.poao.veilarbapi.setup.plugins.*
+import no.nav.poao.veilarbapi.setup.util.TokenProviders
 
-data class ApplicationState(var running: Boolean = true, var initialized: Boolean = false)
 
 fun main() {
-    main(Configuration())
+    SslUtils.setupTruststore()
+
+    val httpServerWait = Cluster.current != Cluster.LOKAL
+
+    embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0", module = Application::module)
+    .start(wait =  httpServerWait)
 }
 
-fun main(configuration: Configuration) {
-    SslUtils.setupTruststore()
-    val applicationState = ApplicationState()
+fun Application.module(configuration: Configuration = Configuration()) {
 
     val azureAdClient = AzureAdClient(configuration.azureAd)
 
-    val proxyTokenProvider: suspend (String?) -> String? = { accessToken ->
-        accessToken?.let {
-            azureAdClient.getAccessTokenForResource(
-                scopes = listOf(configuration.poaoGcpProxyConfig.authenticationScope)
-            ).get()?.accessToken
-        }
-    }
+    val tokenProviders = TokenProviders(azureAdClient, configuration)
 
-    val veilarbaktivitetTokenProvider: suspend (String?) -> String? = { accessToken ->
-        accessToken?.let {
-            azureAdClient.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(configuration.veilarbaktivitetConfig.authenticationScope),
-                accessToken = it
-            ).get()?.accessToken
-        }
-    }
-
-    val veilarbdialogTokenProvider: suspend (String?) -> String? = { accessToken ->
-        accessToken?.let {
-            azureAdClient.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(configuration.veilarbdialogConfig.authenticationScope),
-                accessToken = it
-            ).get()?.accessToken
-        }
-    }
-
-    val veilarboppfolgingTokenProvider: suspend (String?) -> String? = { accessToken ->
-        accessToken?.let {
-            azureAdClient.getOnBehalfOfAccessTokenForResource(
-                scopes = listOf(configuration.veilarboppfolgingConfig.authenticationScope),
-                accessToken = it
-            ).get()?.accessToken
-        }
-    }
-
-    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig.url, veilarbaktivitetTokenProvider, proxyTokenProvider)
-    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig.url, veilarbdialogTokenProvider, proxyTokenProvider)
-    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig.url, veilarboppfolgingTokenProvider, proxyTokenProvider)
+    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig.url, tokenProviders.veilarbaktivitetTokenProvider, tokenProviders.proxyTokenProvider, configuration.veilarbaktivitetConfig.httpClient)
+    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig.url, tokenProviders.veilarbdialogTokenProvider, tokenProviders.proxyTokenProvider, configuration.veilarbdialogConfig.httpClient)
+    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig.url, tokenProviders.veilarboppfolgingTokenProvider, tokenProviders.proxyTokenProvider, configuration.veilarboppfolgingConfig.httpClient)
 
     val oppfolgingService = OppfolgingService(veilarbaktivitetClient = veilarbaktivitetClient, veilarbdialogClient = veilarbdialogClient, veilarboppfolgingClient =  veilarboppfolgingClient)
 
-    val applicationServer = createHttpServer(
-        applicationState = applicationState,
-        configuration = configuration,
-        oppfolgingService = oppfolgingService
-    )
-
-    Runtime.getRuntime().addShutdownHook(Thread {
-        applicationState.initialized = false
-    })
-
-    applicationServer.start(wait = configuration.httpServerWait)
+    configureMonitoring()
+    configureAuthentication(configuration.useAuthentication, configuration.azureAd)
+    configureSerialization()
+    configureRouting(configuration.useAuthentication, oppfolgingService = oppfolgingService)
+    configureExceptionHandler()
 }

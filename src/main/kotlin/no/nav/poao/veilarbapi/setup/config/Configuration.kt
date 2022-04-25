@@ -2,8 +2,10 @@ package no.nav.poao.veilarbapi.setup.config
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.natpryce.konfig.*
+import io.ktor.client.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
+import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.poao.veilarbapi.setup.http.defaultHttpClient
 
 private const val notUsedLocally = ""
@@ -28,7 +30,6 @@ data class Configuration(
     val poaoGcpProxyConfig: PoaoGcpProxyConfig = PoaoGcpProxyConfig(),
     val clustername: String = config()[Key("NAIS_CLUSTER_NAME", stringType)],
     val azureAd: AzureAd = AzureAd(),
-    val httpServerWait: Boolean = true,
     val useAuthentication: Boolean = true
 ) {
     data class AzureAd(
@@ -41,19 +42,22 @@ data class Configuration(
     )
 
     data class PoaoGcpProxyConfig(
-        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.poao-gcp-proxy/.default"
+        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.poao-gcp-proxy/.default"
     )
     data class VeilarbaktivitetConfig(
         val url: String = config()[Key("VEILARBAKTIVITETAPI_URL", stringType)],
-        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarbaktivitet/.default"
+        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarbaktivitet/.default",
+        val httpClient: HttpClient = baseClient()
     )
     data class VeilarbdialogConfig(
         val url: String = config()[Key("VEILARBDIALOGAPI_URL", stringType)],
-        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarbdialog/.default"
+        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarbdialog/.default",
+        val httpClient: HttpClient = baseClient()
     )
     data class VeilarboppfolgingConfig(
         val url: String = config()[Key("VEILARBOPPFOLGINGAPI_URL", stringType)],
-        val authenticationScope: String = "api://${if (Cluster.current == Cluster.PROD_GCP) "prod-fss" else "dev-fss"}.pto.veilarboppfolging/.default"
+        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarboppfolging/.default",
+        val httpClient: HttpClient = baseClient()
     )
 }
 

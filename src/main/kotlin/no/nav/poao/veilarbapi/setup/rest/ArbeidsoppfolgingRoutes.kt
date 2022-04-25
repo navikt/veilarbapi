@@ -12,7 +12,7 @@ import no.nav.poao.veilarbapi.setup.oauth.MockPayload
 import no.nav.poao.veilarbapi.setup.util.getAccessToken
 import no.nav.veilarbapi.model.Oppfolgingsinfo
 
-fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, oppfolgingService: OppfolgingService) {
+fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean = true, oppfolgingService: OppfolgingService) {
     routing() {
         conditionalAuthenticate(useAuthentication) {
             route("/v1/oppfolging/") {
@@ -52,7 +52,8 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean, oppfolgingSe
 fun Route.conditionalAuthenticate(useAuthentication: Boolean, build: Route.() -> Unit): Route {
     if (useAuthentication) {
         return authenticate(build = build, configurations = arrayOf("azuread"))
-    } else return mockAuthentication(build)
+    }
+    return mockAuthentication(build)
 }
 
 fun Route.mockAuthentication(build: Route.() -> Unit): Route {

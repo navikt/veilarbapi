@@ -4,26 +4,18 @@ import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
-import io.ktor.server.engine.*
 import kotlinx.coroutines.runBlocking
-import no.nav.poao.mainTest
+import no.nav.poao.RealServerTestUtil
 import org.assertj.core.api.Assertions.assertThat
-import kotlin.test.AfterTest
-import kotlin.test.BeforeTest
 import kotlin.test.Test
 
 
 class IntegrationTestsInternal {
-    var applicationEngine: ApplicationEngine = mainTest()
 
-    @BeforeTest
-    fun startServer() {
-        applicationEngine.start(wait = false)
-    }
-
-    @AfterTest
-    fun stopServer() {
-        applicationEngine.stop(0,0)
+    private companion object {
+        init {
+            RealServerTestUtil.setup()
+        }
     }
 
     @Test

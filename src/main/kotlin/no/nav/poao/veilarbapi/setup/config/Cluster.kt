@@ -14,5 +14,11 @@ enum class Cluster {
         }
     }
 
+    fun toOnPrem(): String = when (this) {
+        DEV_GCP -> "dev-fss"
+        PROD_GCP -> "prod-fss"
+        LOKAL -> "local"
+    }
+
     fun asString(): String = name.lowercase().replace("_", "-")
 }
