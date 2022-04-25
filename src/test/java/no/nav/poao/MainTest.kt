@@ -26,7 +26,7 @@ class IntegrasjonsTest {
 
             val configuration = Configuration(httpServerWait = false)
 
-//            main(configuration)
+    //        main(configuration)
 
             Runtime.getRuntime().addShutdownHook(Thread {
                 mockOauth2Server.shutdown()

@@ -1,30 +1,22 @@
 package no.nav.poao.rest
 
 import com.auth0.jwt.JWT
-import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.google.gson.Gson
 import com.nimbusds.jwt.SignedJWT
-import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.client.request.*
-import io.ktor.config.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import no.nav.common.types.identer.NavIdent
-import no.nav.poao.IntegrasjonsTest
 import no.nav.poao.veilarbapi.module
 import no.nav.poao.veilarbapi.oppfolging.*
 import no.nav.poao.veilarbapi.setup.config.Configuration
-import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
 import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.withMockOAuth2Server
 import no.nav.veilarbapi.model.Oppfolgingsinfo
-import no.nav.veilarbapi.model.Oppfolgingsperioder
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import java.util.*
 import kotlin.test.assertEquals
 
 class ArbeidsoppfolgingRoutesITest2 {
@@ -45,7 +37,7 @@ class ArbeidsoppfolgingRoutesITest2 {
                 addHandler { request ->
                     when (request.url.encodedPath) {
                         "/veilarboppfolging/api/v2/oppfolging" -> {
-                            checkTokenContent(request)
+                            checkDownstreamTokenContent(request)
                             respondOk(underOppfolgingMock)
                         }
                         "/veilarboppfolging/api/v2/veileder" -> respondOk(veilederMock)
@@ -63,9 +55,9 @@ class ArbeidsoppfolgingRoutesITest2 {
                 setupEnvironment(this@withMockOAuth2Server)
                 module(Configuration(veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = httpClient)))
             }) {
-                handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123") {
+                with(handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123") {
                     this.addHeader("Authorization", "Bearer ${initialToken.serialize()}")
-                }.apply {
+                }) {
                     assertEquals(HttpStatusCode.OK, response.status())
                     val oppfolgingsinfo =
                         no.nav.veilarbapi.JSON.deserialize<Oppfolgingsinfo>(
@@ -79,7 +71,7 @@ class ArbeidsoppfolgingRoutesITest2 {
 
     }
 
-    private fun Application.setupEnvironment(server: MockOAuth2Server) {
+    private fun setupEnvironment(server: MockOAuth2Server) {
         System.setProperty("NAIS_APP_NAME", "local")
         System.setProperty("AZURE_APP_WELL_KNOWN_URL", "${server.wellKnownUrl("default")}")
         System.setProperty("AZURE_APP_CLIENT_ID", "client_id")
@@ -89,7 +81,7 @@ class ArbeidsoppfolgingRoutesITest2 {
         System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:8080/veilarboppfolging")
     }
 
-    private fun checkTokenContent(request: HttpRequestData) {
+    private fun checkDownstreamTokenContent(request: HttpRequestData) {
         val downstreamAuthString = request.headers.get("Downstream-Authorization")?.substringAfter("Bearer ")
         val downstreamAuthJwt = JWT.decode(downstreamAuthString)
         Assertions.assertThat(downstreamAuthJwt.subject).isEqualTo("enduser")

@@ -1,12 +1,10 @@
 package no.nav.poao.rest
 
-import com.auth0.jwt.JWT
-import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.matching.StringValuePattern
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.google.gson.Gson
+import io.ktor.application.*
 import io.ktor.client.*
 import io.ktor.client.call.*
-import io.ktor.client.engine.mock.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -15,12 +13,14 @@ import io.ktor.server.testing.*
 import kotlinx.coroutines.runBlocking
 import no.nav.common.types.identer.NavIdent
 import no.nav.poao.IntegrasjonsTest
-import no.nav.poao.veilarbapi.oppfolging.*
-import no.nav.security.mock.oauth2.withMockOAuth2Server
+import no.nav.poao.veilarbapi.main
+import no.nav.poao.veilarbapi.module
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingsenhetDTO
+import no.nav.poao.veilarbapi.oppfolging.UnderOppfolgingDTO
+import no.nav.poao.veilarbapi.oppfolging.VeilederDTO
 import no.nav.veilarbapi.model.Oppfolgingsinfo
 import org.assertj.core.api.Assertions
 import org.junit.Test
-import java.util.concurrent.TimeUnit
 
 class ArbeidsoppfolgingRoutesITest {
 
@@ -42,36 +42,51 @@ class ArbeidsoppfolgingRoutesITest {
         val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
 
         IntegrasjonsTest.wireMockServer.stubFor(
-            WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/oppfolging"))
-                .withQueryParam("aktorId", WireMock.equalTo("123"))
+            get(urlPathEqualTo("/veilarboppfolging/api/v2/oppfolging"))
+                .withQueryParam("aktorId", equalTo("123"))
                 .willReturn(
-                    WireMock.aResponse()
+                    aResponse()
                         .withStatus(200)
                         .withBody(underOppfolgingMock)
                 )
         )
 
         IntegrasjonsTest.wireMockServer.stubFor(
-            WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/veileder"))
-                .withQueryParam("aktorId", WireMock.equalTo("123"))
+            get(urlPathEqualTo("/veilarboppfolging/api/v2/veileder"))
+                .withQueryParam("aktorId", equalTo("123"))
                 .willReturn(
-                    WireMock.aResponse()
+                    aResponse()
                         .withStatus(200)
                         .withBody(veilederMock)
                 )
         )
 
         IntegrasjonsTest.wireMockServer.stubFor(
-            WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/person/oppfolgingsenhet"))
-                .withQueryParam("aktorId", WireMock.equalTo("123"))
+            get(urlPathEqualTo("/veilarboppfolging/api/person/oppfolgingsenhet"))
+                .withQueryParam("aktorId", equalTo("123"))
                 .willReturn(
-                    WireMock.aResponse()
+                    aResponse()
                         .withStatus(200)
                         .withBody(oppfolgingsenhetMock)
                 )
         )
 
         val token = IntegrasjonsTest.mockOauth2Server.issueToken(subject = "enduser", audience = "clientid")
+
+        withTestApplication(Application::module) {
+            with(handleRequest(HttpMethod.Get, "v1/oppfolging/info?aktorId=123") {
+                addHeader(HttpHeaders.Authorization, token.serialize())
+
+            }) {
+                val oppfolgingsinfo =
+                    no.nav.veilarbapi.JSON.deserialize<Oppfolgingsinfo>(
+                        response.content,
+                        Oppfolgingsinfo::class.java
+                    )
+                Assertions.assertThat(oppfolgingsinfo.underOppfolging).isEqualTo(underOppfolgingDTO.erUnderOppfolging)
+            }
+
+        }
 
         val client = HttpClient(OkHttp)
         runBlocking {
@@ -80,18 +95,8 @@ class ArbeidsoppfolgingRoutesITest {
             }
             Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.OK)
             val oppfolgingsinfo = response.receive<Oppfolgingsinfo>()
+            Assertions.assertThat(oppfolgingsinfo.underOppfolging).isEqualTo(underOppfolgingDTO.erUnderOppfolging)
         }
     }
 
-    fun checkTokenContent(request: HttpRequestData) {
-        val downstreamAuthString = request.headers.get("Downstream-Authorization")?.substringAfter("Bearer ")
-        val downstreamAuthJwt = JWT.decode(downstreamAuthString)
-        Assertions.assertThat(downstreamAuthJwt.subject).isEqualTo("enduser")
-        Assertions.assertThat(downstreamAuthJwt.audience).containsExactly("api://local.pto.veilarboppfolging/.default")
-
-        val authString = request.headers.get("Authorization")?.substringAfter("Bearer ")
-        val authJwt = JWT.decode(authString)
-        Assertions.assertThat(authJwt.subject).isEqualTo("client_id")
-        Assertions.assertThat(authJwt.audience).containsExactly("api://local.pto.poao-gcp-proxy/.default")
-    }
 }
