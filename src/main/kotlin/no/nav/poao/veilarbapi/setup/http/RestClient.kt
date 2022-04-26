@@ -28,10 +28,14 @@ fun baseClient(): HttpClient {
     return baseClient(baseEngine())
 }
 
-fun baseClient(engine: HttpClientEngine): HttpClient {
-    return HttpClient(engine) {
+fun baseClient(engine: HttpClientEngine, block: HttpClientConfig<OkHttpConfig>.() -> Unit = {}): HttpClient {
+    val config: HttpClientConfig<OkHttpConfig> = HttpClientConfig<OkHttpConfig>().apply(block)
+
+    config.apply {
         expectSuccess = false
     }
+
+    return HttpClient(engine, config)
 }
 
 private fun baseEngine(): HttpClientEngine {

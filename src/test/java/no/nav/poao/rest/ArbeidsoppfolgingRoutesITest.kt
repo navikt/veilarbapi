@@ -14,6 +14,7 @@ import no.nav.poao.util.setupEnvironment
 import no.nav.poao.util.withWiremockServer
 import no.nav.poao.veilarbapi.module
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsenhetDTO
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import no.nav.poao.veilarbapi.oppfolging.UnderOppfolgingDTO
 import no.nav.poao.veilarbapi.oppfolging.VeilederDTO
 import no.nav.poao.veilarbapi.setup.config.Configuration
@@ -21,6 +22,8 @@ import no.nav.security.mock.oauth2.withMockOAuth2Server
 import no.nav.veilarbapi.model.Oppfolgingsinfo
 import org.assertj.core.api.Assertions
 import org.junit.Test
+import org.threeten.bp.OffsetDateTime
+import java.util.*
 import kotlin.test.assertEquals
 
 class ArbeidsoppfolgingRoutesITest {
@@ -118,7 +121,48 @@ class ArbeidsoppfolgingRoutesITest {
 
     }
 
-    private fun checkDownstreamTokenContent(request: HttpRequestData) {
+    @Test
+    fun `hent oppfolgingsperiode med mockengine client for eksterne tjenester`() {
+        val uuid = UUID.randomUUID()
+        val oppfolgingsperiode = OppfolgingsperiodeDTO(uuid, "aktorid", null, OffsetDateTime.now().minusDays(1), null)
+
+        val internAktiviteter = listOf(InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid))
+
+        val internDialog = listOf(InternDialogBuilder.nyDialog().oppfolgingsperiodeId(uuid).aktivitetId("3"))
+
+        val mockOppfolgingsperiode = Gson().toJson(oppfolgingsperiode)
+        val mockAktiviteter = Gson().toJson(internAktiviteter)
+        val mockDialoger = Gson().toJson(internDialog)
+
+        val veilarbdialogClient = createMockClient(HttpStatusCode.OK, mockDialoger) {
+            engine {
+
+            }
+        }
+        val veilarbaktivitetClient = createMockClient(HttpStatusCode.OK, mockAktiviteter)
+        val veilarboppfolgingClient = createMockClient(HttpStatusCode.OK, mockOppfolgingsperiode)
+
+        withMockOAuth2Server {
+            val initialToken: SignedJWT = this.issueToken(subject = "enduser", audience = "client_id")
+
+            withTestApplication({
+                setupEnvironment(this@withMockOAuth2Server)
+                module(Configuration(
+                    veilarbdialogConfig = Configuration.VeilarbdialogConfig(httpClient = veilarbdialogClient),
+                    veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(httpClient = veilarbaktivitetClient),
+                    veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingClient)
+                ))
+            }) {
+                with(handleRequest(HttpMethod.Get, "/v1/oppfolging/periode?aktorId=123") {
+                    this.addHeader("Authorization", "Bearer ${initialToken.serialize()}")
+                }) {
+                    assertEquals(HttpStatusCode.OK, response.status())
+                }
+            }
+        }
+    }
+
+    private fun checkDownstreamTokenContent(request: HttpRequestData, ) {
         val downstreamAuthString = request.headers.get("Downstream-Authorization")?.substringAfter("Bearer ")
         val downstreamAuthJwt = JWT.decode(downstreamAuthString)
         Assertions.assertThat(downstreamAuthJwt.subject).isEqualTo("enduser")

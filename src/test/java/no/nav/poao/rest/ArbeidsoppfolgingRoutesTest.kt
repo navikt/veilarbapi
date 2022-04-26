@@ -5,13 +5,11 @@ import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import io.ktor.utils.io.*
 import no.nav.common.types.identer.NavIdent
 import no.nav.poao.util.InternAktivitetBuilder
 import no.nav.poao.util.InternDialogBuilder
-import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClient
+import no.nav.poao.util.createMockClient
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
-import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
 import no.nav.poao.veilarbapi.oppfolging.*
 import no.nav.poao.veilarbapi.setup.config.Configuration
@@ -23,8 +21,6 @@ import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
-import org.mockito.Mock
-import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
 import org.threeten.bp.OffsetDateTime
 import java.util.*
@@ -47,7 +43,7 @@ class ArbeidsoppfolgingRoutesTest {
     }
 
     @Test
-    fun testHentPeriodeRoute() { // todo - sett opp mockoauth2server
+    fun testHentPeriodeRoute() {
         val mockOppfolgingService = oppfolgingService()
 
         withTestApplication({
@@ -215,14 +211,14 @@ class ArbeidsoppfolgingRoutesTest {
             baseUrl = veilarbaktivitetConfig.url,
             veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
             proxyTokenProvider = { "PROXY_TOKEN" },
-            client = baseClient(createMockEngine(mockAktiviteter))
+            client = baseClient(createMockClient(HttpStatusCode.OK, mockAktiviteter))
         )
 
         val veilarbdialogClient = VeilarbdialogClientImpl(
             baseUrl = veilarbdialogConfig.url,
             veilarbdialogTokenProvider = { "VEILARBDIALOG_TOKEN" },
             proxyTokenProvider = { "PROXY_TOKEN" },
-            client = baseClient(createMockEngine(mockDialoger))
+            client = baseClient(createMockClient(HttpStatusCode.OK, mockDialoger))
         )
 
         val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
@@ -293,13 +289,5 @@ class ArbeidsoppfolgingRoutesTest {
         return Gson().toJson(enhet)
     }
 
-    private fun createMockEngine(json: String): MockEngine {
-        return MockEngine {
-            respond(
-                content = ByteReadChannel(json),
-                status = HttpStatusCode.OK,
-                headers = headersOf(HttpHeaders.ContentType, "application/json")
-            )
-        }
-    }
+
 }
