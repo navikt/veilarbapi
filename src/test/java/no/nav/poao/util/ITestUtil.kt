@@ -1,6 +1,9 @@
 package no.nav.poao.util
 
 import com.github.tomakehurst.wiremock.WireMockServer
+import io.ktor.client.*
+import io.ktor.client.engine.mock.*
+import io.ktor.client.request.*
 import no.nav.security.mock.oauth2.MockOAuth2Server
 
 internal fun setupEnvironment(server: MockOAuth2Server) {
@@ -24,3 +27,14 @@ internal fun setupEnvironment(mockOAuth2Server: MockOAuth2Server, wireMockServer
     System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:${wiremockServerPort}/veilarboppfolging")
 }
 
+internal fun createMockClient(block: MockRequestHandleScope.(HttpRequestData) -> HttpResponseData): HttpClient {
+    return HttpClient(MockEngine) {
+        expectSuccess = false
+
+        engine {
+            addHandler { request ->
+                this.block(request)
+            }
+        }
+    }
+}
