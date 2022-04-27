@@ -6,9 +6,13 @@ import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.json.*
+import io.ktor.http.*
 import no.nav.common.rest.client.LogInterceptor
 import java.net.ProxySelector
 import java.util.concurrent.TimeUnit
+
+val HttpHeaders.DownstreamAuthorization: String
+    get() = "Downstream-Authorization"
 
 internal val defaultHttpClient = HttpClient(OkHttp) {
     install(JsonFeature) {
@@ -28,14 +32,10 @@ fun baseClient(): HttpClient {
     return baseClient(baseEngine())
 }
 
-fun baseClient(engine: HttpClientEngine, block: HttpClientConfig<OkHttpConfig>.() -> Unit = {}): HttpClient {
-    val config: HttpClientConfig<OkHttpConfig> = HttpClientConfig<OkHttpConfig>().apply(block)
-
-    config.apply {
+fun baseClient(engine: HttpClientEngine): HttpClient {
+    return HttpClient(engine) {
         expectSuccess = false
     }
-
-    return HttpClient(engine, config)
 }
 
 private fun baseEngine(): HttpClientEngine {

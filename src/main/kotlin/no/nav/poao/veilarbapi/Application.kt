@@ -1,6 +1,7 @@
 package no.nav.poao.veilarbapi
 
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.common.utils.SslUtils
@@ -23,6 +24,9 @@ fun main() {
     embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0", module = Application::module)
     .start(wait =  httpServerWait)
 }
+
+
+
 
 fun Application.module(configuration: Configuration = Configuration()) {
 

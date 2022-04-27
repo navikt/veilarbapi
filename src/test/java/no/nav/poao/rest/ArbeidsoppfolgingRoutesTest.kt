@@ -13,7 +13,6 @@ import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
 import no.nav.poao.veilarbapi.oppfolging.*
 import no.nav.poao.veilarbapi.setup.config.Configuration
-import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.poao.veilarbapi.setup.plugins.configureExceptionHandler
 import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
 import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
@@ -211,14 +210,14 @@ class ArbeidsoppfolgingRoutesTest {
             baseUrl = veilarbaktivitetConfig.url,
             veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
             proxyTokenProvider = { "PROXY_TOKEN" },
-            client = baseClient(createMockClient(HttpStatusCode.OK, mockAktiviteter))
+            client = createMockClient { respondOk(mockAktiviteter) }
         )
 
         val veilarbdialogClient = VeilarbdialogClientImpl(
             baseUrl = veilarbdialogConfig.url,
             veilarbdialogTokenProvider = { "VEILARBDIALOG_TOKEN" },
             proxyTokenProvider = { "PROXY_TOKEN" },
-            client = baseClient(createMockClient(HttpStatusCode.OK, mockDialoger))
+            client = createMockClient { respondOk(mockDialoger) }
         )
 
         val veilarboppfolgingClient = VeilarboppfolgingClientImpl(

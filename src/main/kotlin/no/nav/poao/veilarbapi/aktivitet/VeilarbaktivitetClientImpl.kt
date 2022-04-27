@@ -9,6 +9,7 @@ import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
+import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
 import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbaktivitet.model.Aktivitet
@@ -26,7 +27,7 @@ class VeilarbaktivitetClientImpl (
         val response =
             client.get<HttpResponse>("$baseUrl/internal/api/v1/aktivitet?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
-                header("Downstream-Authorization", "Bearer ${veilarbaktivitetTokenProvider(accessToken)}")
+                header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarbaktivitetTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {

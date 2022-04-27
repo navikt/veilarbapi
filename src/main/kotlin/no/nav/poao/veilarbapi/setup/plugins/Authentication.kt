@@ -6,9 +6,7 @@ import no.nav.poao.veilarbapi.setup.oauth.azureAdtokenSupportConfig
 import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.security.token.support.ktor.tokenValidationSupport
 
-//fun Application.configureAuthentication(configuration: Configuration) {
 fun Application.configureAuthentication(useAuthentication: Boolean, azureAdConfig: Configuration.AzureAd ) {
-
 
     if (useAuthentication) {
         val tokenSupportConfig = azureAdtokenSupportConfig(azureAdConfig)

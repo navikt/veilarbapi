@@ -2,13 +2,11 @@ package no.nav.poao.veilarbapi.setup.rest
 
 import io.ktor.application.*
 import io.ktor.auth.*
-import io.ktor.auth.jwt.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
-import no.nav.poao.veilarbapi.setup.oauth.MockPayload
 import no.nav.poao.veilarbapi.setup.util.getAccessToken
 import no.nav.veilarbapi.model.Oppfolgingsinfo
 
