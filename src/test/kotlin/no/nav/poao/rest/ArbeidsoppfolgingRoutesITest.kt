@@ -3,7 +3,6 @@ package no.nav.poao.rest
 import com.auth0.jwt.JWT
 import com.google.gson.Gson
 import com.nimbusds.jwt.SignedJWT
-import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.client.request.*
 import io.ktor.http.*
