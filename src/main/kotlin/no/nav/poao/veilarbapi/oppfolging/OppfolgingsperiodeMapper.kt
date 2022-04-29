@@ -15,13 +15,19 @@ internal fun mapOppfolgingsperioder(oppfolgingsperioder: List<Oppfolgingsperiode
             aktiviteter?.filter { a -> a.oppfolgingsperiodeId == o.uuid },
             dialoger?.filter { d -> d.oppfolgingsperiodeId == o.uuid }
         )
-    } ?: listOf(
-        mapOppfolgingsperiode(
-            OppfolgingsperiodeDTO(startDato = null, sluttDato = null),
-            aktiviteter,
-            dialoger
-        )
-    )
+    } ?: run {
+        if (aktiviteter.isNullOrEmpty() && dialoger.isNullOrEmpty()) {
+            listOf()
+        } else {
+            listOf(
+                mapOppfolgingsperiode(
+                    OppfolgingsperiodeDTO(startDato = null, sluttDato = null),
+                    aktiviteter,
+                    dialoger
+                )
+            )
+        }
+    }
 
     return Oppfolgingsperioder().apply {
         oppfolgingsperioder(mappedOppfolgingsperioder)

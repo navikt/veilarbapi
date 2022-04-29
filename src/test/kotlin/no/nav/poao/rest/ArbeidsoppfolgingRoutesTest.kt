@@ -1,7 +1,6 @@
 package no.nav.poao.rest
 
 import com.google.gson.Gson
-import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
@@ -17,8 +16,10 @@ import no.nav.poao.veilarbapi.setup.plugins.configureExceptionHandler
 import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
 import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
 import no.nav.veilarbaktivitet.JSON
+import no.nav.veilarbapi.model.Oppfolgingsinfo
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.SoftAssertions
 import org.junit.Test
 import org.mockito.kotlin.mock
 import org.threeten.bp.OffsetDateTime
@@ -66,6 +67,53 @@ class ArbeidsoppfolgingRoutesTest {
     }
 
     @Test
+    fun `test hentperioder feilhaandtering `() {
+        val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
+            baseUrl = veilarbaktivitetConfig.url,
+            veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
+            client = createMockClient { respondError(HttpStatusCode.Forbidden) }
+        )
+
+        val veilarbdialogClient = VeilarbdialogClientImpl(
+            baseUrl = veilarbdialogConfig.url,
+            veilarbdialogTokenProvider = { "VEILARBDIALOG_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
+            client = createMockClient { respondError(HttpStatusCode.Forbidden) }
+        )
+
+        val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
+            baseUrl = veilarboppfolgingConfig.url,
+            veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
+            client = createMockClient { respondError(HttpStatusCode.Forbidden) }
+        )
+
+        val oppfolgingService = OppfolgingService(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
+
+        withTestApplication({
+            arbeidsoppfolgingRoutes(false, oppfolgingService)
+            configureSerialization()
+        }) {
+            handleRequest(HttpMethod.Get, "/v1/oppfolging/periode?aktorId=123").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val oppfolgingsperioder =
+                    no.nav.veilarbapi.JSON.deserialize<Oppfolgingsperioder>(
+                        response.content,
+                        Oppfolgingsperioder::class.java
+                    )
+
+                SoftAssertions().apply {
+                    assertThat(oppfolgingsperioder.oppfolgingsperioder).isEmpty()
+                    assertThat(oppfolgingsperioder.feil).hasSize(3)
+                    assertThat(oppfolgingsperioder.feil!![0].feilmelding).isEqualTo("Mangler tilgang")
+                }.assertAll()
+            }
+        }
+    }
+
+    @Test
     fun `tom oppfolgingsenhet skal returnere 204`() {
         val underOppfolgingDTO = UnderOppfolgingDTO(true)
         val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
@@ -76,19 +124,15 @@ class ArbeidsoppfolgingRoutesTest {
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO(null, null)
         val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
 
-        val httpClient = HttpClient(MockEngine) {
-            engine {
-                addHandler { request ->
-                    when (request.url.encodedPath) {
-                        "/veilarboppfolging/api/v2/oppfolging" ->
-                            respond(underOppfolgingMock, HttpStatusCode.OK)
-                        "/veilarboppfolging/api/v2/veileder" ->
-                            respond(veilederMock, HttpStatusCode.OK)
-                        "/veilarboppfolging/api/person/oppfolgingsenhet" ->
-                            respond(oppfolgingsenhetMock, HttpStatusCode.OK)
-                        else -> error("Unhandled ${request.url.encodedPath}")
-                    }
-                }
+        val httpClient = createMockClient { request ->
+            when (request.url.encodedPath) {
+                "/veilarboppfolging/api/v2/oppfolging" ->
+                    respond(underOppfolgingMock, HttpStatusCode.OK)
+                "/veilarboppfolging/api/v2/veileder" ->
+                    respond(veilederMock, HttpStatusCode.OK)
+                "/veilarboppfolging/api/person/oppfolgingsenhet" ->
+                    respond(oppfolgingsenhetMock, HttpStatusCode.OK)
+                else -> error("Unhandled ${request.url.encodedPath}")
             }
         }
 
@@ -116,7 +160,7 @@ class ArbeidsoppfolgingRoutesTest {
     }
 
     @Test
-    fun `test ExceptionHandler (StatusPages plugin)`() {
+    fun `test oppfolgingsinfo feilhaandtering`() {
         val veilederDTO = VeilederDTO(NavIdent("z123456"))
         val veilederMock = Gson().toJson(veilederDTO)
 
@@ -157,6 +201,57 @@ class ArbeidsoppfolgingRoutesTest {
                 assertEquals(HttpStatusCode.Forbidden, response.status())
             }
         }
+
+        val underOppfolgingDTO = UnderOppfolgingDTO(true)
+        val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
+
+        val veilarboppfolgingHttpClient2 = createMockClient { request ->
+            when (request.url.encodedPath) {
+                "/veilarboppfolging/api/v2/oppfolging" ->
+                    respondOk(underOppfolgingMock)
+                "/veilarboppfolging/api/v2/veileder" ->
+                    respondError(HttpStatusCode.Forbidden)
+                "/veilarboppfolging/api/person/oppfolgingsenhet" ->
+                    respondError(HttpStatusCode.InternalServerError)
+                else -> error("Unhandled ${request.url.encodedPath}")
+            }
+        }
+
+        val veilarboppfolgingClient2 = VeilarboppfolgingClientImpl(
+            baseUrl = veilarboppfolgingConfig.url,
+            veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
+            proxyTokenProvider = { "PROXY_TOKEN" },
+            client = veilarboppfolgingHttpClient2
+        )
+
+        val oppfolgingService2 = OppfolgingService(
+            veilarbaktivitetClient = mock {},
+            veilarbdialogClient = mock {},
+            veilarboppfolgingClient = veilarboppfolgingClient2
+        )
+
+        withTestApplication({
+            arbeidsoppfolgingRoutes(false, oppfolgingService2)
+            configureSerialization()
+            configureExceptionHandler()
+        }) {
+            handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123").apply {
+                assertEquals(HttpStatusCode.OK, response.status())
+
+                val oppfolgingsinfo: Oppfolgingsinfo = no.nav.veilarbapi.JSON.deserialize(
+                    response.content,
+                    Oppfolgingsinfo::class.java
+                )
+
+                SoftAssertions().apply {
+                    assertThat(oppfolgingsinfo.underOppfolging).isEqualTo(true)
+                    assertThat(oppfolgingsinfo.feil).hasSize(2)
+                    assertThat(oppfolgingsinfo.feil?.find { it.feilkilder == "veilederinfo" }?.feilmelding).isEqualTo("Mangler tilgang")
+                    assertThat(oppfolgingsinfo.feil?.find { it.feilkilder == "oppfolgingsenhet" }?.feilmelding).isEqualTo("Serverfeil i klientkall")
+                }.assertAll()
+            }
+        }
+
     }
 
     private fun oppfolgingService(): OppfolgingService {

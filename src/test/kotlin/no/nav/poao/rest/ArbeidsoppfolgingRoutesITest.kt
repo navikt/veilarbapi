@@ -124,9 +124,7 @@ class ArbeidsoppfolgingRoutesITest {
     fun `hent oppfolgingsperiode med mockengine client for eksterne tjenester`() {
         val uuid = UUID.randomUUID()
         val oppfolgingsperiode = listOf(OppfolgingsperiodeDTO(uuid, "aktorid", null, OffsetDateTime.now().minusDays(1), null))
-
         val internAktiviteter = listOf(InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid).aktivitetId("3"))
-
         val internDialoger = listOf(InternDialogBuilder.nyDialog().oppfolgingsperiodeId(uuid).aktivitetId("3"))
 
         val mockOppfolgingsperiode = Gson().toJson(oppfolgingsperiode)
@@ -167,6 +165,7 @@ class ArbeidsoppfolgingRoutesITest {
             }
         }
     }
+
 
     private fun checkDownstreamTokenContent(request: HttpRequestData, expectedAudience: String) {
         val downstreamAuthString = request.headers[HttpHeaders.DownstreamAuthorization]?.substringAfter("Bearer ")
