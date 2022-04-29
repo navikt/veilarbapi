@@ -14,7 +14,8 @@ import kotlin.test.assertTrue
 
 
 class VeilarbaktivitetClientKtTest {
-    private val veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
+    private val veilarbaktivitetConfig =
+        Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
 
     @Test
     fun testHentAktiviteterWithMockEngine() {
@@ -58,7 +59,7 @@ class VeilarbaktivitetClientKtTest {
         }
     }
 
-    val mockAktiviteterJson = """
+    private val mockAktiviteterJson = """
         [
           {
             "aktivitet_type": "mote",
@@ -91,7 +92,7 @@ class VeilarbaktivitetClientKtTest {
           }
         ]""".trimIndent()
 
-    val mockServerError = """
+    private val mockServerError = """
         {
           "timestamp": "2022-02-17T13:19:42.774+00:00",
           "status": 500,

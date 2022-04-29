@@ -22,14 +22,10 @@ fun main() {
     val httpServerWait = Cluster.current != Cluster.LOKAL
 
     embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-    .start(wait =  httpServerWait)
+        .start(wait =  httpServerWait)
 }
 
-
-
-
 fun Application.module(configuration: Configuration = Configuration()) {
-
     val azureAdClient = AzureAdClient(configuration.azureAd)
 
     val tokenProviders = TokenProviders(azureAdClient, configuration)

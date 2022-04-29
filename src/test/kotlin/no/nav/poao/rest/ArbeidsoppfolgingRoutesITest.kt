@@ -65,9 +65,7 @@ class ArbeidsoppfolgingRoutesITest {
                         Assertions.assertThat(oppfolgingsinfo.underOppfolging).isEqualTo(underOppfolgingDto.erUnderOppfolging)
                     }
                 }
-
             }
-
         }
     }
 
@@ -85,8 +83,6 @@ class ArbeidsoppfolgingRoutesITest {
 
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO("NAV Grünerløkka", "1234")
         val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
-
-
 
         val veilarboppfolgingMockClient = createMockClient { request ->
             when (request.url.encodedPath) {
@@ -106,6 +102,7 @@ class ArbeidsoppfolgingRoutesITest {
             withTestApplication({
                 setupEnvironment(this@withMockOAuth2Server)
                 module(Configuration(veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingMockClient)))
+
             }) {
                 with(handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123") {
                     this.addHeader("Authorization", "Bearer ${initialToken.serialize()}")
@@ -182,6 +179,4 @@ class ArbeidsoppfolgingRoutesITest {
         Assertions.assertThat(authJwt.subject).isEqualTo("client_id")
         Assertions.assertThat(authJwt.audience).containsExactly("api://local.pto.poao-gcp-proxy/.default")
     }
-
-
 }
