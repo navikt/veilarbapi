@@ -2,7 +2,8 @@ package no.nav.poao.veilarbapi.setup.oauth
 
 import com.nimbusds.oauth2.sdk.auth.ClientAuthenticationMethod
 import io.ktor.client.*
-import io.ktor.config.*
+//import io.ktor.config.*
+import io.ktor.server.config.*
 import no.nav.security.token.support.client.core.ClientAuthenticationProperties
 
 class ClientConfig(

@@ -4,11 +4,15 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.get
 import io.ktor.client.HttpClient
-import io.ktor.client.features.ResponseException
+import io.ktor.client.call.*
+//import io.ktor.client.features.ResponseException
+import io.ktor.client.plugins.ResponseException
 import io.ktor.client.request.forms.submitForm
-import io.ktor.client.statement.readText
+import io.ktor.client.statement.*
 import io.ktor.http.Parameters
+import io.ktor.util.reflect.*
 import no.nav.poao.veilarbapi.setup.config.Configuration
 
 import no.nav.poao.veilarbapi.setup.http.defaultHttpClient
@@ -23,10 +27,10 @@ class AzureAdClient(
 
     private suspend inline fun fetchAccessToken(formParameters: Parameters): Result<AccessToken, ThrowableErrorMessage> =
         runCatching {
-            httpClient.submitForm<AccessToken>(
+            httpClient.submitForm(
                 url = config.openIdConfiguration.tokenEndpoint,
                 formParameters = formParameters
-            )
+            ).body() as AccessToken
         }.fold(
             onSuccess = { result -> Ok(result) },
             onFailure = { error -> error.handleError("Could not fetch access token from authority endpoint") }
@@ -34,7 +38,7 @@ class AzureAdClient(
 
     private suspend fun Throwable.handleError(message: String): Err<ThrowableErrorMessage> {
         val responseBody: String? = when (this) {
-            is ResponseException -> this.response.readText()
+            is ResponseException -> this.response.bodyAsText()
             else -> null
         }
         return "$message. response body: $responseBody"

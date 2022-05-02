@@ -11,7 +11,7 @@ import no.nav.poao.veilarbapi.oppfolging.VeilederDTO
 internal fun <R> withWiremockServer(
     test: WireMockServer.() -> R
 ): R {
-    val server = WireMockServer(WireMockConfiguration.DYNAMIC_PORT)
+    val server = WireMockServer(80)
     server.start()
     try {
         return server.test()

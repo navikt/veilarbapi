@@ -1,10 +1,11 @@
 package no.nav.poao.veilarbapi.setup.plugins
 
-import io.ktor.features.*
-import io.ktor.application.*
-import io.ktor.gson.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.application.*
+import io.ktor.serialization.gson.*
 import io.ktor.http.*
 import no.nav.veilarbapi.JSON
+
 
 fun Application.configureSerialization() {
     install(ContentNegotiation) {

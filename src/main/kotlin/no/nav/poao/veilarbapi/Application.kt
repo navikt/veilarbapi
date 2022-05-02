@@ -1,7 +1,6 @@
 package no.nav.poao.veilarbapi
 
-import io.ktor.application.*
-import io.ktor.http.*
+import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.common.utils.SslUtils

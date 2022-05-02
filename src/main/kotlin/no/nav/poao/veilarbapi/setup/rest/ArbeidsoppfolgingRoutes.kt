@@ -1,10 +1,11 @@
 package no.nav.poao.veilarbapi.setup.rest
 
-import io.ktor.application.*
-import io.ktor.auth.*
+import io.ktor.server.application.*
 import io.ktor.http.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.auth.*
+import io.ktor.server.auth.AuthenticationRouteSelector
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
 import no.nav.poao.veilarbapi.setup.util.getAccessToken
@@ -19,7 +20,7 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean = true, oppfo
                     if (aktorId == null) {
                         call.respond(HttpStatusCode.BadRequest, "AktorId er påkrevd")
                     } else {
-                        log.info("Hent oppfølgingsperioder for aktorId: {}", aktorId)
+                        call.application.log.info("Hent oppfølgingsperioder for aktorId: {}", aktorId)
                         val token = call.getAccessToken()
                         call.respond(oppfolgingService.fetchOppfolgingsPerioder(AktorId.of(aktorId), token))
                     }
@@ -29,7 +30,7 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean = true, oppfo
                     if (aktorId == null) {
                         call.respond(HttpStatusCode.BadRequest, "AktorId er påkrevd")
                     } else {
-                        log.info("Hent oppfølgingsInfo for aktorId: {}", aktorId)
+                        call.application.log.info("Hent oppfølgingsInfo for aktorId: {}", aktorId)
                         val token = call.getAccessToken()
 
                         val result: Result<Oppfolgingsinfo?> = oppfolgingService.fetchOppfolgingsInfo(AktorId.of(aktorId), token)

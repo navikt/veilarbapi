@@ -5,8 +5,10 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.engine.okhttp.*
-import io.ktor.client.features.json.*
+import io.ktor.client.plugins.contentnegotiation.*
+
 import io.ktor.http.*
+import io.ktor.serialization.jackson.*
 import no.nav.common.rest.client.LogInterceptor
 import java.net.ProxySelector
 import java.util.concurrent.TimeUnit
@@ -15,8 +17,8 @@ val HttpHeaders.DownstreamAuthorization: String
     get() = "Downstream-Authorization"
 
 internal val defaultHttpClient = HttpClient(OkHttp) {
-    install(JsonFeature) {
-        serializer = JacksonSerializer {
+    install(ContentNegotiation) {
+        jackson {
             configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             setSerializationInclusion(JsonInclude.Include.NON_NULL)
         }

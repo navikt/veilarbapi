@@ -3,6 +3,7 @@ package no.nav.poao.veilarbapi.setup.config
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.natpryce.konfig.*
 import io.ktor.client.*
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
 import no.nav.poao.veilarbapi.setup.http.baseClient
@@ -37,7 +38,8 @@ data class Configuration(
         val clientSecret: String = config()[Key("AZURE_APP_CLIENT_SECRET", stringType)],
         val wellKnownConfigurationUrl: String = config()[Key("AZURE_APP_WELL_KNOWN_URL", stringType)],
         val openIdConfiguration: AzureAdOpenIdConfiguration = runBlocking {
-            defaultHttpClient.get(wellKnownConfigurationUrl)
+//            defaultHttpClient.get(wellKnownConfigurationUrl)
+            defaultHttpClient.get(wellKnownConfigurationUrl).body()
         }
     )
 

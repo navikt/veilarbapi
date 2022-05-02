@@ -25,13 +25,15 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
         val response =
-            client.get<HttpResponse>("$baseUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
+            client.get {
+                url(path = "$baseUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}")
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
+
         if (response.status == HttpStatusCode.OK) {
             val type = object : TypeToken<List<OppfolgingsperiodeDTO>>() {}.type
-            val perioder = json.fromJson<List<OppfolgingsperiodeDTO>>(response.readText(), type)
+            val perioder = json.fromJson<List<OppfolgingsperiodeDTO>>(response.bodyAsText(), type)
 
             return Result.success(perioder)
         } else {
@@ -41,13 +43,14 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String?): Result<UnderOppfolgingDTO> {
         val response =
-            client.get<HttpResponse>("$baseUrl/api/v2/oppfolging?aktorId=${aktorId.get()}") {
+            client.get {
+                url(path = "$baseUrl/api/v2/oppfolging?aktorId=${aktorId.get()}")
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val underOppfolgingDTO: UnderOppfolgingDTO = json.fromJson(response.readText(), UnderOppfolgingDTO::class.java)
+            val underOppfolgingDTO: UnderOppfolgingDTO = json.fromJson(response.bodyAsText(), UnderOppfolgingDTO::class.java)
 
             return Result.success(underOppfolgingDTO)
         } else {
@@ -57,13 +60,14 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO> {
         val response =
-            client.get<HttpResponse>("$baseUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
+            client.get {
+                url(path = "$baseUrl/api/v2/veileder?aktorId=${aktorId.get()}")
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val veilederDTO = json.fromJson(response.readText(), VeilederDTO::class.java)
+            val veilederDTO = json.fromJson(response.bodyAsText(), VeilederDTO::class.java)
             return Result.success(veilederDTO)
         } else {
             return Result.failure(callFailure(response))
@@ -72,13 +76,14 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String?): Result<OppfolgingsenhetDTO?> {
         val response =
-            client.get<HttpResponse>("$baseUrl/api/person/oppfolgingsenhet?aktorId=${aktorId.get()}") {
+            client.get {
+                url(path = "$baseUrl/api/person/oppfolgingsenhet?aktorId=${aktorId.get()}")
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val oppfolgingsenhetDTO = json.fromJson(response.readText(), OppfolgingsenhetDTO::class.java)
+            val oppfolgingsenhetDTO = json.fromJson(response.bodyAsText(), OppfolgingsenhetDTO::class.java)
 
             return Result.success(oppfolgingsenhetDTO)
         } else if (response.status == HttpStatusCode.NotFound) {
@@ -90,9 +95,9 @@ class VeilarboppfolgingClientImpl(
 
     private suspend fun callFailure(response: HttpResponse): Exception {
         return when (response.status) {
-            HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.readText())
-            HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.readText())
-            HttpStatusCode.InternalServerError -> ServerFeilException(response, response.readText())
+            HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.bodyAsText())
+            HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.bodyAsText())
+            HttpStatusCode.InternalServerError -> ServerFeilException(response, response.bodyAsText())
             else -> Exception("Ukjent statuskode ${response.status}")
         }
     }
