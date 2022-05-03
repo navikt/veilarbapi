@@ -23,7 +23,7 @@ plugins {
 sonarqube {
     properties {
         property ("sonar.projectKey", "navikt_veilarbapi")
-        property ("sonar.organization", "navit")
+        property ("sonar.organization", "navikt")
         property ("sonar.host.url", "https://sonarcloud.io")
     }
 }
