@@ -8,8 +8,6 @@ metadata:
     team: pto
 spec:
   image: docker.pkg.github.com/navikt/veilarbapi/veilarbapi:{{version}}
-  ingresses:
-    - https://salesforce.poao.ekstern.nav.no
   port: 8080
   prometheus:
     enabled: true
