@@ -127,7 +127,8 @@ class ArbeidsoppfolgingRoutesITest {
         val internAktiviteter = listOf(InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid).aktivitetId("3"))
         val internDialoger = listOf(InternDialogBuilder.nyDialog().oppfolgingsperiodeId(uuid).aktivitetId("3"))
 
-        val mockOppfolgingsperiode = Gson().toJson(oppfolgingsperiode)
+        //TODO fiks serialisering
+        val mockOppfolgingsperiode = no.nav.veilarbaktivitet.JSON.getGson().toJson(oppfolgingsperiode)
         val mockAktiviteter = no.nav.veilarbaktivitet.JSON.getGson().toJson(internAktiviteter)
         val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
 
