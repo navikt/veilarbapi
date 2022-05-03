@@ -1,8 +1,6 @@
 package no.nav.poao.veilarbapi.oppfolging
 
 
-import com.google.gson.Gson
-import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -13,6 +11,7 @@ import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
 import no.nav.poao.veilarbapi.setup.http.baseClient
+import no.nav.veilarbaktivitet.JSON
 
 class VeilarboppfolgingClientImpl(
     private val baseUrl: String,
@@ -21,7 +20,7 @@ class VeilarboppfolgingClientImpl(
     private val client: HttpClient = baseClient()
 ) : VeilarboppfolgingClient {
 
-    val json = Gson()
+    init { JSON() }
 
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
         val response =
@@ -30,8 +29,10 @@ class VeilarboppfolgingClientImpl(
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
         if (response.status == HttpStatusCode.OK) {
-            val type = object : TypeToken<List<OppfolgingsperiodeDTO>>() {}.type
-            val perioder = json.fromJson<List<OppfolgingsperiodeDTO>>(response.readText(), type)
+            val perioder = JSON.deserialize<Array<OppfolgingsperiodeDTO>>(
+                response.readText(),
+                OppfolgingsperiodeDTO::class.java.arrayType()
+            ).toList()
 
             return Result.success(perioder)
         } else {
@@ -47,7 +48,10 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val underOppfolgingDTO: UnderOppfolgingDTO = json.fromJson(response.readText(), UnderOppfolgingDTO::class.java)
+            val underOppfolgingDTO = JSON.deserialize<UnderOppfolgingDTO>(
+                response.readText(),
+                UnderOppfolgingDTO::class.java
+            )
 
             return Result.success(underOppfolgingDTO)
         } else {
@@ -63,7 +67,10 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val veilederDTO = json.fromJson(response.readText(), VeilederDTO::class.java)
+            val veilederDTO = JSON.deserialize<VeilederDTO>(
+                response.readText(),
+                VeilederDTO::class.java
+            )
             return Result.success(veilederDTO)
         } else {
             return Result.failure(callFailure(response))
@@ -78,7 +85,8 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val oppfolgingsenhetDTO = json.fromJson(response.readText(), OppfolgingsenhetDTO::class.java)
+
+            val oppfolgingsenhetDTO = JSON.deserialize<OppfolgingsenhetDTO>(response.readText(), OppfolgingsenhetDTO::class.java)
 
             return Result.success(oppfolgingsenhetDTO)
         } else if (response.status == HttpStatusCode.NotFound) {
