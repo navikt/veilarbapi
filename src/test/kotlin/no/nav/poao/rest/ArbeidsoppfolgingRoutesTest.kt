@@ -2,6 +2,8 @@ package no.nav.poao.rest
 
 import com.google.gson.Gson
 import io.ktor.client.engine.mock.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import no.nav.common.types.identer.NavIdent
@@ -28,10 +30,10 @@ import kotlin.test.assertEquals
 
 class ArbeidsoppfolgingRoutesTest {
     private val veilarbaktivitetConfig =
-        Configuration.VeilarbaktivitetConfig(url = "http://localhost:8080/veilarbaktivitet")
-    private val veilarbdialogConfig = Configuration.VeilarbdialogConfig(url = "http://localhost:8080/veilarbdialog")
+        Configuration.VeilarbaktivitetConfig(url = "/veilarbaktivitet")
+    private val veilarbdialogConfig = Configuration.VeilarbdialogConfig(url = "/veilarbdialog")
     private val veilarboppfolgingConfig =
-        Configuration.VeilarboppfolgingConfig(url = "http://localhost:8080/veilarboppfolging")
+        Configuration.VeilarboppfolgingConfig(url = "/veilarboppfolging")
 
     init {
         no.nav.veilarbaktivitet.JSON()
@@ -43,26 +45,25 @@ class ArbeidsoppfolgingRoutesTest {
     fun `happy case hent perioder`() {
         val mockOppfolgingService = oppfolgingService()
 
-        withTestApplication({
-            arbeidsoppfolgingRoutes(false, mockOppfolgingService)
-            configureSerialization()
-        }) {
-            handleRequest(HttpMethod.Get, "/v1/oppfolging/periode?aktorId=123").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val oppfolgingsperioder =
-                    no.nav.veilarbapi.JSON.deserialize<Oppfolgingsperioder>(
-                        response.content,
-                        Oppfolgingsperioder::class.java
-                    )
-
-                assertThat(oppfolgingsperioder.oppfolgingsperioder).hasSize(2)
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter).hasSize(1)
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.tittel).isEqualTo("ikke kvp")
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.dialog!!.meldinger!!).hasSize(1)
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter).hasSize(1)
-                assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter!![0].stillingFraNav.dialog).isNull()
+        testApplication {
+            application {
+                arbeidsoppfolgingRoutes(false, mockOppfolgingService)
+                configureSerialization()
             }
+            val response = client.get("/v1/oppfolging/periode?aktorId=123")
+            assertEquals(HttpStatusCode.OK, response.status)
+
+            val oppfolgingsperioder =
+                no.nav.veilarbapi.JSON.deserialize<Oppfolgingsperioder>(
+                    response.bodyAsText(),
+                    Oppfolgingsperioder::class.java
+                )
+            assertThat(oppfolgingsperioder.oppfolgingsperioder).hasSize(2)
+            assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter).hasSize(1)
+            assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.tittel).isEqualTo("ikke kvp")
+            assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.dialog!!.meldinger!!).hasSize(1)
+            assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter).hasSize(1)
+            assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter!![0].stillingFraNav.dialog).isNull()
         }
     }
 
@@ -91,25 +92,25 @@ class ArbeidsoppfolgingRoutesTest {
 
         val oppfolgingService = OppfolgingService(veilarbaktivitetClient, veilarbdialogClient, veilarboppfolgingClient)
 
-        withTestApplication({
-            arbeidsoppfolgingRoutes(false, oppfolgingService)
-            configureSerialization()
-        }) {
-            handleRequest(HttpMethod.Get, "/v1/oppfolging/periode?aktorId=123").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val oppfolgingsperioder =
-                    no.nav.veilarbapi.JSON.deserialize<Oppfolgingsperioder>(
-                        response.content,
-                        Oppfolgingsperioder::class.java
-                    )
-
-                SoftAssertions().apply {
-                    assertThat(oppfolgingsperioder.oppfolgingsperioder).isEmpty()
-                    assertThat(oppfolgingsperioder.feil).hasSize(3)
-                    assertThat(oppfolgingsperioder.feil!![0].feilmelding).isEqualTo("Mangler tilgang")
-                }.assertAll()
+        testApplication {
+            application {
+                arbeidsoppfolgingRoutes(false, oppfolgingService)
+                configureSerialization()
             }
+            val response = client.get("/v1/oppfolging/periode?aktorId=123")
+            assertEquals(HttpStatusCode.OK, response.status)
+
+            val oppfolgingsperioder =
+                no.nav.veilarbapi.JSON.deserialize<Oppfolgingsperioder>(
+                    response.bodyAsText(),
+                    Oppfolgingsperioder::class.java
+                )
+
+            SoftAssertions().apply {
+                assertThat(oppfolgingsperioder.oppfolgingsperioder).isEmpty()
+                assertThat(oppfolgingsperioder.feil).hasSize(3)
+                assertThat(oppfolgingsperioder.feil!![0].feilmelding).isEqualTo("Mangler tilgang")
+            }.assertAll()
         }
     }
 
@@ -149,13 +150,13 @@ class ArbeidsoppfolgingRoutesTest {
             veilarboppfolgingClient = veilarboppfolgingClient
         )
 
-        withTestApplication({
-            arbeidsoppfolgingRoutes(false, oppfolgingService)
-            configureSerialization()
-        }) {
-            handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123").apply {
-                assertEquals(HttpStatusCode.NoContent, response.status())
+        testApplication {
+            application {
+                arbeidsoppfolgingRoutes(false, oppfolgingService)
+                configureSerialization()
             }
+            val response = client.get("/v1/oppfolging/info?aktorId=123")
+            assertEquals(HttpStatusCode.NoContent, response.status)
         }
     }
 
@@ -192,14 +193,14 @@ class ArbeidsoppfolgingRoutesTest {
             veilarboppfolgingClient = veilarboppfolgingClient
         )
 
-        withTestApplication({
-            arbeidsoppfolgingRoutes(false, oppfolgingService)
-            configureSerialization()
-            configureExceptionHandler()
-        }) {
-            handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123").apply {
-                assertEquals(HttpStatusCode.Forbidden, response.status())
+        testApplication {
+            application {
+                arbeidsoppfolgingRoutes(false, oppfolgingService)
+                configureSerialization()
+                configureExceptionHandler()
             }
+            val response = client.get("/v1/oppfolging/info?aktorId=123")
+            assertEquals(HttpStatusCode.Forbidden, response.status)
         }
 
         val underOppfolgingDTO = UnderOppfolgingDTO(true)
@@ -230,28 +231,27 @@ class ArbeidsoppfolgingRoutesTest {
             veilarboppfolgingClient = veilarboppfolgingClient2
         )
 
-        withTestApplication({
-            arbeidsoppfolgingRoutes(false, oppfolgingService2)
-            configureSerialization()
-            configureExceptionHandler()
-        }) {
-            handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123").apply {
-                assertEquals(HttpStatusCode.OK, response.status())
-
-                val oppfolgingsinfo: Oppfolgingsinfo = no.nav.veilarbapi.JSON.deserialize(
-                    response.content,
-                    Oppfolgingsinfo::class.java
-                )
-
-                SoftAssertions().apply {
-                    assertThat(oppfolgingsinfo.underOppfolging).isEqualTo(true)
-                    assertThat(oppfolgingsinfo.feil).hasSize(2)
-                    assertThat(oppfolgingsinfo.feil?.find { it.feilkilder == "veilederinfo" }?.feilmelding).isEqualTo("Mangler tilgang")
-                    assertThat(oppfolgingsinfo.feil?.find { it.feilkilder == "oppfolgingsenhet" }?.feilmelding).isEqualTo("Serverfeil i klientkall")
-                }.assertAll()
+        testApplication {
+            application {
+                arbeidsoppfolgingRoutes(false, oppfolgingService2)
+                configureSerialization()
+                configureExceptionHandler()
             }
-        }
+            val response = client.get("/v1/oppfolging/info?aktorId=123")
+            assertEquals(HttpStatusCode.OK, response.status)
 
+            val oppfolgingsinfo: Oppfolgingsinfo = no.nav.veilarbapi.JSON.deserialize(
+                response.bodyAsText(),
+                Oppfolgingsinfo::class.java
+            )
+
+            SoftAssertions().apply {
+                assertThat(oppfolgingsinfo.underOppfolging).isEqualTo(true)
+                assertThat(oppfolgingsinfo.feil).hasSize(2)
+                assertThat(oppfolgingsinfo.feil?.find { it.feilkilder == "veilederinfo" }?.feilmelding).isEqualTo("Mangler tilgang")
+                assertThat(oppfolgingsinfo.feil?.find { it.feilkilder == "oppfolgingsenhet" }?.feilmelding).isEqualTo("Serverfeil i klientkall")
+            }.assertAll()
+        }
     }
 
     private fun oppfolgingService(): OppfolgingService {
@@ -288,7 +288,6 @@ class ArbeidsoppfolgingRoutesTest {
 
         val mockAktiviteter = JSON.getGson().toJson(internAktiviteter)
         val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
-        //TODO fiks serialisering
         val mockOppfolgingsperioder = JSON.getGson().toJson(oppfolgingsperiodeDTOer)
 
         val veilarbaktivitetClient = VeilarbaktivitetClientImpl(

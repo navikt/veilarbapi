@@ -1,4 +1,4 @@
-package no.nav.poao
+package no.nav.poao.util
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration

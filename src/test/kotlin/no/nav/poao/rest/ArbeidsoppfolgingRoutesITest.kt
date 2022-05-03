@@ -5,9 +5,9 @@ import com.google.gson.Gson
 import com.nimbusds.jwt.SignedJWT
 import io.ktor.client.engine.mock.*
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import no.nav.common.types.identer.NavIdent
 import no.nav.poao.util.*
 import no.nav.poao.util.setupEnvironment
 import no.nav.poao.util.withWiremockServer
@@ -36,34 +36,34 @@ class ArbeidsoppfolgingRoutesITest {
 
     @Test
     fun `hent oppfolgingsinfo med wiremock for eksterne kall`() {
-        val underOppfolgingDto = UnderOppfolgingDTO(true)
+        val underOppfolgingDTO = UnderOppfolgingDTO(true)
         val veilederDTO = VeilederDTO("z999999")
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO(navn = "Nav Grunerløkka", "1234")
 
         withWiremockServer {
-            stubUnderOppfolging(this, underOppfolgingDto)
+            stubUnderOppfolging(this, underOppfolgingDTO)
             stubVeileder(this, veilederDTO)
             stubOppfolgingsEnhet(this, oppfolgingsenhetDTO)
 
             withMockOAuth2Server {
                 val token = this.issueToken(subject = "enduser", audience = "client_id")
 
-                withTestApplication({
-                    setupEnvironment(this@withMockOAuth2Server, this@withWiremockServer)
-                    module()
-                }) {
-                    with(handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123") {
-                        addHeader(HttpHeaders.Authorization, "Bearer ${token.serialize()}")
-
-                    }) {
-                        assertEquals(HttpStatusCode.OK, response.status())
-                        val oppfolgingsinfo =
-                            no.nav.veilarbapi.JSON.deserialize<Oppfolgingsinfo>(
-                                response.content,
-                                Oppfolgingsinfo::class.java
-                            )
-                        Assertions.assertThat(oppfolgingsinfo.underOppfolging).isEqualTo(underOppfolgingDto.erUnderOppfolging)
+                testApplication {
+                    application {
+                        setupEnvironment(this@withMockOAuth2Server)
+                        module()
                     }
+                    val response = client.get("/v1/oppfolging/info?aktorId=123") {
+                        header(HttpHeaders.Authorization, "Bearer ${token.serialize()}")
+                    }
+                    assertEquals(HttpStatusCode.OK, response.status)
+
+                    val oppfolgingsinfo =
+                        no.nav.veilarbapi.JSON.deserialize<Oppfolgingsinfo>(
+                            response.bodyAsText(),
+                            Oppfolgingsinfo::class.java
+                        )
+                    Assertions.assertThat(oppfolgingsinfo.underOppfolging).isEqualTo(underOppfolgingDTO.erUnderOppfolging)
                 }
             }
         }
@@ -99,24 +99,23 @@ class ArbeidsoppfolgingRoutesITest {
         withMockOAuth2Server {
             val initialToken: SignedJWT = this.issueToken(subject = "enduser", audience = "client_id")
 
-            withTestApplication({
-                setupEnvironment(this@withMockOAuth2Server)
-                module(Configuration(veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingMockClient)))
-
-            }) {
-                with(handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123") {
-                    this.addHeader("Authorization", "Bearer ${initialToken.serialize()}")
-                }) {
-                    assertEquals(HttpStatusCode.OK, response.status())
-                    val oppfolgingsinfo =
-                        no.nav.veilarbapi.JSON.deserialize<Oppfolgingsinfo>(
-                            response.content,
-                            Oppfolgingsinfo::class.java
-                        )
-                    assertEquals(underOppfolgingDTO.erUnderOppfolging, oppfolgingsinfo.underOppfolging)
+            testApplication {
+                application {
+                    setupEnvironment(this@withMockOAuth2Server)
+                    module(Configuration(veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingMockClient)))
                 }
+                val response = client.get("/v1/oppfolging/info?aktorId=123") {
+                    header("Authorization", "Bearer ${initialToken.serialize()}")
+                }
+                val oppfolgingsinfo =
+                    no.nav.veilarbapi.JSON.deserialize<Oppfolgingsinfo>(
+                        response.bodyAsText(),
+                        Oppfolgingsinfo::class.java
+                    )
+                assertEquals(underOppfolgingDTO.erUnderOppfolging, oppfolgingsinfo.underOppfolging)
             }
         }
+    }
 
     }
 
@@ -150,19 +149,19 @@ class ArbeidsoppfolgingRoutesITest {
         withMockOAuth2Server {
             val initialToken: SignedJWT = this.issueToken(subject = "enduser", audience = "client_id")
 
-            withTestApplication({
-                setupEnvironment(this@withMockOAuth2Server)
-                module(Configuration(
-                    veilarbdialogConfig = Configuration.VeilarbdialogConfig(httpClient = veilarbdialogClient),
-                    veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(httpClient = veilarbaktivitetClient),
-                    veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingClient)
-                ))
-            }) {
-                with(handleRequest(HttpMethod.Get, "/v1/oppfolging/periode?aktorId=123") {
-                    this.addHeader("Authorization", "Bearer ${initialToken.serialize()}")
-                }) {
-                    assertEquals(HttpStatusCode.OK, response.status())
+            testApplication {
+                application {
+                    setupEnvironment(this@withMockOAuth2Server)
+                    module(Configuration(
+                        veilarbdialogConfig = Configuration.VeilarbdialogConfig(httpClient = veilarbdialogClient),
+                        veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(httpClient = veilarbaktivitetClient),
+                        veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingClient)
+                    ))
                 }
+                val response = client.get("/v1/oppfolging/periode?aktorId=123") {
+                    header(HttpHeaders.Authorization, "Bearer ${initialToken.serialize()}")
+                }
+                assertEquals(HttpStatusCode.OK, response.status)
             }
         }
     }
