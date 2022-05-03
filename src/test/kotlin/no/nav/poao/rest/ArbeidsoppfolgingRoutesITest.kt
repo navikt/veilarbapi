@@ -166,6 +166,85 @@ class ArbeidsoppfolgingRoutesITest {
         }
     }
 
+    @Test
+    fun `kall uten auth token skal feile med 401`() {
+        val underOppfolgingDTO = UnderOppfolgingDTO(true)
+        val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
+
+        val veilederDTO = VeilederDTO(NavIdent("z123456"))
+        val veilederMock = Gson().toJson(veilederDTO)
+
+        val oppfolgingsenhetDTO = OppfolgingsenhetDTO("NAV Grünerløkka", "1234")
+        val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
+
+        val veilarboppfolgingMockClient = createMockClient { request ->
+            when (request.url.encodedPath) {
+                "/veilarboppfolging/api/v2/oppfolging" -> {
+                    checkDownstreamTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+                    respondOk(underOppfolgingMock)
+                }
+                "/veilarboppfolging/api/v2/veileder" -> respondOk(veilederMock)
+                "/veilarboppfolging/api/person/oppfolgingsenhet" -> respondOk(oppfolgingsenhetMock)
+                else -> error("Unhandled ${request.url.encodedPath}")
+            }
+        }
+
+        withMockOAuth2Server {
+            testApplication {
+                application {
+                    setupEnvironment(this@withMockOAuth2Server)
+                    module(Configuration(veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingMockClient)))
+                }
+                val response = client.get("/v1/oppfolging/info?aktorId=123")
+                Assertions.assertThat(response.status).isEqualTo(HttpStatusCode.Unauthorized)
+            }
+        }
+    }
+
+    @Test
+    fun `hent veilederinfo feiler`() {
+        val underOppfolgingDTO = UnderOppfolgingDTO(true)
+        val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
+
+
+
+        val oppfolgingsenhetDTO = OppfolgingsenhetDTO("NAV Grünerløkka", "1234")
+        val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
+
+        val veilarboppfolgingMockClient = createMockClient { request ->
+            when (request.url.encodedPath) {
+                "/veilarboppfolging/api/v2/oppfolging" -> {
+                    checkDownstreamTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+                    respondOk(underOppfolgingMock)
+                }
+                "/veilarboppfolging/api/v2/veileder" -> respondBadRequest()
+                "/veilarboppfolging/api/person/oppfolgingsenhet" -> respondOk(oppfolgingsenhetMock)
+                else -> error("Unhandled ${request.url.encodedPath}")
+            }
+        }
+
+        withMockOAuth2Server {
+            val initialToken: SignedJWT = this.issueToken(subject = "enduser", audience = "client_id")
+
+            testApplication {
+                application {
+                    setupEnvironment(this@withMockOAuth2Server)
+                    module(Configuration(veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingMockClient)))
+                }
+                val response = client.get("/v1/oppfolging/info?aktorId=123") {
+                    header("Authorization", "Bearer ${initialToken.serialize()}")
+                }
+                val oppfolgingsinfo =
+                    no.nav.veilarbapi.JSON.deserialize<Oppfolgingsinfo>(
+                        response.bodyAsText(),
+                        Oppfolgingsinfo::class.java
+                    )
+                assertEquals(response.status, HttpStatusCode.OK)
+                Assertions.assertThat(oppfolgingsinfo.feil).isNotEmpty()
+                Assertions.assertThat(oppfolgingsinfo.feil?.get(0)?.feilkilder).isEqualTo("veilederinfo")
+            }
+        }
+    }
 
     private fun checkDownstreamTokenContent(request: HttpRequestData, expectedAudience: String) {
         val downstreamAuthString = request.headers[HttpHeaders.DownstreamAuthorization]?.substringAfter("Bearer ")
