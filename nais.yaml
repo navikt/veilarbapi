@@ -49,6 +49,8 @@ spec:
         - application: salesforce
           namespace: teamcrm
           cluster: prod-external
+        - application: saas-proxy
+          namespace: teamcrm
   env:
     - name: AZURE_APP_WELL_KNOWN_URL
       value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration
