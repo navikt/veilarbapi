@@ -74,7 +74,7 @@ class VeilarboppfolgingClientImpl(
         }
     }
 
-    override suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO> {
+    override suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO?> {
         val response =
             client.get<HttpResponse>("$baseUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
@@ -84,6 +84,8 @@ class VeilarboppfolgingClientImpl(
         if (response.status == HttpStatusCode.OK) {
             val veilederDTO = json.fromJson(response.readText(), VeilederDTO::class.java)
             return Result.success(veilederDTO)
+        } else if (response.status === HttpStatusCode.NoContent) {
+            return Result.success(null)
         } else {
             return Result.failure(callFailure(response))
         }
