@@ -41,4 +41,8 @@ fun Application.module(configuration: Configuration = Configuration()) {
     configureSerialization()
     configureRouting(configuration.useAuthentication, oppfolgingService = oppfolgingService)
     configureExceptionHandler()
+
+    if (Cluster.current == Cluster.DEV_GCP) {
+        configureCors()
+    }
 }
