@@ -3,9 +3,9 @@ info:
   title: Arbeidsoppfolging API
   version: '1.0'
 servers:
-  - url: https://salesforce.poao.dev.ekstern.nav.no
+  - url: https://veilarbapi.dev.intern.nav.no
     description: dev
-  - url: https://salesforce.poao.ekstern.nav.no
+  - url: https://veilarbapi.intern.nav.no
     description: prod
 #  - url: https://veilarbapi.dev.intern.nav.no
 #    description: manuell testing only
