@@ -6,9 +6,13 @@ import io.ktor.client.*
 import io.ktor.client.engine.*
 import io.ktor.client.engine.okhttp.*
 import io.ktor.client.features.json.*
+import io.ktor.http.*
 import no.nav.common.rest.client.LogInterceptor
 import java.net.ProxySelector
 import java.util.concurrent.TimeUnit
+
+val HttpHeaders.DownstreamAuthorization: String
+    get() = "Downstream-Authorization"
 
 internal val defaultHttpClient = HttpClient(OkHttp) {
     install(JsonFeature) {

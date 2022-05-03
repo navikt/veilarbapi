@@ -11,8 +11,8 @@ import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
+import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
 import no.nav.poao.veilarbapi.setup.http.baseClient
-import no.nav.veilarbaktivitet.JSON
 
 class VeilarboppfolgingClientImpl(
     private val baseUrl: String,
@@ -27,7 +27,7 @@ class VeilarboppfolgingClientImpl(
         val response =
             client.get<HttpResponse>("$baseUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
-                header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
+                header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
         if (response.status == HttpStatusCode.OK) {
             val type = object : TypeToken<List<OppfolgingsperiodeDTO>>() {}.type
@@ -43,7 +43,7 @@ class VeilarboppfolgingClientImpl(
         val response =
             client.get<HttpResponse>("$baseUrl/api/v2/oppfolging?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
-                header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
+                header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
@@ -59,7 +59,7 @@ class VeilarboppfolgingClientImpl(
         val response =
             client.get<HttpResponse>("$baseUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
-                header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
+                header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
@@ -74,7 +74,7 @@ class VeilarboppfolgingClientImpl(
         val response =
             client.get<HttpResponse>("$baseUrl/api/person/oppfolgingsenhet?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
-                header("Downstream-Authorization", "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
+                header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {

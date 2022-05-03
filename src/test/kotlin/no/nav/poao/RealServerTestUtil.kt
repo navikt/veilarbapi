@@ -8,8 +8,8 @@ import no.nav.security.mock.oauth2.MockOAuth2Server
 class RealServerTestUtil {
 
     companion object {
-        var mockOauth2Server = MockOAuth2Server()
-        val wireMockServer: WireMockServer = WireMockServer(WireMockConfiguration.options().dynamicPort())
+        private var mockOauth2Server = MockOAuth2Server()
+        private val wireMockServer: WireMockServer = WireMockServer(WireMockConfiguration.options().dynamicPort())
 
         fun setup() {
             wireMockServer.start()
@@ -23,8 +23,6 @@ class RealServerTestUtil {
             System.setProperty("VEILARBDIALOGAPI_URL", "http://localhost:${wireMockServer.port()}/veilarbdialog")
             System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:${wireMockServer.port()}/veilarboppfolging")
 
-
-
             main()
 
             Runtime.getRuntime().addShutdownHook(Thread {
@@ -32,6 +30,5 @@ class RealServerTestUtil {
             })
         }
     }
-
 }
 

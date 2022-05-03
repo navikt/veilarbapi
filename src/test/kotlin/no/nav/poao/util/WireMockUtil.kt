@@ -20,8 +20,7 @@ internal fun <R> withWiremockServer(
     }
 }
 
-
-fun stubVeileder(wireMockServer: WireMockServer, veilederDTO: VeilederDTO) {
+internal fun stubVeileder(wireMockServer: WireMockServer, veilederDTO: VeilederDTO) {
     val veilederMock = Gson().toJson(veilederDTO)
     wireMockServer.stubFor(
         WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/veileder"))
@@ -34,7 +33,7 @@ fun stubVeileder(wireMockServer: WireMockServer, veilederDTO: VeilederDTO) {
     )
 }
 
-fun stubUnderOppfolging(wireMockServer: WireMockServer, underOppfolgingDTO: UnderOppfolgingDTO) {
+internal fun stubUnderOppfolging(wireMockServer: WireMockServer, underOppfolgingDTO: UnderOppfolgingDTO) {
     val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
     wireMockServer.stubFor(
         WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/oppfolging"))
@@ -47,7 +46,7 @@ fun stubUnderOppfolging(wireMockServer: WireMockServer, underOppfolgingDTO: Unde
     )
 }
 
-fun stubOppfolgingsEnhet(wireMockServer: WireMockServer, oppfolgingsenhetDTO: OppfolgingsenhetDTO) {
+internal fun stubOppfolgingsEnhet(wireMockServer: WireMockServer, oppfolgingsenhetDTO: OppfolgingsenhetDTO) {
     val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
     wireMockServer.stubFor(
         WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/person/oppfolgingsenhet"))

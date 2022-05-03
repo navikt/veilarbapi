@@ -1,6 +1,7 @@
 package no.nav.poao.veilarbapi
 
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
 import no.nav.common.utils.SslUtils
@@ -21,11 +22,10 @@ fun main() {
     val httpServerWait = Cluster.current != Cluster.LOKAL
 
     embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0", module = Application::module)
-    .start(wait =  httpServerWait)
+        .start(wait =  httpServerWait)
 }
 
 fun Application.module(configuration: Configuration = Configuration()) {
-
     val azureAdClient = AzureAdClient(configuration.azureAd)
 
     val tokenProviders = TokenProviders(azureAdClient, configuration)

@@ -2,13 +2,11 @@ package no.nav.poao.veilarbapi.setup.rest
 
 import io.ktor.application.*
 import io.ktor.auth.*
-import io.ktor.auth.jwt.*
 import io.ktor.http.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
-import no.nav.poao.veilarbapi.setup.oauth.MockPayload
 import no.nav.poao.veilarbapi.setup.util.getAccessToken
 import no.nav.veilarbapi.model.Oppfolgingsinfo
 
@@ -53,15 +51,8 @@ fun Route.conditionalAuthenticate(useAuthentication: Boolean, build: Route.() ->
     if (useAuthentication) {
         return authenticate(build = build, configurations = arrayOf("azuread"))
     }
-    return mockAuthentication(build)
-}
 
-fun Route.mockAuthentication(build: Route.() -> Unit): Route {
     val route = createChild(AuthenticationRouteSelector(listOf<String?>(null)))
-    route.insertPhaseAfter(ApplicationCallPipeline.Features, Authentication.AuthenticatePhase)
-    route.intercept(Authentication.AuthenticatePhase) {
-        this.context.authentication.principal = JWTPrincipal(MockPayload("Z999999"))
-    }
     route.build()
     return route
 }

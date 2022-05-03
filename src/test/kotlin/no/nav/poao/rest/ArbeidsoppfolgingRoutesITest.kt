@@ -3,7 +3,6 @@ package no.nav.poao.rest
 import com.auth0.jwt.JWT
 import com.google.gson.Gson
 import com.nimbusds.jwt.SignedJWT
-import io.ktor.client.*
 import io.ktor.client.engine.mock.*
 import io.ktor.client.request.*
 import io.ktor.http.*
@@ -14,18 +13,26 @@ import no.nav.poao.util.setupEnvironment
 import no.nav.poao.util.withWiremockServer
 import no.nav.poao.veilarbapi.module
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsenhetDTO
+import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
 import no.nav.poao.veilarbapi.oppfolging.UnderOppfolgingDTO
 import no.nav.poao.veilarbapi.oppfolging.VeilederDTO
 import no.nav.poao.veilarbapi.setup.config.Configuration
+import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
 import no.nav.security.mock.oauth2.withMockOAuth2Server
 import no.nav.veilarbapi.model.Oppfolgingsinfo
 import org.assertj.core.api.Assertions
 import org.junit.Test
+import org.threeten.bp.OffsetDateTime
+import java.util.*
 import kotlin.test.assertEquals
 
 class ArbeidsoppfolgingRoutesITest {
 
-
+    init {
+        no.nav.veilarbaktivitet.JSON()
+        no.nav.veilarbdialog.JSON()
+        no.nav.veilarbapi.JSON()
+    }
 
     @Test
     fun `hent oppfolgingsinfo med wiremock for eksterne kall`() {
@@ -58,9 +65,7 @@ class ArbeidsoppfolgingRoutesITest {
                         Assertions.assertThat(oppfolgingsinfo.underOppfolging).isEqualTo(underOppfolgingDto.erUnderOppfolging)
                     }
                 }
-
             }
-
         }
     }
 
@@ -79,19 +84,15 @@ class ArbeidsoppfolgingRoutesITest {
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO("NAV Grünerløkka", "1234")
         val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
 
-        val veilarboppfolgingMockClient = HttpClient(MockEngine) {
-            engine {
-                addHandler { request ->
-                    when (request.url.encodedPath) {
-                        "/veilarboppfolging/api/v2/oppfolging" -> {
-                            checkDownstreamTokenContent(request)
-                            respondOk(underOppfolgingMock)
-                        }
-                        "/veilarboppfolging/api/v2/veileder" -> respondOk(veilederMock)
-                        "/veilarboppfolging/api/person/oppfolgingsenhet" -> respondOk(oppfolgingsenhetMock)
-                        else -> error("Unhandled ${request.url.encodedPath}")
-                    }
+        val veilarboppfolgingMockClient = createMockClient { request ->
+            when (request.url.encodedPath) {
+                "/veilarboppfolging/api/v2/oppfolging" -> {
+                    checkDownstreamTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+                    respondOk(underOppfolgingMock)
                 }
+                "/veilarboppfolging/api/v2/veileder" -> respondOk(veilederMock)
+                "/veilarboppfolging/api/person/oppfolgingsenhet" -> respondOk(oppfolgingsenhetMock)
+                else -> error("Unhandled ${request.url.encodedPath}")
             }
         }
 
@@ -101,6 +102,7 @@ class ArbeidsoppfolgingRoutesITest {
             withTestApplication({
                 setupEnvironment(this@withMockOAuth2Server)
                 module(Configuration(veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingMockClient)))
+
             }) {
                 with(handleRequest(HttpMethod.Get, "/v1/oppfolging/info?aktorId=123") {
                     this.addHeader("Authorization", "Bearer ${initialToken.serialize()}")
@@ -118,17 +120,62 @@ class ArbeidsoppfolgingRoutesITest {
 
     }
 
-    private fun checkDownstreamTokenContent(request: HttpRequestData) {
-        val downstreamAuthString = request.headers.get("Downstream-Authorization")?.substringAfter("Bearer ")
+    @Test
+    fun `hent oppfolgingsperiode med mockengine client for eksterne tjenester`() {
+        val uuid = UUID.randomUUID()
+        val oppfolgingsperiode = listOf(OppfolgingsperiodeDTO(uuid, "aktorid", null, OffsetDateTime.now().minusDays(1), null))
+        val internAktiviteter = listOf(InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid).aktivitetId("3"))
+        val internDialoger = listOf(InternDialogBuilder.nyDialog().oppfolgingsperiodeId(uuid).aktivitetId("3"))
+
+        val mockOppfolgingsperiode = Gson().toJson(oppfolgingsperiode)
+        val mockAktiviteter = no.nav.veilarbaktivitet.JSON.getGson().toJson(internAktiviteter)
+        val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
+
+        val veilarbdialogClient = createMockClient { request ->
+            checkDownstreamTokenContent(request, "api://local.pto.veilarbdialog/.default")
+            respondOk(mockDialoger)
+        }
+
+        val veilarbaktivitetClient = createMockClient { request ->
+            checkDownstreamTokenContent(request, "api://local.pto.veilarbaktivitet/.default")
+            respondOk(mockAktiviteter)
+        }
+
+        val veilarboppfolgingClient = createMockClient { request ->
+            checkDownstreamTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+            respondOk(mockOppfolgingsperiode)
+        }
+
+        withMockOAuth2Server {
+            val initialToken: SignedJWT = this.issueToken(subject = "enduser", audience = "client_id")
+
+            withTestApplication({
+                setupEnvironment(this@withMockOAuth2Server)
+                module(Configuration(
+                    veilarbdialogConfig = Configuration.VeilarbdialogConfig(httpClient = veilarbdialogClient),
+                    veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(httpClient = veilarbaktivitetClient),
+                    veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingClient)
+                ))
+            }) {
+                with(handleRequest(HttpMethod.Get, "/v1/oppfolging/periode?aktorId=123") {
+                    this.addHeader("Authorization", "Bearer ${initialToken.serialize()}")
+                }) {
+                    assertEquals(HttpStatusCode.OK, response.status())
+                }
+            }
+        }
+    }
+
+
+    private fun checkDownstreamTokenContent(request: HttpRequestData, expectedAudience: String) {
+        val downstreamAuthString = request.headers[HttpHeaders.DownstreamAuthorization]?.substringAfter("Bearer ")
         val downstreamAuthJwt = JWT.decode(downstreamAuthString)
         Assertions.assertThat(downstreamAuthJwt.subject).isEqualTo("enduser")
-        Assertions.assertThat(downstreamAuthJwt.audience).containsExactly("api://local.pto.veilarboppfolging/.default")
+        Assertions.assertThat(downstreamAuthJwt.audience).containsExactly(expectedAudience)
 
-        val authString = request.headers.get("Authorization")?.substringAfter("Bearer ")
+        val authString = request.headers[HttpHeaders.Authorization]?.substringAfter("Bearer ")
         val authJwt = JWT.decode(authString)
         Assertions.assertThat(authJwt.subject).isEqualTo("client_id")
         Assertions.assertThat(authJwt.audience).containsExactly("api://local.pto.poao-gcp-proxy/.default")
     }
-
-
 }
