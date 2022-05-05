@@ -288,7 +288,8 @@ class ArbeidsoppfolgingRoutesTest {
 
         val mockAktiviteter = JSON.getGson().toJson(internAktiviteter)
         val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
-        val mockOppfolgingsperioder = Gson().toJson(oppfolgingsperiodeDTOer)
+        //TODO fiks serialisering
+        val mockOppfolgingsperioder = JSON.getGson().toJson(oppfolgingsperiodeDTOer)
 
         val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
             baseUrl = veilarbaktivitetConfig.url,
