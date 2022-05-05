@@ -1,7 +1,6 @@
 package no.nav.poao.veilarbapi.oppfolging
 
 import no.nav.common.types.identer.AktorId
-import no.nav.common.types.identer.NavIdent
 import org.threeten.bp.OffsetDateTime
 import java.util.*
 
