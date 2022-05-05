@@ -171,7 +171,7 @@ class ArbeidsoppfolgingRoutesITest {
         val underOppfolgingDTO = UnderOppfolgingDTO(true)
         val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
 
-        val veilederDTO = VeilederDTO(NavIdent("z123456"))
+        val veilederDTO = VeilederDTO("z123456")
         val veilederMock = Gson().toJson(veilederDTO)
 
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO("NAV Grünerløkka", "1234")

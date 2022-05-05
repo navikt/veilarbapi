@@ -6,7 +6,6 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
-import no.nav.common.types.identer.NavIdent
 import no.nav.poao.util.InternAktivitetBuilder
 import no.nav.poao.util.InternDialogBuilder
 import no.nav.poao.util.createMockClient
