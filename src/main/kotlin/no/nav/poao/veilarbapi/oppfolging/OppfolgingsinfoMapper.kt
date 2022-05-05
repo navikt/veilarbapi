@@ -10,7 +10,7 @@ internal fun mapOppfolgingsinfo(
 ): Oppfolgingsinfo {
     return Oppfolgingsinfo().apply {
         underOppfolging = underOppfolgingDTO?.erUnderOppfolging
-        primaerVeileder = veilederDTO?.veilederIdent?.get()
+        primaerVeileder = veilederDTO?.veilederIdent
         oppfolgingsEnhet = OppfolgingsinfoOppfolgingsEnhet().apply {
             enhetId = oppfolgingsenhetDTO?.enhetId
             navn = oppfolgingsenhetDTO?.navn
