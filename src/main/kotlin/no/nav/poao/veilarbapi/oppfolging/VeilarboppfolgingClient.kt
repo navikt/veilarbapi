@@ -25,7 +25,7 @@ data class OppfolgingsperiodeDTO(
 
 data class UnderOppfolgingDTO(var erUnderOppfolging: Boolean? = null)
 
-data class VeilederDTO(var veilederIdent: NavIdent? = null)
+data class VeilederDTO(var veilederIdent: String? = null)
 
 data class OppfolgingsenhetDTO(
     var navn: String? = null,

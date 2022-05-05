@@ -37,7 +37,7 @@ class ArbeidsoppfolgingRoutesITest {
     @Test
     fun `hent oppfolgingsinfo med wiremock for eksterne kall`() {
         val underOppfolgingDto = UnderOppfolgingDTO(true)
-        val veilederDTO = VeilederDTO(NavIdent("z999999"))
+        val veilederDTO = VeilederDTO("z999999")
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO(navn = "Nav Grunerløkka", "1234")
 
         withWiremockServer {
@@ -78,7 +78,7 @@ class ArbeidsoppfolgingRoutesITest {
         val underOppfolgingDTO = UnderOppfolgingDTO(true)
         val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
 
-        val veilederDTO = VeilederDTO(NavIdent("z123456"))
+        val veilederDTO = VeilederDTO("z123456")
         val veilederMock = Gson().toJson(veilederDTO)
 
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO("NAV Grünerløkka", "1234")
