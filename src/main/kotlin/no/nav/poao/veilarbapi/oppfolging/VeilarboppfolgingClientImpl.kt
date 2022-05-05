@@ -63,8 +63,7 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String?): Result<UnderOppfolgingDTO> {
         val response =
-            client.get {
-                url(path = "$baseUrl/api/v2/oppfolging?aktorId=${aktorId.get()}")
+            client.get("$baseUrl/api/v2/oppfolging?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
@@ -80,8 +79,7 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO?> {
         val response =
-            client.get {
-                url(path = "$baseUrl/api/v2/veileder?aktorId=${aktorId.get()}")
+            client.get("$baseUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
@@ -98,8 +96,7 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String?): Result<OppfolgingsenhetDTO?> {
         val response =
-            client.get {
-                url(path = "$baseUrl/api/person/oppfolgingsenhet?aktorId=${aktorId.get()}")
+            client.get("$baseUrl/api/person/oppfolgingsenhet?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }

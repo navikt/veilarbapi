@@ -50,7 +50,7 @@ class ArbeidsoppfolgingRoutesITest {
 
                 testApplication {
                     application {
-                        setupEnvironment(this@withMockOAuth2Server)
+                        setupEnvironment(this@withMockOAuth2Server, this@withWiremockServer)
                         module()
                     }
                     val response = client.get("/v1/oppfolging/info?aktorId=123") {

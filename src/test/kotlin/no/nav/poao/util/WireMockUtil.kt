@@ -2,6 +2,7 @@ package no.nav.poao.util
 
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.core.WireMockConfiguration
 import com.google.gson.Gson
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsenhetDTO
 import no.nav.poao.veilarbapi.oppfolging.UnderOppfolgingDTO
@@ -10,7 +11,7 @@ import no.nav.poao.veilarbapi.oppfolging.VeilederDTO
 internal fun <R> withWiremockServer(
     test: WireMockServer.() -> R
 ): R {
-    val server = WireMockServer(80)
+    val server = WireMockServer(WireMockConfiguration.DYNAMIC_PORT)
     server.start()
     try {
         return server.test()
