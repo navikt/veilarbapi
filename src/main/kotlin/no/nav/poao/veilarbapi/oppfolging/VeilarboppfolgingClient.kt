@@ -10,7 +10,7 @@ interface VeilarboppfolgingClient {
 
     suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String?): Result<UnderOppfolgingDTO>
 
-    suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO>
+    suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO?>
 
     suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String?): Result<OppfolgingsenhetDTO?>
 }
