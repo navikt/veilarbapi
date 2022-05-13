@@ -25,8 +25,7 @@ class VeilarbaktivitetClientImpl (
 
     override suspend fun hentAktiviteter(aktorId: AktorId, accessToken: String?): Result<List<Aktivitet>> {
         val response =
-            client.get {
-                url(path = "$baseUrl/internal/api/v1/aktivitet?aktorId=${aktorId.get()}")
+            client.get("$baseUrl/internal/api/v1/aktivitet?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarbaktivitetTokenProvider(accessToken)}")
             }

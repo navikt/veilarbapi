@@ -25,8 +25,7 @@ class VeilarbdialogClientImpl(
 
     override suspend fun hentDialoger(aktorId: AktorId, accessToken: String?): Result<List<Dialog>> {
         val response =
-            client.get {
-                url(path = "$baseUrl/internal/api/v1/dialog?aktorId=${aktorId.get()}")
+            client.get("$baseUrl/internal/api/v1/dialog?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarbdialogTokenProvider(accessToken)}")
             }

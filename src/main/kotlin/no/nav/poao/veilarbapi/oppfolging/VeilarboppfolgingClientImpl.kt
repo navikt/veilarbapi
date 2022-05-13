@@ -31,8 +31,7 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
         val response =
-            client.get {
-                url(path = "$baseUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}")
+            client.get("$baseUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
