@@ -11,7 +11,7 @@ import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
 import no.nav.poao.veilarbapi.setup.http.baseClient
-import no.nav.veilarbaktivitet.JSON
+import no.nav.veilarbdialog.JSON
 import no.nav.veilarbdialog.model.Dialog
 
 class VeilarbdialogClientImpl(

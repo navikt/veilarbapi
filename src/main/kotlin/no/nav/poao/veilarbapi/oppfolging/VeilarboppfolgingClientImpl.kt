@@ -1,7 +1,7 @@
 package no.nav.poao.veilarbapi.oppfolging
 
 
-import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -13,17 +13,13 @@ import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
 import no.nav.poao.veilarbapi.setup.http.baseClient
+import no.nav.poao.veilarbapi.typeadapter.OffsetDateTimeTypeAdapter
+import no.nav.veilarbapi.JSON
 import org.threeten.bp.OffsetDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import java.util.*
 
 
-private data class OppfolgingsperiodeDTOInternal(
-    var uuid: UUID? = null,
-    var aktorId: String? = null,
-    var veileder: String? = null,
-    var startDato: String? = null,
-    var sluttDato: String? = null
-)
 class VeilarboppfolgingClientImpl(
     private val baseUrl: String,
     private val veilarboppfolgingTokenProvider: suspend (String?) -> String?,
@@ -31,7 +27,7 @@ class VeilarboppfolgingClientImpl(
     private val client: HttpClient = baseClient()
 ) : VeilarboppfolgingClient {
 
-    val json = Gson()
+    val json = gson()
 
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
         val response =
@@ -42,18 +38,8 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val type = object : TypeToken<List<OppfolgingsperiodeDTOInternal>>() {}.type
-            val perioderInternal = json.fromJson<List<OppfolgingsperiodeDTOInternal>>(response.bodyAsText(), type)
-
-            val perioder = perioderInternal.map {
-                OppfolgingsperiodeDTO(
-                    uuid = it.uuid,
-                    aktorId = it.aktorId,
-                    veileder = it.veileder,
-                    startDato = it.startDato?.let{ startdato -> OffsetDateTime.parse(startdato) },
-                    sluttDato = it.sluttDato?.let{ sluttdato -> OffsetDateTime.parse(sluttdato) },
-                )
-            }.toList()
+            val type = object : TypeToken<List<OppfolgingsperiodeDTO>>() {}.type
+            val perioder = json.fromJson<List<OppfolgingsperiodeDTO>>(response.bodyAsText(), type)
 
             return Result.success(perioder)
         } else {

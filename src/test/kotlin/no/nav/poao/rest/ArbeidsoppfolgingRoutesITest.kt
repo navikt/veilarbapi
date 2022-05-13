@@ -12,10 +12,7 @@ import no.nav.poao.util.*
 import no.nav.poao.util.setupEnvironment
 import no.nav.poao.util.withWiremockServer
 import no.nav.poao.veilarbapi.module
-import no.nav.poao.veilarbapi.oppfolging.OppfolgingsenhetDTO
-import no.nav.poao.veilarbapi.oppfolging.OppfolgingsperiodeDTO
-import no.nav.poao.veilarbapi.oppfolging.UnderOppfolgingDTO
-import no.nav.poao.veilarbapi.oppfolging.VeilederDTO
+import no.nav.poao.veilarbapi.oppfolging.*
 import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
 import no.nav.security.mock.oauth2.withMockOAuth2Server
@@ -117,8 +114,6 @@ class ArbeidsoppfolgingRoutesITest {
         }
     }
 
-    }
-
     @Test
     fun `hent oppfolgingsperiode med mockengine client for eksterne tjenester`() {
         val uuid = UUID.randomUUID()
@@ -126,8 +121,7 @@ class ArbeidsoppfolgingRoutesITest {
         val internAktiviteter = listOf(InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid).aktivitetId("3"))
         val internDialoger = listOf(InternDialogBuilder.nyDialog().oppfolgingsperiodeId(uuid).aktivitetId("3"))
 
-        //TODO fiks serialisering
-        val mockOppfolgingsperiode = no.nav.veilarbaktivitet.JSON.getGson().toJson(oppfolgingsperiode)
+        val mockOppfolgingsperiode = gson().toJson(oppfolgingsperiode)
         val mockAktiviteter = no.nav.veilarbaktivitet.JSON.getGson().toJson(internAktiviteter)
         val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
 
@@ -205,8 +199,6 @@ class ArbeidsoppfolgingRoutesITest {
     fun `hent veilederinfo feiler`() {
         val underOppfolgingDTO = UnderOppfolgingDTO(true)
         val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
-
-
 
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO("NAV Grünerløkka", "1234")
         val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
