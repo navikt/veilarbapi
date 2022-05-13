@@ -1,7 +1,6 @@
 package no.nav.poao.veilarbapi.oppfolging
 
 
-import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -13,11 +12,6 @@ import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
 import no.nav.poao.veilarbapi.setup.http.baseClient
-import no.nav.poao.veilarbapi.typeadapter.OffsetDateTimeTypeAdapter
-import no.nav.veilarbapi.JSON
-import org.threeten.bp.OffsetDateTime
-import org.threeten.bp.format.DateTimeFormatter
-import java.util.*
 
 
 class VeilarboppfolgingClientImpl(
