@@ -1,6 +1,9 @@
 package no.nav.poao.veilarbapi.oppfolging
 
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import no.nav.common.types.identer.AktorId
+import no.nav.poao.veilarbapi.typeadapter.OffsetDateTimeTypeAdapter
 import org.threeten.bp.OffsetDateTime
 import java.util.*
 
@@ -13,6 +16,13 @@ interface VeilarboppfolgingClient {
 
     suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String?): Result<OppfolgingsenhetDTO?>
 }
+
+fun gson(): Gson {
+    return GsonBuilder()
+        .registerTypeAdapter(OffsetDateTime::class.java, OffsetDateTimeTypeAdapter())
+        .create()
+}
+
 
 data class OppfolgingsperiodeDTO(
     var uuid: UUID? = null,

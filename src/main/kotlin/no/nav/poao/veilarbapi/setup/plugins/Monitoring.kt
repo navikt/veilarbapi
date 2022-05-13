@@ -1,11 +1,11 @@
 package no.nav.poao.veilarbapi.setup.plugins
 
-import io.ktor.application.*
-import io.ktor.features.*
-import io.ktor.metrics.micrometer.*
-import io.ktor.request.*
-import io.ktor.response.*
-import io.ktor.routing.*
+import io.ktor.server.application.*
+import io.ktor.server.plugins.callloging.*
+import io.ktor.server.request.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
+import io.ktor.server.metrics.micrometer.*
 import io.micrometer.prometheus.PrometheusConfig
 import io.micrometer.prometheus.PrometheusMeterRegistry
 
@@ -13,18 +13,19 @@ fun Application.configureMonitoring() {
     val appMicrometerRegistry = PrometheusMeterRegistry(PrometheusConfig.DEFAULT)
     install(MicrometerMetrics) {
         registry = appMicrometerRegistry
-        routing {
-            get("/internal/prometheus") {
-                call.respond(appMicrometerRegistry.scrape())
-            }
-        }
 
         timers { call, exception ->
             tag("path", call.request.path())
             if (exception != null) tag("exception", exception::class.simpleName)
         }
-
     }
+
+    routing {
+        get("/internal/prometheus") {
+            call.respond(appMicrometerRegistry.scrape())
+        }
+    }
+
 
     install(CallLogging) {
         mdc("Nav-Consumer-Id") { call ->

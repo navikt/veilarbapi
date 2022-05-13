@@ -25,13 +25,13 @@ class VeilarbaktivitetClientImpl (
 
     override suspend fun hentAktiviteter(aktorId: AktorId, accessToken: String?): Result<List<Aktivitet>> {
         val response =
-            client.get<HttpResponse>("$baseUrl/internal/api/v1/aktivitet?aktorId=${aktorId.get()}") {
+            client.get("$baseUrl/internal/api/v1/aktivitet?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarbaktivitetTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val aktiviteter = JSON.deserialize<Array<Aktivitet>?>(response.readText(), Aktivitet::class.java.arrayType())
+            val aktiviteter = JSON.deserialize<Array<Aktivitet>?>(response.bodyAsText(), Aktivitet::class.java.arrayType())
             return Result.success(aktiviteter.toList())
         } else {
             return Result.failure(callFailure(response))
@@ -40,9 +40,9 @@ class VeilarbaktivitetClientImpl (
 
     private suspend fun callFailure(response: HttpResponse): Exception {
         return when (response.status) {
-            HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.readText())
-            HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.readText())
-            HttpStatusCode.InternalServerError -> ServerFeilException(response, response.readText())
+            HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.bodyAsText())
+            HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.bodyAsText())
+            HttpStatusCode.InternalServerError -> ServerFeilException(response, response.bodyAsText())
             else -> Exception("Ukjent statuskode ${response.status}")
         }
     }

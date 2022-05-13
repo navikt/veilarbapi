@@ -17,6 +17,7 @@ internal fun setupEnvironment(mockOAuth2Server: MockOAuth2Server, wireMockServer
     System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:${port}/veilarboppfolging")
 }
 
+
 internal fun createMockClient(block: MockRequestHandleScope.(HttpRequestData) -> HttpResponseData): HttpClient {
     return HttpClient(MockEngine) {
         expectSuccess = false

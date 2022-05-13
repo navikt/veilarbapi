@@ -1,6 +1,6 @@
 package no.nav.poao.veilarbapi.setup.plugins
 
-import io.ktor.application.*
+import io.ktor.server.application.*
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
 import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
 import no.nav.poao.veilarbapi.setup.rest.internalRoutes

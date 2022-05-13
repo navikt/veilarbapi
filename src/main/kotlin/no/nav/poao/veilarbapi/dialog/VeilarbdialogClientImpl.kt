@@ -11,7 +11,7 @@ import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
 import no.nav.poao.veilarbapi.setup.http.baseClient
-import no.nav.veilarbaktivitet.JSON
+import no.nav.veilarbdialog.JSON
 import no.nav.veilarbdialog.model.Dialog
 
 class VeilarbdialogClientImpl(
@@ -25,12 +25,12 @@ class VeilarbdialogClientImpl(
 
     override suspend fun hentDialoger(aktorId: AktorId, accessToken: String?): Result<List<Dialog>> {
         val response =
-            client.get<HttpResponse>("$baseUrl/internal/api/v1/dialog?aktorId=${aktorId.get()}") {
+            client.get("$baseUrl/internal/api/v1/dialog?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarbdialogTokenProvider(accessToken)}")
             }
         if (response.status == HttpStatusCode.OK) {
-            val dialoger = JSON.deserialize<Array<Dialog>>(response.readText(), Dialog::class.java.arrayType())
+            val dialoger = JSON.deserialize<Array<Dialog>>(response.bodyAsText(), Dialog::class.java.arrayType())
             return Result.success(dialoger.toList())
         } else {
             return Result.failure(callFailure(response))
@@ -39,9 +39,9 @@ class VeilarbdialogClientImpl(
 
     private suspend fun callFailure(response: HttpResponse): Exception {
         return when (response.status) {
-            HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.readText())
-            HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.readText())
-            HttpStatusCode.InternalServerError -> ServerFeilException(response, response.readText())
+            HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.bodyAsText())
+            HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.bodyAsText())
+            HttpStatusCode.InternalServerError -> ServerFeilException(response, response.bodyAsText())
             else -> Exception("Ukjent statuskode ${response.status}")
         }
     }

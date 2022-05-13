@@ -1,7 +1,6 @@
 package no.nav.poao.veilarbapi.oppfolging
 
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+
 import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
 import io.ktor.client.request.*
@@ -13,17 +12,8 @@ import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
 import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
 import no.nav.poao.veilarbapi.setup.http.baseClient
-import org.threeten.bp.OffsetDateTime
-import java.util.*
 
 
-private data class OppfolgingsperiodeDTOInternal(
-    var uuid: UUID? = null,
-    var aktorId: String? = null,
-    var veileder: String? = null,
-    var startDato: String? = null,
-    var sluttDato: String? = null
-)
 class VeilarboppfolgingClientImpl(
     private val baseUrl: String,
     private val veilarboppfolgingTokenProvider: suspend (String?) -> String?,
@@ -31,26 +21,18 @@ class VeilarboppfolgingClientImpl(
     private val client: HttpClient = baseClient()
 ) : VeilarboppfolgingClient {
 
-    val json = Gson()
+    val json = gson()
+
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
         val response =
-            client.get<HttpResponse>("$baseUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
+            client.get("$baseUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
-        if (response.status == HttpStatusCode.OK) {
-            val type = object : TypeToken<List<OppfolgingsperiodeDTOInternal>>() {}.type
-            val perioderInternal = json.fromJson<List<OppfolgingsperiodeDTOInternal>>(response.readText(), type)
 
-            val perioder = perioderInternal.map {
-                OppfolgingsperiodeDTO(
-                    uuid = it.uuid,
-                            aktorId = it.aktorId,
-                            veileder = it.veileder,
-                            startDato = it.startDato?.let{ startdato -> OffsetDateTime.parse(startdato) },
-                            sluttDato = it.sluttDato?.let{ sluttdato -> OffsetDateTime.parse(sluttdato) },
-                )
-            }.toList()
+        if (response.status == HttpStatusCode.OK) {
+            val type = object : TypeToken<List<OppfolgingsperiodeDTO>>() {}.type
+            val perioder = json.fromJson<List<OppfolgingsperiodeDTO>>(response.bodyAsText(), type)
 
             return Result.success(perioder)
         } else {
@@ -60,13 +42,13 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String?): Result<UnderOppfolgingDTO> {
         val response =
-            client.get<HttpResponse>("$baseUrl/api/v2/oppfolging?aktorId=${aktorId.get()}") {
+            client.get("$baseUrl/api/v2/oppfolging?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val underOppfolgingDTO: UnderOppfolgingDTO = json.fromJson(response.readText(), UnderOppfolgingDTO::class.java)
+            val underOppfolgingDTO: UnderOppfolgingDTO = json.fromJson(response.bodyAsText(), UnderOppfolgingDTO::class.java)
 
             return Result.success(underOppfolgingDTO)
         } else {
@@ -76,13 +58,13 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO?> {
         val response =
-            client.get<HttpResponse>("$baseUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
+            client.get("$baseUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val veilederDTO = json.fromJson(response.readText(), VeilederDTO::class.java)
+            val veilederDTO = json.fromJson(response.bodyAsText(), VeilederDTO::class.java)
             return Result.success(veilederDTO)
         } else if (response.status === HttpStatusCode.NoContent) {
             return Result.success(null)
@@ -93,13 +75,13 @@ class VeilarboppfolgingClientImpl(
 
     override suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String?): Result<OppfolgingsenhetDTO?> {
         val response =
-            client.get<HttpResponse>("$baseUrl/api/person/oppfolgingsenhet?aktorId=${aktorId.get()}") {
+            client.get("$baseUrl/api/person/oppfolgingsenhet?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
                 header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val oppfolgingsenhetDTO = json.fromJson(response.readText(), OppfolgingsenhetDTO::class.java)
+            val oppfolgingsenhetDTO = json.fromJson(response.bodyAsText(), OppfolgingsenhetDTO::class.java)
 
             return Result.success(oppfolgingsenhetDTO)
         } else if (response.status == HttpStatusCode.NotFound) {
@@ -111,9 +93,9 @@ class VeilarboppfolgingClientImpl(
 
     private suspend fun callFailure(response: HttpResponse): Exception {
         return when (response.status) {
-            HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.readText())
-            HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.readText())
-            HttpStatusCode.InternalServerError -> ServerFeilException(response, response.readText())
+            HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.bodyAsText())
+            HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.bodyAsText())
+            HttpStatusCode.InternalServerError -> ServerFeilException(response, response.bodyAsText())
             else -> Exception("Ukjent statuskode ${response.status}")
         }
     }

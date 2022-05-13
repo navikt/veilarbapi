@@ -1,17 +1,17 @@
 package no.nav.poao.veilarbapi.setup.plugins
 
-import io.ktor.application.*
-import io.ktor.features.*
+import io.ktor.server.application.*
 import io.ktor.http.*
+import io.ktor.server.plugins.cors.routing.*
 
 fun Application.configureCors() {
     install(CORS) {
-        host("navikt.github.io", schemes = listOf("https"))
-        host("localhost:8080")
-        header(HttpHeaders.Authorization)
-        header("Nav-Consumer-Id")
-        header("Nav-Call-Id")
-        method(HttpMethod.Options)
+        allowHost("navikt.github.io", schemes = listOf("https"))
+        allowHost("localhost:8080")
+        allowHeader(HttpHeaders.Authorization)
+        allowHeader("Nav-Consumer-Id")
+        allowHeader("Nav-Call-Id")
+        allowMethod(HttpMethod.Options)
         allowCredentials = true
     }
 }

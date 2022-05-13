@@ -11,9 +11,9 @@ val prometeus_version: String by project
 
 plugins {
     application
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.6.21"
     `java-library`
-    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.10"
+    id("org.jetbrains.kotlin.plugin.serialization") version "1.6.21"
     id ("org.openapi.generator") version "5.4.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
     id("org.sonarqube") version "3.3"
@@ -43,7 +43,7 @@ dependencyLocking {
     lockAllConfigurations()
 }
 
-//configurations.all { resolutionStrategy.failOnVersionConflict() }
+configurations.all { resolutionStrategy.failOnVersionConflict() }
 
 kotlin {
     jvmToolchain {
@@ -120,13 +120,17 @@ kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated/src/main/kotlin")
 dependencies {
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
-    implementation("io.ktor:ktor-metrics:$ktor_version")
-    implementation("io.ktor:ktor-server-core:$ktor_version")
+    implementation("io.ktor:ktor-server-metrics:$ktor_version")
     implementation("io.ktor:ktor-server-netty:$ktor_version")
-    implementation("io.ktor:ktor-auth:$ktor_version")
-    implementation("io.ktor:ktor-auth-jwt:$ktor_version")
+    implementation("io.ktor:ktor-server-auth:$ktor_version")
+    implementation("io.ktor:ktor-server-auth-jwt:$ktor_version")
+    implementation("io.ktor:ktor-server-status-pages:$ktor_version")
+    implementation("io.ktor:ktor-server-call-logging:$ktor_version")
+    implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-server-cors:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
-    implementation("io.ktor:ktor-gson:$ktor_version")
+    implementation("io.ktor:ktor-serialization-gson:$ktor_version")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeine_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
@@ -138,11 +142,11 @@ dependencies {
 
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.14")
     // LOGGING
-    implementation(group= "ch.qos.logback", name= "logback-classic", version= "1.2.6")
+    implementation(group= "ch.qos.logback", name= "logback-classic", version= logback_version)
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
     // Monitoring
-    implementation("io.ktor:ktor-metrics-micrometer:$ktor_version")
+    implementation("io.ktor:ktor-server-metrics-micrometer:$ktor_version")
     implementation("io.micrometer:micrometer-registry-prometheus:$prometeus_version")
 
 
@@ -156,7 +160,7 @@ dependencies {
     implementation("io.ktor:ktor-client-java:$ktor_version")
     implementation("io.ktor:ktor-client-okhttp:$ktor_version")
     // Azure client
-    implementation("io.ktor:ktor-client-jackson:$ktor_version")
+    implementation("io.ktor:ktor-serialization-jackson:$ktor_version")
     // Rest Client END
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
     testImplementation("org.assertj:assertj-core:3.22.0")

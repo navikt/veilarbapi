@@ -3,6 +3,7 @@ package no.nav.poao.auth
 import com.github.michaelbull.result.expect
 import com.nimbusds.jwt.SignedJWT
 import com.nimbusds.oauth2.sdk.TokenRequest
+import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.util.*
 import kotlinx.coroutines.runBlocking
@@ -32,8 +33,6 @@ class AzureAdClientTest {
 
     @Test
     fun `given valid credentials, getting access token for resource should succeed`() {
-
-
         withMockOAuth2Server {
             val resource = "some-resource"
             enqueueCallback(
@@ -56,8 +55,6 @@ class AzureAdClientTest {
                     }
                 }
         }
-
-
     }
 
     @Test
@@ -102,8 +99,7 @@ class AzureAdClientTest {
             clientId = clientId,
             clientSecret = "some-client-secret",
             wellKnownConfigurationUrl = wellKnownUrl,
-            openIdConfiguration = runBlocking { defaultHttpClient.get(wellKnownUrl) }
+            openIdConfiguration = runBlocking { defaultHttpClient.get(wellKnownUrl).body() }
         )
     }
-
 }
