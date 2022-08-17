@@ -118,6 +118,7 @@ private fun mapTilSamtalereferat(aktivitet: InternSamtalereferat, dialog: Dialog
 private fun mapTilStillingFraNav(aktivitet: InternStillingFraNav, dialog: Dialog?): Aktivitet {
     val sfnSoknadsstatus = when (aktivitet.soknadsstatus) {
         no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.VENTER -> "Venter på å bli kontaktet av NAV eller arbeidsgiver"
+        no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.CV_DELT -> "CV er delt med arbeidsgiver"
         no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.SKAL_PAA_INTERVJU -> "Skal på intervju"
         no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.JOBBTILBUD -> "Fått jobbtilbud"
         no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.AVSLAG -> "Fått avslag"
