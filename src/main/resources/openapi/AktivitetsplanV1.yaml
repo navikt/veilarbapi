@@ -193,6 +193,7 @@ components:
                 - SKAL_PAA_INTERVJU
                 - JOBBTILBUD
                 - AVSLAG
+                - IKKE_FATT_JOBBEN
     AktivitetStatus:
       type: string
       enum:
