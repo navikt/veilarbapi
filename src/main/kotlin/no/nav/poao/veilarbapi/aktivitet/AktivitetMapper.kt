@@ -121,7 +121,8 @@ private fun mapTilStillingFraNav(aktivitet: InternStillingFraNav, dialog: Dialog
         no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.CV_DELT -> "CV er delt med arbeidsgiver"
         no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.SKAL_PAA_INTERVJU -> "Skal på intervju"
         no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.JOBBTILBUD -> "Fått jobbtilbud"
-        no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.AVSLAG -> "Fått avslag"
+        no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.AVSLAG -> "Ikke fått jobben"
+        no.nav.veilarbaktivitet.model.StillingFraNav.SoknadsstatusEnum.IKKE_FATT_JOBBEN -> "Ikke fått jobben"
         else -> null
     }
 
