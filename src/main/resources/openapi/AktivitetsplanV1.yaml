@@ -16,13 +16,8 @@ components:
         aktivitet_type:
           type: string
           example: samtalereferat
-        aktivitet_id:
-          type: string
         kontorsperre_enhet_id:
           type: string
-        oppfolgingsperiode_id:
-          type: string
-          format: uuid
         avtalt_med_nav:
           type: boolean
           description: Definer om den definerte aktiviteten er avtalt med NAV
@@ -34,6 +29,11 @@ components:
           type: string
           description: Beskrivelse av aktiviteten som er planlagt/gjennomført
           example: NAV forventer at du søker omtrent 20 stillinger i denne perioden
+        aktivitet_id:
+          type: string
+        oppfolgingsperiode_id:
+          type: string
+          format: uuid
         tittel:
           type: string
         fra_dato:
@@ -217,13 +217,6 @@ paths:
           schema:
             type: string
           description: AktørID til personen man ønsker å hente ut aktivitetsplanen til
-        - name: oppfolgingsperiodeId
-          in: query
-          required: false
-          schema:
-            type: string
-            format: uuid
-          description: Uuid til oppfolgingsperioden
       responses:
         '200':
           description: OK
@@ -234,38 +227,12 @@ paths:
                 items:
                   $ref: '#/components/schemas/aktivitet'
         '204':
-          description: Ingen aktiviteter for aktorId/oppfolgingsperiodeId
+          description: Ingen aktiviteter for aktorId
         '400':
-          description: Trenger aktorId eller/og oppfolgingsperiodeId
+          description: Trenger aktorId
         '401':
           description: Ikke logget inn
         '403':
           description: Ingen tilgang
         '404':
-          description: Finner ikke aktorId/oppfolgingsperiodeId
-        '500':
-          description: Serverfeil
-  /internal/api/v1/aktivitet/{aktivitetId}:
-    get:
-      operationId: hentAktivitet
-      tags:
-        - Aktiviteter
-      description: ''
-      parameters:
-        - name: aktivitetId
-          in: path
-          required: true
-          schema:
-            type: integer
-          description: Numerisk id til aktiviteten
-      responses:
-        '500':
-          description: Serverfeil
-        '403':
-          description: Ingen tilgang
-        '200':
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/aktivitet'
+          description: Finner ikke aktorId
