@@ -29,7 +29,6 @@ components:
           example: true
         status:
           $ref: '#/components/schemas/AktivitetStatus'
-          example: FULLFORT
         beskrivelse:
           type: string
           description: Beskrivelse av aktiviteten som er planlagt/gjennomført
@@ -194,7 +193,10 @@ components:
                 - JOBBTILBUD
                 - AVSLAG
                 - IKKE_FATT_JOBBEN
+                - FATT_JOBBEN
     AktivitetStatus:
+      description: Status for aktiviteten
+      example: FULLFORT
       type: string
       enum:
         - PLANLAGT
