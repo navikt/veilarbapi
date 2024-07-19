@@ -20,6 +20,7 @@ class RealServerTestUtil {
             System.setProperty("AZURE_APP_CLIENT_ID", "clientid")
             System.setProperty("AZURE_APP_CLIENT_SECRET", "supersecret")
             System.setProperty("VEILARBAKTIVITETAPI_URL", "http://localhost:${wireMockServer.port()}/veilarbaktivitet")
+            System.setProperty("VEILARBAKTIVITETAPI_SCOPE", "api://local.dab.veilarbaktivitet/.default")
             System.setProperty("VEILARBDIALOGAPI_URL", "http://localhost:${wireMockServer.port()}/veilarbdialog")
             System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:${wireMockServer.port()}/veilarboppfolging")
 

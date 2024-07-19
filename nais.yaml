@@ -63,8 +63,12 @@ spec:
       value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration
     - name : VEILARBAKTIVITETAPI_URL
       value: https://veilarbaktivitet.prod-fss-pub.nais.io/veilarbaktivitet
+    - name: VEILARBAKTIVITETAPI_SCOPE
+      value: api://prod-fss.pto.veilarbaktivitet/.default
 #    - name: VEILARBAKTIVITETAPI_URL TODO: When prod version of veilarbaktivitet is ready enable this
 #      value: http://veilarbaktivitet.dab/veilarbaktivitet
+#    - name: VEILARBAKTIVITETAPI_SCOPE
+#      value: api://prod-gcp.dab.veilarbaktivitet/.default
     - name : VEILARBDIALOGAPI_URL
       value: https://veilarbdialog.prod-fss-pub.nais.io/veilarbdialog
     - name : VEILARBOPPFOLGINGAPI_URL

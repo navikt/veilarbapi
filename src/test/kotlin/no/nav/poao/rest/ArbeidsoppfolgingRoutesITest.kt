@@ -131,7 +131,7 @@ class ArbeidsoppfolgingRoutesITest {
         }
 
         val veilarbaktivitetClient = createMockClient { request ->
-            checkBearerTokenContent(request, "api://local.pto.veilarbaktivitet/.default")
+            checkBearerTokenContent(request, "api://local.dab.veilarbaktivitet/.default")
             respondOk(mockAktiviteter)
         }
 
