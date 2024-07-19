@@ -56,13 +56,17 @@ spec:
         - application: saas-proxy
           namespace: teamcrm
     outbound:
+      rules:
+        - application: veilarbaktivitet
+          namespace: dab
+          cluster: gcp
       external:
         - host: poao-gcp-proxy.dev-fss-pub.nais.io
   env:
     - name: AZURE_APP_WELL_KNOWN_URL
       value: https://login.microsoftonline.com/966ac572-f5b7-4bbe-aa88-c76419c0f851/v2.0/.well-known/openid-configuration
-    - name : VEILARBAKTIVITETAPI_URL
-      value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy/veilarbaktivitet
+    - name: VEILARBAKTIVITETAPI_URL
+      value: http://veilarbaktivitet.dab/veilarbaktivitet
     - name : VEILARBDIALOGAPI_URL
       value: https://poao-gcp-proxy.dev-fss-pub.nais.io/proxy/veilarbdialog
     - name : VEILARBOPPFOLGINGAPI_URL
