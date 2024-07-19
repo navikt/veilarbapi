@@ -16,7 +16,7 @@ plugins {
     id("org.jetbrains.kotlin.plugin.serialization") version "1.6.21"
     id ("org.openapi.generator") version "5.4.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("org.sonarqube") version "3.3"
+    id("org.sonarqube") version "4.4.1.3373"
     id ("jacoco")
 }
 
@@ -28,9 +28,9 @@ sonarqube {
     }
 }
 
-tasks.sonarqube {
-    dependsOn(tasks.jacocoTestReport)
-}
+//tasks.sonarqube {
+//    dependsOn(tasks.jacocoTestReport)
+//}
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
