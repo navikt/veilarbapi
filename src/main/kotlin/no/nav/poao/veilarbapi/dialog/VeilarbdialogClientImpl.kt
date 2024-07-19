@@ -17,7 +17,6 @@ import no.nav.veilarbdialog.model.Dialog
 class VeilarbdialogClientImpl(
     private val baseUrl: String,
     private val veilarbdialogTokenProvider: suspend (String?) -> String?,
-    private val proxyTokenProvider: suspend (String?) -> String?,
     private val client: HttpClient = baseClient()
 ) : VeilarbdialogClient {
 
@@ -26,8 +25,7 @@ class VeilarbdialogClientImpl(
     override suspend fun hentDialoger(aktorId: AktorId, accessToken: String?): Result<List<Dialog>> {
         val response =
             client.get("$baseUrl/internal/api/v1/dialog?aktorId=${aktorId.get()}") {
-                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
-                header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarbdialogTokenProvider(accessToken)}")
+                header(HttpHeaders.Authorization, "Bearer ${veilarbdialogTokenProvider(accessToken)}")
             }
         if (response.status == HttpStatusCode.OK) {
             val dialoger = JSON.deserialize<Array<Dialog>>(response.bodyAsText(), Dialog::class.java.arrayType())

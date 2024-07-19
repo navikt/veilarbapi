@@ -71,21 +71,18 @@ class ArbeidsoppfolgingRoutesTest {
         val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
             baseUrl = veilarbaktivitetConfig.url,
             veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
-            proxyTokenProvider = { "PROXY_TOKEN" },
             client = createMockClient { respondError(HttpStatusCode.Forbidden) }
         )
 
         val veilarbdialogClient = VeilarbdialogClientImpl(
             baseUrl = veilarbdialogConfig.url,
             veilarbdialogTokenProvider = { "VEILARBDIALOG_TOKEN" },
-            proxyTokenProvider = { "PROXY_TOKEN" },
             client = createMockClient { respondError(HttpStatusCode.Forbidden) }
         )
 
         val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
             baseUrl = veilarboppfolgingConfig.url,
             veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
-            proxyTokenProvider = { "PROXY_TOKEN" },
             client = createMockClient { respondError(HttpStatusCode.Forbidden) }
         )
 
@@ -139,7 +136,6 @@ class ArbeidsoppfolgingRoutesTest {
         val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
             baseUrl = veilarboppfolgingConfig.url,
             veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
-            proxyTokenProvider = { "PROXY_TOKEN" },
             client = httpClient
         )
 
@@ -182,7 +178,6 @@ class ArbeidsoppfolgingRoutesTest {
         val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
             baseUrl = veilarboppfolgingConfig.url,
             veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
-            proxyTokenProvider = { "PROXY_TOKEN" },
             client = veilarboppfolgingHttpClient
         )
 
@@ -220,7 +215,6 @@ class ArbeidsoppfolgingRoutesTest {
         val veilarboppfolgingClient2 = VeilarboppfolgingClientImpl(
             baseUrl = veilarboppfolgingConfig.url,
             veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
-            proxyTokenProvider = { "PROXY_TOKEN" },
             client = veilarboppfolgingHttpClient2
         )
 
@@ -292,21 +286,18 @@ class ArbeidsoppfolgingRoutesTest {
         val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
             baseUrl = veilarbaktivitetConfig.url,
             veilarbaktivitetTokenProvider = { "VEILARBAKTIVITET_TOKEN" },
-            proxyTokenProvider = { "PROXY_TOKEN" },
             client = createMockClient { respondOk(mockAktiviteter) }
         )
 
         val veilarbdialogClient = VeilarbdialogClientImpl(
             baseUrl = veilarbdialogConfig.url,
             veilarbdialogTokenProvider = { "VEILARBDIALOG_TOKEN" },
-            proxyTokenProvider = { "PROXY_TOKEN" },
             client = createMockClient { respondOk(mockDialoger) }
         )
 
         val veilarboppfolgingClient = VeilarboppfolgingClientImpl(
             baseUrl = veilarboppfolgingConfig.url,
             veilarboppfolgingTokenProvider = { "VEILARBOPPFOLGING_TOKEN" },
-            proxyTokenProvider = { "PROXY_TOKEN" },
             client = createMockClient { respondOk(mockOppfolgingsperioder) }
         )
 

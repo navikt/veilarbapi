@@ -17,7 +17,6 @@ import no.nav.poao.veilarbapi.setup.http.baseClient
 class VeilarboppfolgingClientImpl(
     private val baseUrl: String,
     private val veilarboppfolgingTokenProvider: suspend (String?) -> String?,
-    private val proxyTokenProvider: suspend (String?) -> String?,
     private val client: HttpClient = baseClient()
 ) : VeilarboppfolgingClient {
 
@@ -26,8 +25,7 @@ class VeilarboppfolgingClientImpl(
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>> {
         val response =
             client.get("$baseUrl/api/v2/oppfolging/perioder?aktorId=${aktorId.get()}") {
-                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
-                header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
+                header(HttpHeaders.Authorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
@@ -43,8 +41,7 @@ class VeilarboppfolgingClientImpl(
     override suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String?): Result<UnderOppfolgingDTO> {
         val response =
             client.get("$baseUrl/api/v2/oppfolging?aktorId=${aktorId.get()}") {
-                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
-                header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
+                header(HttpHeaders.Authorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
@@ -59,8 +56,7 @@ class VeilarboppfolgingClientImpl(
     override suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO?> {
         val response =
             client.get("$baseUrl/api/v2/veileder?aktorId=${aktorId.get()}") {
-                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
-                header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
+                header(HttpHeaders.Authorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {
@@ -76,8 +72,7 @@ class VeilarboppfolgingClientImpl(
     override suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String?): Result<OppfolgingsenhetDTO?> {
         val response =
             client.get("$baseUrl/api/person/oppfolgingsenhet?aktorId=${aktorId.get()}") {
-                header(HttpHeaders.Authorization, "Bearer ${proxyTokenProvider(accessToken)}")
-                header(HttpHeaders.DownstreamAuthorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
+                header(HttpHeaders.Authorization, "Bearer ${veilarboppfolgingTokenProvider(accessToken)}")
             }
 
         if (response.status == HttpStatusCode.OK) {

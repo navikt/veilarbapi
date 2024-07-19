@@ -84,7 +84,7 @@ class ArbeidsoppfolgingRoutesITest {
         val veilarboppfolgingMockClient = createMockClient { request ->
             when (request.url.encodedPath) {
                 "/veilarboppfolging/api/v2/oppfolging" -> {
-                    checkDownstreamTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+                    checkBearerTokenContent(request, "api://local.pto.veilarboppfolging/.default")
                     respondOk(underOppfolgingMock)
                 }
                 "/veilarboppfolging/api/v2/veileder" -> respondOk(veilederMock)
@@ -126,17 +126,17 @@ class ArbeidsoppfolgingRoutesITest {
         val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
 
         val veilarbdialogClient = createMockClient { request ->
-            checkDownstreamTokenContent(request, "api://local.pto.veilarbdialog/.default")
+            checkBearerTokenContent(request, "api://local.pto.veilarbdialog/.default")
             respondOk(mockDialoger)
         }
 
         val veilarbaktivitetClient = createMockClient { request ->
-            checkDownstreamTokenContent(request, "api://local.pto.veilarbaktivitet/.default")
+            checkBearerTokenContent(request, "api://local.dab.veilarbaktivitet/.default")
             respondOk(mockAktiviteter)
         }
 
         val veilarboppfolgingClient = createMockClient { request ->
-            checkDownstreamTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+            checkBearerTokenContent(request, "api://local.pto.veilarboppfolging/.default")
             respondOk(mockOppfolgingsperiode)
         }
 
@@ -174,7 +174,7 @@ class ArbeidsoppfolgingRoutesITest {
         val veilarboppfolgingMockClient = createMockClient { request ->
             when (request.url.encodedPath) {
                 "/veilarboppfolging/api/v2/oppfolging" -> {
-                    checkDownstreamTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+                    checkBearerTokenContent(request, "api://local.pto.veilarboppfolging/.default")
                     respondOk(underOppfolgingMock)
                 }
                 "/veilarboppfolging/api/v2/veileder" -> respondOk(veilederMock)
@@ -206,7 +206,7 @@ class ArbeidsoppfolgingRoutesITest {
         val veilarboppfolgingMockClient = createMockClient { request ->
             when (request.url.encodedPath) {
                 "/veilarboppfolging/api/v2/oppfolging" -> {
-                    checkDownstreamTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+                    checkBearerTokenContent(request, "api://local.pto.veilarboppfolging/.default")
                     respondOk(underOppfolgingMock)
                 }
                 "/veilarboppfolging/api/v2/veileder" -> respondBadRequest()
@@ -238,15 +238,10 @@ class ArbeidsoppfolgingRoutesITest {
         }
     }
 
-    private fun checkDownstreamTokenContent(request: HttpRequestData, expectedAudience: String) {
-        val downstreamAuthString = request.headers[HttpHeaders.DownstreamAuthorization]?.substringAfter("Bearer ")
-        val downstreamAuthJwt = JWT.decode(downstreamAuthString)
-        Assertions.assertThat(downstreamAuthJwt.subject).isEqualTo("enduser")
-        Assertions.assertThat(downstreamAuthJwt.audience).containsExactly(expectedAudience)
-
+    private fun checkBearerTokenContent(request: HttpRequestData, expectedAudience: String) {
         val authString = request.headers[HttpHeaders.Authorization]?.substringAfter("Bearer ")
         val authJwt = JWT.decode(authString)
-        Assertions.assertThat(authJwt.subject).isEqualTo("client_id")
-        Assertions.assertThat(authJwt.audience).containsExactly("api://local.pto.poao-gcp-proxy/.default")
+        Assertions.assertThat(authJwt.subject).isEqualTo("enduser")
+        Assertions.assertThat(authJwt.audience).containsExactly(expectedAudience)
     }
 }
