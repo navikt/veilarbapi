@@ -55,6 +55,9 @@ spec:
           cluster: dev-external
         - application: saas-proxy
           namespace: teamcrm
+        - application: ida
+          namespace: traktor
+          cluster: prod-fss
     outbound:
       rules:
         - application: veilarbaktivitet
