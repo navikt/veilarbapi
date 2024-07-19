@@ -55,14 +55,11 @@ spec:
           cluster: dev-external
         - application: saas-proxy
           namespace: teamcrm
-        - application: ida
-          namespace: traktor
-          cluster: prod-fss
     outbound:
       rules:
         - application: veilarbaktivitet
           namespace: dab
-          cluster: gcp
+          cluster: dev-gcp
       external:
         - host: veilarbdialog.dev-fss-pub.nais.io
         - host: veilarboppfolging.dev-fss-pub.nais.io
