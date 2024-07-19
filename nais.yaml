@@ -56,15 +56,17 @@ spec:
           namespace: dab
           cluster: gcp
       external:
-        - host: poao-gcp-proxy.prod-fss-pub.nais.io
+        - host: veilarbaktivitet.prod-fss-pub.nais.io
+        - host: veilarbdialog.prod-fss-pub.nais.io
+        - host: veilarboppfolging.prod-fss-pub.nais.io
   env:
     - name: AZURE_APP_WELL_KNOWN_URL
       value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration
     - name : VEILARBAKTIVITETAPI_URL
-      value: https://poao-gcp-proxy.prod-fss-pub.nais.io/proxy/veilarbaktivitet
+      value: https://veilarbaktivitet.prod-fss-pub.nais.io/veilarbaktivitet
 #    - name: VEILARBAKTIVITETAPI_URL TODO: When prod version of veilarbaktivitet is ready enable this
 #      value: http://veilarbaktivitet.dab/veilarbaktivitet
     - name : VEILARBDIALOGAPI_URL
-      value: https://poao-gcp-proxy.prod-fss-pub.nais.io/proxy/veilarbdialog
+      value: https://veilarbdialog.prod-fss-pub.nais.io/veilarbdialog
     - name : VEILARBOPPFOLGINGAPI_URL
-      value: https://poao-gcp-proxy.prod-fss-pub.nais.io/proxy/veilarboppfolging
+      value: https://veilarboppfolging.prod-fss-pub.nais.io/veilarboppfolging
