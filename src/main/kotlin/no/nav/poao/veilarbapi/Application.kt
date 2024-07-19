@@ -29,9 +29,9 @@ fun Application.module(configuration: Configuration = Configuration()) {
 
     val tokenProviders = TokenProviders(azureAdClient, configuration)
 
-    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig.url, tokenProviders.veilarbaktivitetTokenProvider, tokenProviders.proxyTokenProvider, configuration.veilarbaktivitetConfig.httpClient)
-    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig.url, tokenProviders.veilarbdialogTokenProvider, tokenProviders.proxyTokenProvider, configuration.veilarbdialogConfig.httpClient)
-    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig.url, tokenProviders.veilarboppfolgingTokenProvider, tokenProviders.proxyTokenProvider, configuration.veilarboppfolgingConfig.httpClient)
+    val veilarbaktivitetClient = VeilarbaktivitetClientImpl(configuration.veilarbaktivitetConfig.url, tokenProviders.veilarbaktivitetTokenProvider, configuration.veilarbaktivitetConfig.httpClient)
+    val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig.url, tokenProviders.veilarbdialogTokenProvider, configuration.veilarbdialogConfig.httpClient)
+    val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig.url, tokenProviders.veilarboppfolgingTokenProvider, configuration.veilarboppfolgingConfig.httpClient)
 
     val oppfolgingService = OppfolgingService(veilarbaktivitetClient = veilarbaktivitetClient, veilarbdialogClient = veilarbdialogClient, veilarboppfolgingClient =  veilarboppfolgingClient)
 

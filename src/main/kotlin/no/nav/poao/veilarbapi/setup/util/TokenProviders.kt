@@ -9,14 +9,6 @@ class TokenProviders(
     val configuration: Configuration
 ) {
 
-    val proxyTokenProvider: suspend (String?) -> String? = { accessToken ->
-        accessToken?.let {
-            azureAdClient.getAccessTokenForResource(
-                scopes = listOf(configuration.poaoGcpProxyConfig.authenticationScope)
-            ).get()?.accessToken
-        }
-    }
-
     val veilarbaktivitetTokenProvider: suspend (String?) -> String? = { accessToken ->
         accessToken?.let {
             azureAdClient.getOnBehalfOfAccessTokenForResource(
