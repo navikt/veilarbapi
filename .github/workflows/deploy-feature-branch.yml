@@ -6,6 +6,9 @@ concurrency:
   group: deploy_feature_branch
   cancel-in-progress: true
 
+permissions:
+  packages: write
+
 env:
   IMAGE_TAG: ${{ github.sha }}-dev
   IMAGE: docker.pkg.github.com/${{ github.repository }}/veilarbapi
