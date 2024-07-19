@@ -9,7 +9,7 @@ metadata:
 spec:
   image: docker.pkg.github.com/navikt/veilarbapi/veilarbapi:{{version}}
   ingresses:
-    - https://veilarbapi.dev.intern.nav.no
+    - https://veilarbapi.intern.dev.nav.no
   port: 8080
   prometheus:
     enabled: true
