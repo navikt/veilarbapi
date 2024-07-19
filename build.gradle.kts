@@ -28,10 +28,6 @@ sonarqube {
     }
 }
 
-//tasks.sonarqube {
-//    dependsOn(tasks.jacocoTestReport)
-//}
-
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
     reports {
