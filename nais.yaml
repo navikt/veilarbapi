@@ -54,7 +54,6 @@ spec:
       rules:
         - application: veilarbaktivitet
           namespace: dab
-          cluster: gcp
       external:
         - host: poao-gcp-proxy.prod-fss-pub.nais.io
   env:
