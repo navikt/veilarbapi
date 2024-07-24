@@ -8,13 +8,13 @@ import org.threeten.bp.OffsetDateTime
 import java.util.*
 
 interface VeilarboppfolgingClient {
-    suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String?): Result<List<OppfolgingsperiodeDTO>>
+    suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String): Result<List<OppfolgingsperiodeDTO>>
 
-    suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String?): Result<UnderOppfolgingDTO>
+    suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String): Result<UnderOppfolgingDTO>
 
-    suspend fun hentVeileder(aktorId: AktorId, accessToken: String?): Result<VeilederDTO?>
+    suspend fun hentVeileder(aktorId: AktorId, accessToken: String): Result<VeilederDTO?>
 
-    suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String?): Result<OppfolgingsenhetDTO?>
+    suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String): Result<OppfolgingsenhetDTO?>
 }
 
 fun gson(): Gson {

@@ -8,21 +8,20 @@ import io.ktor.http.*
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
-import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
-import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
+import no.nav.poao.veilarbapi.setup.exceptions.EksternServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbaktivitet.model.Aktivitet
 
 class VeilarbaktivitetClientImpl (
     private val baseUrl: String,
-    private val veilarbaktivitetTokenProvider: suspend (String?) -> String?,
+    private val veilarbaktivitetTokenProvider: suspend (String) -> String,
     private val client: HttpClient = baseClient()
 ) : VeilarbaktivitetClient {
 
     init { JSON() }
 
-    override suspend fun hentAktiviteter(aktorId: AktorId, accessToken: String?): Result<List<Aktivitet>> {
+    override suspend fun hentAktiviteter(aktorId: AktorId, accessToken: String): Result<List<Aktivitet>> {
         val response =
             client.get("$baseUrl/internal/api/v1/aktivitet?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${veilarbaktivitetTokenProvider(accessToken)}")
@@ -40,7 +39,7 @@ class VeilarbaktivitetClientImpl (
         return when (response.status) {
             HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.bodyAsText())
             HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.bodyAsText())
-            HttpStatusCode.InternalServerError -> ServerFeilException(response, response.bodyAsText())
+            HttpStatusCode.InternalServerError -> EksternServerFeilException(response, response.bodyAsText())
             else -> Exception("Ukjent statuskode ${response.status}")
         }
     }

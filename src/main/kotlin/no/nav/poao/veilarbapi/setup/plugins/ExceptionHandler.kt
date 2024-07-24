@@ -6,7 +6,7 @@ import io.ktor.server.response.*
 import io.ktor.server.plugins.statuspages.*
 import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
-import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
+import no.nav.poao.veilarbapi.setup.exceptions.EksternServerFeilException
 
 fun Application.configureExceptionHandler() {
 
@@ -19,7 +19,7 @@ fun Application.configureExceptionHandler() {
             call.respond(HttpStatusCode.Forbidden)
             call.application.log.info("Mangler tilgang", cause)
         }
-        exception<ServerFeilException> { call, cause ->
+        exception<EksternServerFeilException> { call, cause ->
             call.respond(HttpStatusCode.InternalServerError)
             call.application.log.warn("Serverfeil i klientkall", cause)
         }

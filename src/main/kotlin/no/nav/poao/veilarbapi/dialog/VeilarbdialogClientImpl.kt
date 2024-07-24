@@ -8,21 +8,20 @@ import io.ktor.http.*
 import no.nav.common.types.identer.AktorId
 import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
-import no.nav.poao.veilarbapi.setup.exceptions.ServerFeilException
-import no.nav.poao.veilarbapi.setup.http.DownstreamAuthorization
+import no.nav.poao.veilarbapi.setup.exceptions.EksternServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.veilarbdialog.JSON
 import no.nav.veilarbdialog.model.Dialog
 
 class VeilarbdialogClientImpl(
     private val baseUrl: String,
-    private val veilarbdialogTokenProvider: suspend (String?) -> String?,
+    private val veilarbdialogTokenProvider: suspend (String) -> String,
     private val client: HttpClient = baseClient()
 ) : VeilarbdialogClient {
 
     init { JSON() }
 
-    override suspend fun hentDialoger(aktorId: AktorId, accessToken: String?): Result<List<Dialog>> {
+    override suspend fun hentDialoger(aktorId: AktorId, accessToken: String): Result<List<Dialog>> {
         val response =
             client.get("$baseUrl/internal/api/v1/dialog?aktorId=${aktorId.get()}") {
                 header(HttpHeaders.Authorization, "Bearer ${veilarbdialogTokenProvider(accessToken)}")
@@ -39,7 +38,7 @@ class VeilarbdialogClientImpl(
         return when (response.status) {
             HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.bodyAsText())
             HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.bodyAsText())
-            HttpStatusCode.InternalServerError -> ServerFeilException(response, response.bodyAsText())
+            HttpStatusCode.InternalServerError -> EksternServerFeilException(response, response.bodyAsText())
             else -> Exception("Ukjent statuskode ${response.status}")
         }
     }

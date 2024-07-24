@@ -5,6 +5,6 @@ import no.nav.veilarbdialog.model.Dialog
 
 interface VeilarbdialogClient {
 
-    suspend fun hentDialoger(aktorId: AktorId, accessToken: String?): Result<List<Dialog>>
+    suspend fun hentDialoger(aktorId: AktorId, accessToken: String): Result<List<Dialog>>
 
 }

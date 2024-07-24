@@ -17,7 +17,7 @@ class OppfolgingService(
     val veilarboppfolgingClient: VeilarboppfolgingClient
 ) {
 
-    suspend fun fetchOppfolgingsPerioder(aktorId: AktorId, accessToken: String?): Oppfolgingsperioder {
+    suspend fun fetchOppfolgingsPerioder(aktorId: AktorId, accessToken: String): Oppfolgingsperioder {
         val dialoger = veilarbdialogClient.hentDialoger(aktorId, accessToken)
         val aktiviteter: Result<List<Aktivitet>> = veilarbaktivitetClient.hentAktiviteter(aktorId, accessToken)
         val oppfolgingsperioder = veilarboppfolgingClient.hentOppfolgingsperioder(aktorId, accessToken)
@@ -60,7 +60,7 @@ class OppfolgingService(
         return response
     }
 
-    suspend fun fetchOppfolgingsInfo(aktorId: AktorId, accessToken: String?): Result<Oppfolgingsinfo?> {
+    suspend fun fetchOppfolgingsInfo(aktorId: AktorId, accessToken: String): Result<Oppfolgingsinfo?> {
         val erUnderOppfolging = veilarboppfolgingClient.hentErUnderOppfolging(aktorId, accessToken)
         val veileder = veilarboppfolgingClient.hentVeileder(aktorId, accessToken)
         val oppfolgingsenhet = veilarboppfolgingClient.hentOppfolgingsenhet(aktorId, accessToken)

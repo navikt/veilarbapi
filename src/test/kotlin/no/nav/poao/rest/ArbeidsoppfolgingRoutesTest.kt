@@ -27,6 +27,8 @@ import org.threeten.bp.OffsetDateTime
 import java.util.*
 import kotlin.test.assertEquals
 
+val mockJwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNDU2Nzg5LCJuYW1lIjoiSm9zZXBoIn0.OpOSSw7e485LOP5PrzScxHb7SR6sAOMRckfFwi4rp7o"
+
 class ArbeidsoppfolgingRoutesTest {
     private val veilarbaktivitetConfig =
         Configuration.VeilarbaktivitetConfig(url = "/veilarbaktivitet")
@@ -49,7 +51,9 @@ class ArbeidsoppfolgingRoutesTest {
                 arbeidsoppfolgingRoutes(false, mockOppfolgingService)
                 configureSerialization()
             }
-            val response = client.get("/v1/oppfolging/periode?aktorId=123")
+            val response = client.get("/v1/oppfolging/periode?aktorId=123") {
+                header("Authorization", "Bearer $mockJwtToken")
+            }
             assertEquals(HttpStatusCode.OK, response.status)
 
             val oppfolgingsperioder =
@@ -93,7 +97,9 @@ class ArbeidsoppfolgingRoutesTest {
                 arbeidsoppfolgingRoutes(false, oppfolgingService)
                 configureSerialization()
             }
-            val response = client.get("/v1/oppfolging/periode?aktorId=123")
+            val response = client.get("/v1/oppfolging/periode?aktorId=123") {
+                header("Authorization", "Bearer $mockJwtToken")
+            }
             assertEquals(HttpStatusCode.OK, response.status)
 
             val oppfolgingsperioder =
@@ -150,7 +156,9 @@ class ArbeidsoppfolgingRoutesTest {
                 arbeidsoppfolgingRoutes(false, oppfolgingService)
                 configureSerialization()
             }
-            val response = client.get("/v1/oppfolging/info?aktorId=123")
+            val response = client.get("/v1/oppfolging/info?aktorId=123") {
+                header("Authorization", "Bearer $mockJwtToken")
+            }
             assertEquals(HttpStatusCode.NoContent, response.status)
         }
     }
@@ -193,7 +201,9 @@ class ArbeidsoppfolgingRoutesTest {
                 configureSerialization()
                 configureExceptionHandler()
             }
-            val response = client.get("/v1/oppfolging/info?aktorId=123")
+            val response = client.get("/v1/oppfolging/info?aktorId=123") {
+                header("Authorization", "Bearer $mockJwtToken")
+            }
             assertEquals(HttpStatusCode.Forbidden, response.status)
         }
 
@@ -230,7 +240,9 @@ class ArbeidsoppfolgingRoutesTest {
                 configureSerialization()
                 configureExceptionHandler()
             }
-            val response = client.get("/v1/oppfolging/info?aktorId=123")
+            val response = client.get("/v1/oppfolging/info?aktorId=123") {
+                header("Authorization", "Bearer $mockJwtToken")
+            }
             assertEquals(HttpStatusCode.OK, response.status)
 
             val oppfolgingsinfo: Oppfolgingsinfo = no.nav.veilarbapi.JSON.deserialize(

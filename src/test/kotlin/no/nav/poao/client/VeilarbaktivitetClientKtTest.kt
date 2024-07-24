@@ -32,7 +32,7 @@ class VeilarbaktivitetClientKtTest {
             client = baseClient(mockEngine)
         )
         runBlocking {
-            val aktiviteter = client.hentAktiviteter(AktorId.of("123456789101"), null)
+            val aktiviteter = client.hentAktiviteter(AktorId.of("123456789101"), "token")
             assertThat(aktiviteter.getOrNull()).hasSize(2)
         }
     }
@@ -52,7 +52,7 @@ class VeilarbaktivitetClientKtTest {
             client = baseClient(mockEngine)
         )
         runBlocking {
-            val hentAktiviteter = client.hentAktiviteter(AktorId.of("123456789101"), null)
+            val hentAktiviteter = client.hentAktiviteter(AktorId.of("123456789101"), "token")
             assertTrue(hentAktiviteter.isFailure)
         }
     }
