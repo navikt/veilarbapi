@@ -54,6 +54,8 @@ spec:
       rules:
         - application: veilarbaktivitet
           namespace: dab
+        - application: veilarbdialog
+          namespace: dab
       external:
         - host: veilarbaktivitet.prod-fss-pub.nais.io
         - host: veilarbdialog.prod-fss-pub.nais.io
