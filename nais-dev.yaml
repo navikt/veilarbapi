@@ -62,7 +62,6 @@ spec:
         - application: veilarbdialog
           namespace: dab
       external:
-        - host: veilarbdialog.dev-fss-pub.nais.io
         - host: veilarboppfolging.dev-fss-pub.nais.io
   env:
     - name: AZURE_APP_WELL_KNOWN_URL
@@ -72,6 +71,6 @@ spec:
     - name: VEILARBAKTIVITETAPI_SCOPE
       value: api://dev-gcp.dab.veilarbaktivitet/.default
     - name : VEILARBDIALOGAPI_URL
-      value: https://veilarbdialog.dev-fss-pub.nais.io/veilarbdialog
+      value: http://veilarbdialog.dab/veilarbdialog
     - name : VEILARBOPPFOLGINGAPI_URL
       value: https://veilarboppfolging.dev-fss-pub.nais.io/veilarboppfolging
