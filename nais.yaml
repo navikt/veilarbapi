@@ -35,6 +35,10 @@ spec:
       memory: 768Mi
   secureLogs:
     enabled: true
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
   azure:
     application:
       allowAllUsers: true
