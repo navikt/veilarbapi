@@ -12,6 +12,9 @@ import no.nav.poao.veilarbapi.setup.exceptions.EksternServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.veilarbdialog.JSON
 import no.nav.veilarbdialog.model.Dialog
+import org.slf4j.LoggerFactory
+
+private val logger = LoggerFactory.getLogger(VeilarbdialogClientImpl::class.java)
 
 class VeilarbdialogClientImpl(
     private val baseUrl: String,
@@ -30,6 +33,7 @@ class VeilarbdialogClientImpl(
             val dialoger = JSON.deserialize<Array<Dialog>>(response.bodyAsText(), Dialog::class.java.arrayType())
             return Result.success(dialoger.toList())
         } else {
+            logger.error("Feilet å hente dialog data", response.toString())
             return Result.failure(callFailure(response))
         }
     }
