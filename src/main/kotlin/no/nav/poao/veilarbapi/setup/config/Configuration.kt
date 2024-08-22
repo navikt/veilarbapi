@@ -49,7 +49,7 @@ data class Configuration(
     )
     data class VeilarbdialogConfig(
         val url: String = config()[Key("VEILARBDIALOGAPI_URL", stringType)],
-        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarbdialog/.default",
+        val authenticationScope: String = "api://${Cluster.current.toGcp()}.dab.veilarbdialog/.default",
         val httpClient: HttpClient = baseClient()
     )
     data class VeilarboppfolgingConfig(

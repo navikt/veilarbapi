@@ -126,7 +126,7 @@ class ArbeidsoppfolgingRoutesITest {
         val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
 
         val veilarbdialogClient = createMockClient { request ->
-            checkBearerTokenContent(request, "api://local.pto.veilarbdialog/.default")
+            checkBearerTokenContent(request, "api://local.dab.veilarbdialog/.default")
             respondOk(mockDialoger)
         }
 
