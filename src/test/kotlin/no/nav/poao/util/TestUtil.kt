@@ -16,6 +16,7 @@ internal fun setupEnvironment(mockOAuth2Server: MockOAuth2Server, wireMockServer
     System.setProperty("VEILARBAKTIVITETAPI_SCOPE", "api://local.dab.veilarbaktivitet/.default")
     System.setProperty("VEILARBDIALOGAPI_URL", "http://localhost:${port}/veilarbdialog")
     System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:${port}/veilarboppfolging")
+    System.setProperty("VEILARBOPPFOLGINGAPI_SCOPE", "api://local.poao.veilarboppfolging/.default")
 }
 
 

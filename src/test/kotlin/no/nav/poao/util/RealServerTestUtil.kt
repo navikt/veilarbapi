@@ -23,6 +23,7 @@ class RealServerTestUtil {
             System.setProperty("VEILARBAKTIVITETAPI_SCOPE", "api://local.dab.veilarbaktivitet/.default")
             System.setProperty("VEILARBDIALOGAPI_URL", "http://localhost:${wireMockServer.port()}/veilarbdialog")
             System.setProperty("VEILARBOPPFOLGINGAPI_URL", "http://localhost:${wireMockServer.port()}/veilarboppfolging")
+            System.setProperty("VEILARBAKTIVITETAPI_SCOPE", "api://local.poao.veilarboppfolging/.default")
 
             main()
 
