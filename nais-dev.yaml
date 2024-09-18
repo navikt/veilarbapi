@@ -65,6 +65,8 @@ spec:
           namespace: dab
         - application: veilarbdialog
           namespace: dab
+        - application: veilarboppfolging
+          namespace: poao
       external:
         - host: veilarboppfolging.dev-fss-pub.nais.io
   env:
