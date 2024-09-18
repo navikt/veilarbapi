@@ -78,3 +78,5 @@ spec:
       value: http://veilarbdialog.dab/veilarbdialog
     - name : VEILARBOPPFOLGINGAPI_URL
       value: https://veilarboppfolging.dev-fss-pub.nais.io/veilarboppfolging
+    - name: VEILARBOPPFOLGINGAPI_SCOPE
+      value: api://dev-gcp.poao.veilarboppfolging/.default
