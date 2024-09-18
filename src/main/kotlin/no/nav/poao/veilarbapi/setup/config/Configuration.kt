@@ -18,6 +18,7 @@ private val defaultProperties by lazy {
             "VEILARBAKTIVITETAPI_SCOPE" to notUsedLocally,
             "VEILARBDIALOGAPI_URL" to notUsedLocally,
             "VEILARBOPPFOLGINGAPI_URL" to notUsedLocally,
+            "VEILARBOPPFOLGINGAPI_SCOPE" to notUsedLocally,
             "AZURE_APP_CLIENT_SECRET" to notUsedLocally,
             "AZURE_APP_CLIENT_ID" to notUsedLocally,
             "AZURE_APP_WELL_KNOWN_URL" to notUsedLocally
@@ -54,7 +55,7 @@ data class Configuration(
     )
     data class VeilarboppfolgingConfig(
         val url: String = config()[Key("VEILARBOPPFOLGINGAPI_URL", stringType)],
-        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarboppfolging/.default",
+        val authenticationScope: String = config()[Key("VEILARBOPPFOLGINGAPI_SCOPE", stringType)],
         val httpClient: HttpClient = baseClient()
     )
 }
