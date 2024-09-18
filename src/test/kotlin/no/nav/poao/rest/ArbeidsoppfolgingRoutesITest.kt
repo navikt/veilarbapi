@@ -84,7 +84,7 @@ class ArbeidsoppfolgingRoutesITest {
         val veilarboppfolgingMockClient = createMockClient { request ->
             when (request.url.encodedPath) {
                 "/veilarboppfolging/api/v2/oppfolging" -> {
-                    checkBearerTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+                    checkBearerTokenContent(request, "api://local.poao.veilarboppfolging/.default")
                     respondOk(underOppfolgingMock)
                 }
                 "/veilarboppfolging/api/v2/veileder" -> respondOk(veilederMock)
@@ -136,7 +136,7 @@ class ArbeidsoppfolgingRoutesITest {
         }
 
         val veilarboppfolgingClient = createMockClient { request ->
-            checkBearerTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+            checkBearerTokenContent(request, "api://local.poao.veilarboppfolging/.default")
             respondOk(mockOppfolgingsperiode)
         }
 
@@ -206,7 +206,7 @@ class ArbeidsoppfolgingRoutesITest {
         val veilarboppfolgingMockClient = createMockClient { request ->
             when (request.url.encodedPath) {
                 "/veilarboppfolging/api/v2/oppfolging" -> {
-                    checkBearerTokenContent(request, "api://local.pto.veilarboppfolging/.default")
+                    checkBearerTokenContent(request, "api://local.poao.veilarboppfolging/.default")
                     respondOk(underOppfolgingMock)
                 }
                 "/veilarboppfolging/api/v2/veileder" -> respondBadRequest()
