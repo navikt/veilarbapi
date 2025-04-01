@@ -18,11 +18,19 @@ env:
   PRINT_PAYLOAD: true
 jobs:
   test-build-and-push:
+    permissions:
+      contents: read
+      id-token: write
     name: Test, build and push
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
+      telemetry: ${{ steps.docker-build-push.outputs.telemetry }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
@@ -34,6 +42,7 @@ jobs:
         id: docker-build-push
         with:
           team: pto
+          tag: latest
 
   deploy-dev:
     name: Deploy application to GCP dev
