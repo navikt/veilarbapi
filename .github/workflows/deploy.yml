@@ -71,8 +71,8 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
           RESOURCE: nais.yaml
-          VAR: image=${{ needs.test-build-and-push.outputs.image }}
-          TELEMETRY: ${{ needs.test-build-and-push.outputs.telemetry }}
+          VAR: image=${{ needs.deploy-dev.outputs.image }}
+          TELEMETRY: ${{ needs.deploy-dev.outputs.telemetry }}
 
   deploy-gh-pages:
     name: Deploy to GitHub Pages
