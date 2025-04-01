@@ -10,10 +10,10 @@ permissions:
   packages: write
   contents: write
 
-env:
-  IMAGE_TAG: ${{ github.sha }}-dev
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/veilarbapi
-  PRINT_PAYLOAD: true
+#env:
+#  IMAGE_TAG: ${{ github.sha }}-dev
+#  IMAGE: docker.pkg.github.com/${{ github.repository }}/veilarbapi
+#  PRINT_PAYLOAD: true
 jobs:
   test-build-and-push:
     name: Test, build and push
@@ -27,13 +27,12 @@ jobs:
           cache: 'gradle'
       - name: Build artifacts
         run: ./gradlew build --no-daemon
-      - name: Build and push Docker image
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
-          docker build -t ${IMAGE}:${IMAGE_TAG} .
-          docker push ${IMAGE}:${IMAGE_TAG}
+      - name: Push docker image to GAR
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: dab
+          tag: latest
 
   deploy-dev:
     name: Deploy application to GCP dev
