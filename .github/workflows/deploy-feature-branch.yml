@@ -53,5 +53,5 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: nais-dev.yaml
-          VAR: image=${{ needs.test-build-and-push.outputs.image }}
-          TELEMETRY: ${{ needs.test-build-and-push.outputs.telemetry }}
+          VAR: image=${{ steps.docker-build-push.outputs.image }}
+          TELEMETRY: ${{ steps.docker-build-push.outputs.telemetry }}
