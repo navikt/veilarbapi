@@ -12,10 +12,6 @@ concurrency:
   group: deploy
   cancel-in-progress: true
 
-env:
-  IMAGE_TAG: ${{ github.sha }}-dev
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/veilarbapi
-  PRINT_PAYLOAD: true
 jobs:
   test-build-and-push:
     permissions:
