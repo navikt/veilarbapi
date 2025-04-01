@@ -15,8 +15,10 @@ concurrency:
 jobs:
   test-build-and-push:
     permissions:
-      contents: read
+      packages: write
+      contents: write
       id-token: write
+      actions: read
     name: Test, build and push
     runs-on: ubuntu-latest
     outputs:
@@ -53,7 +55,8 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: nais-dev.yaml
-          VAR: version=${{ env.IMAGE_TAG }}
+          VAR: image=${{ needs.test-build-and-push.outputs.image }}
+          TELEMETRY: ${{ needs.test-build-and-push.outputs.telemetry }}
 
   deploy-prod:
     name: Deploy application to GCP prod
@@ -68,7 +71,8 @@ jobs:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-gcp
           RESOURCE: nais.yaml
-          VAR: version=${{ env.IMAGE_TAG }}
+          VAR: image=${{ needs.test-build-and-push.outputs.image }}
+          TELEMETRY: ${{ needs.test-build-and-push.outputs.telemetry }}
 
   deploy-gh-pages:
     name: Deploy to GitHub Pages
