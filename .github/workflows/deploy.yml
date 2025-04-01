@@ -60,7 +60,7 @@ jobs:
 
   deploy-prod:
     name: Deploy application to GCP prod
-    needs: deploy-dev
+    needs: [test-build-and-push, deploy-dev]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
