@@ -39,8 +39,6 @@ jobs:
         with:
           team: pto
           tag: latest
-        env:
-          TRIVY_JAVA_DB_REPOSITORY: "public.ecr.aws/aquasecurity/trivy-java-db:1"
 
   deploy-dev:
     name: Deploy application to GCP dev
