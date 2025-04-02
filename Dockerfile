@@ -9,9 +9,9 @@ COPY --from=busybox /bin/chown /bin/chown
 
 ENV TZ="Europe/Oslo"
 WORKDIR /app
-COPY target/veilarbapi.jar ./
+COPY target/veilarbapi.jar app.jar
 RUN /bin/mkdir /secure-logs
 RUN chown nonroot /secure-logs
 EXPOSE 8080
 USER nonroot
-CMD ["veilarbapi.jar"]
+CMD ["app.jar"]
