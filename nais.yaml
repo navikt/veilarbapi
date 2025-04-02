@@ -3,11 +3,10 @@ apiVersion: nais.io/v1alpha1
 metadata:
   name: veilarbapi
   namespace: pto
-  cluster: prod-gcp
   labels:
     team: pto
 spec:
-  image: docker.pkg.github.com/navikt/veilarbapi/veilarbapi:{{version}}
+  image: {{image}}
   port: 8080
   prometheus:
     enabled: true

@@ -10,30 +10,35 @@ permissions:
   packages: write
   contents: write
 
-env:
-  IMAGE_TAG: ${{ github.sha }}-dev
-  IMAGE: docker.pkg.github.com/${{ github.repository }}/veilarbapi
-  PRINT_PAYLOAD: true
 jobs:
   test-build-and-push:
+    permissions:
+      packages: write
+      contents: write
+      id-token: write
+      actions: read
     name: Test, build and push
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.docker-build-push.outputs.image }}
+      telemetry: ${{ steps.docker-build-push.outputs.telemetry }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
           cache: 'gradle'
       - name: Build artifacts
         run: ./gradlew build --no-daemon
-      - name: Build and push Docker image
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          docker login docker.pkg.github.com -u ${GITHUB_REPOSITORY} -p ${GITHUB_TOKEN}
-          docker build -t ${IMAGE}:${IMAGE_TAG} .
-          docker push ${IMAGE}:${IMAGE_TAG}
+      - name: Push docker image to GAR
+        uses: nais/docker-build-push@v0
+        id: docker-build-push
+        with:
+          team: pto
+          tag: latest
 
   deploy-dev:
     name: Deploy application to GCP dev
@@ -43,9 +48,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
       - name: Deploy application
-        uses: nais/deploy/actions/deploy@v1
+        uses: nais/deploy/actions/deploy@v2
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-gcp
           RESOURCE: nais-dev.yaml
-          VAR: version=${{ env.IMAGE_TAG }}
+          VAR: image=${{ needs.test-build-and-push.outputs.image }}
+          TELEMETRY: ${{ needs.test-build-and-push.outputs.telemetry }}
