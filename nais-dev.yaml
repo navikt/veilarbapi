@@ -40,6 +40,9 @@ spec:
     autoInstrumentation:
       enabled: true
       runtime: java
+    logging:
+      destinations:
+        - id: elastic
   azure:
     application:
       allowAllUsers: true
