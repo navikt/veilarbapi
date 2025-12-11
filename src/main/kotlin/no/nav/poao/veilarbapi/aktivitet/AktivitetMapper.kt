@@ -13,10 +13,16 @@ typealias InternStillingFraNav = no.nav.veilarbaktivitet.model.StillingFraNav
 
 private val FILTER_AKTIVITETSTYPER = listOf("egenaktivitet", "jobbsoeking", "ijobb")
 
-fun mapAktiviteter(aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog>? = null): List<Aktivitet>? {
-    val filtrerteAktiviteter = aktiviteter?.filter { it.aktivitetType !in FILTER_AKTIVITETSTYPER }
-    return filtrerteAktiviteter?.map { a ->
-        mapAktivitet(a, dialoger?.find { d -> d.aktivitetId == a.aktivitetId })
+fun mapAktiviteter(aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog> = emptyList()): Pair<List<Aktivitet>, List<InternDialog>> {
+    if (aktiviteter == null) return Pair(emptyList(), dialoger)
+    val filtrerteAktiviteter = aktiviteter.filter { it.aktivitetType !in FILTER_AKTIVITETSTYPER }
+
+    return filtrerteAktiviteter.fold(emptyList<Aktivitet>() to dialoger) { (aktiviteter, dialoger), aktivitet ->
+        val (dialogMatch, resterendeDialoger) = dialoger.partition { d -> aktivitet.aktivitetId == d.aktivitetId }
+        // Skal max finnes 1 match per aktivitetsId
+        val mappedAktivitet = mapAktivitet(aktivitet, dialogMatch.firstOrNull())
+        val mappedeAktiviteter = aktiviteter + listOf(mappedAktivitet)
+        return@fold mappedeAktiviteter to resterendeDialoger
     }
 }
 

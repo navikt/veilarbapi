@@ -5,8 +5,8 @@ import no.nav.veilarbdialog.model.Henvendelse
 
 typealias InternDialog = no.nav.veilarbdialog.model.Dialog
 
-internal fun mapDialoger(dialoger: List<InternDialog>?): List<Dialog>? {
-    return dialoger?.map {
+internal fun mapDialoger(dialoger: List<InternDialog>): List<Dialog> {
+    return dialoger.map {
         mapDialog(it)
     }
 }

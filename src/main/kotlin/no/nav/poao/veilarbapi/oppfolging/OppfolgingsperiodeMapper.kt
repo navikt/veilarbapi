@@ -4,7 +4,6 @@ import no.nav.poao.veilarbapi.aktivitet.InternAktivitet
 import no.nav.poao.veilarbapi.aktivitet.mapAktiviteter
 import no.nav.poao.veilarbapi.dialog.InternDialog
 import no.nav.poao.veilarbapi.dialog.mapDialoger
-import no.nav.veilarbapi.model.Dialog
 import no.nav.veilarbapi.model.Oppfolgingsperiode
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 
@@ -36,12 +35,12 @@ internal fun mapOppfolgingsperioder(oppfolgingsperioder: List<Oppfolgingsperiode
 
 private fun mapOppfolgingsperiode(oppfolgingsperiode: OppfolgingsperiodeDTO, aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog>?): Oppfolgingsperiode {
     val partition = dialoger?.partition { it.aktivitetId == null }
-    val dialogerUtenAktiviteter = partition?.first
-    val dialogerMedAktiviteter = partition?.second
+    val dialogerUtenAktiviteter = partition?.first ?: emptyList()
+    val dialogerMedAktiviteter = partition?.second ?: emptyList()
 
-    val mappedAktiviteter = mapAktiviteter(aktiviteter, dialogerMedAktiviteter)
+    val (mappedAktiviteter, dialogerPaaBortfiltrerteAktiviteter) = mapAktiviteter(aktiviteter, dialogerMedAktiviteter)
 
-    val mappedDialoger: List<Dialog>? = mapDialoger(dialogerUtenAktiviteter)
+    val mappedDialoger = mapDialoger(dialogerUtenAktiviteter) + mapDialoger(dialogerPaaBortfiltrerteAktiviteter)
 
     return Oppfolgingsperiode().apply {
         startDato = oppfolgingsperiode.startDato

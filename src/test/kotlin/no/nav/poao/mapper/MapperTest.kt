@@ -53,13 +53,13 @@ class MapperTest {
             InternDialogBuilder.nyDialog().aktivitetId("8").overskrift("overskrift"),
         )
 
-        val aktiviteter = mapAktiviteter(internAktiviteter)
+        val (aktiviteter, _) = mapAktiviteter(internAktiviteter)
 
         assertThat(aktiviteter!!).hasSize(5) // mapperen filtrerer vekk noen typer
         assertThat(aktiviteter[1].actualInstance).isInstanceOf(Behandling::class.java)
         assertThat(aktiviteter[1].behandling.dialog).isNull()
 
-        val aktiviteter2 = mapAktiviteter(internAktiviteter, internDialoger)
+        val (aktiviteter2, _) = mapAktiviteter(internAktiviteter, internDialoger)
 
         assertThat(aktiviteter2!![1].behandling.dialog).isNotNull
         assertThat(aktiviteter2[1].behandling.dialog?.tittel).isEqualTo("overskrift")
