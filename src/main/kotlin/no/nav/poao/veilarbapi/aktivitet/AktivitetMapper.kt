@@ -10,14 +10,15 @@ typealias InternBehandling = no.nav.veilarbaktivitet.model.Behandling
 typealias InternMote = no.nav.veilarbaktivitet.model.Mote
 typealias InternSamtalereferat = no.nav.veilarbaktivitet.model.Samtalereferat
 typealias InternStillingFraNav = no.nav.veilarbaktivitet.model.StillingFraNav
+typealias InternEgenAktivitet = no.nav.veilarbaktivitet.model.Egenaktivitet
 
-private val FILTER_AKTIVITETSTYPER = listOf("egenaktivitet", "jobbsoeking", "ijobb")
+private val FILTER_AKTIVITETSTYPER = listOf("jobbsoeking", "ijobb")
 
-fun mapAktiviteter(aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog>? = null): List<Aktivitet>? {
-    val filtrerteAktiviteter = aktiviteter?.filter { it.aktivitetType !in FILTER_AKTIVITETSTYPER }
-    return filtrerteAktiviteter?.map { a ->
-        mapAktivitet(a, dialoger?.find { d -> d.aktivitetId == a.aktivitetId })
-    }
+fun mapAktiviteter(aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog> = emptyList()): List<Aktivitet> {
+    if (aktiviteter == null) return emptyList()
+    return aktiviteter
+        .filter { it.aktivitetType !in FILTER_AKTIVITETSTYPER }
+        .map { aktivitet -> mapAktivitet(aktivitet, dialoger.firstOrNull { it.aktivitetId == aktivitet.aktivitetId }) }
 }
 
 fun mapAktivitet(aktivitet: InternAktivitet, dialog: InternDialog? = null): Aktivitet {
@@ -29,6 +30,7 @@ fun mapAktivitet(aktivitet: InternAktivitet, dialog: InternDialog? = null): Akti
         "mote" -> mapTilMote(aktivitet as InternMote, mappedDialog)
         "samtalereferat" -> mapTilSamtalereferat(aktivitet as InternSamtalereferat, mappedDialog)
         "stilling_fra_nav" -> mapTilStillingFraNav(aktivitet as InternStillingFraNav, mappedDialog)
+        "egenaktivitet" -> mapTilEgenaktivitet(aktivitet as InternEgenAktivitet, mappedDialog)
         else -> throw IllegalArgumentException("Ukjent aktivitetstype")
     }
 }
@@ -153,4 +155,17 @@ private fun mapTilStillingFraNav(aktivitet: InternStillingFraNav, dialog: Dialog
     merge(aktivitet, stillingFraNav, dialog)
 
     return Aktivitet(stillingFraNav)
+}
+
+private fun mapTilEgenaktivitet(aktivitet: InternEgenAktivitet, dialog: Dialog?): Aktivitet {
+    val egenAktivitet = Egenaktivitet().apply {
+        aktivitetType = "Egenaktivitet"
+        aktivitetTypeNavn = "Jobbrettet egenaktivitet"
+        oppfolging = aktivitet.oppfolging
+        hensikt = aktivitet.hensikt
+    }
+
+    merge(aktivitet, egenAktivitet, dialog)
+
+    return Aktivitet(egenAktivitet)
 }
