@@ -60,6 +60,9 @@ spec:
         - application: salesforce
           namespace: teamcrm
           cluster: dev-external
+        - application: azure-token-generator
+          namespace: nais
+          cluster: dev-gcp
         - application: saas-proxy
           namespace: teamcrm
     outbound:
