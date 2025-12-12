@@ -37,11 +37,11 @@ class MapperTest {
     @Test
     fun testAktivitetMapper() {
         val internAktiviteter = listOf(
-            InternAktivitetBuilder.nyAktivitet("egenaktivitet"),
             InternAktivitetBuilder.nyAktivitet("jobbsoeking").aktivitetId("2"),
             InternAktivitetBuilder.nyAktivitet("sokeavtale").aktivitetId("6"),
             InternAktivitetBuilder.nyAktivitet("ijobb"),
             InternAktivitetBuilder.nyAktivitet("behandling").aktivitetId("8"),
+            InternAktivitetBuilder.nyAktivitet("egenaktivitet"),
             InternAktivitetBuilder.nyAktivitet("mote"),
             InternAktivitetBuilder.nyAktivitet("samtalereferat"),
             InternAktivitetBuilder.nyAktivitet("stilling_fra_nav")
@@ -55,7 +55,7 @@ class MapperTest {
 
         val aktiviteter = mapAktiviteter(internAktiviteter)
 
-        assertThat(aktiviteter!!).hasSize(5) // mapperen filtrerer vekk noen typer
+        assertThat(aktiviteter!!).hasSize(6) // mapperen filtrerer vekk noen typer
         assertThat(aktiviteter[1].actualInstance).isInstanceOf(Behandling::class.java)
         assertThat(aktiviteter[1].behandling.dialog).isNull()
 
@@ -104,7 +104,7 @@ class MapperTest {
         val oppfolgingsperioder2: Oppfolgingsperioder =
             mapOppfolgingsperioder(oppfolgingsperiodeDTOer, interneAktiviteter, interneDialoger)
 
-        assertThat(oppfolgingsperioder2.oppfolgingsperioder!![0].aktiviteter).hasSize(2)
+        assertThat(oppfolgingsperioder2.oppfolgingsperioder!![0].aktiviteter).hasSize(3)
         assertThat(oppfolgingsperioder2.oppfolgingsperioder!![1].aktiviteter).hasSize(1)
         assertThat(oppfolgingsperioder2.oppfolgingsperioder!![1].aktiviteter!![0].sokeavtale.dialog).isNotNull
 

@@ -62,9 +62,15 @@ class ArbeidsoppfolgingRoutesTest {
                     Oppfolgingsperioder::class.java
                 )
             assertThat(oppfolgingsperioder.oppfolgingsperioder).hasSize(2)
-            assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter).hasSize(1)
-            assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.tittel).isEqualTo("ikke kvp")
-            assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].behandling.dialog!!.meldinger!!).hasSize(1)
+            assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter).hasSize(2)
+
+            val behandling = oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![1].behandling
+            val egenaktivitet = oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].egenaktivitet
+
+            assertThat(behandling.tittel).isEqualTo("ikke kvp")
+            assertThat(behandling.dialog!!.meldinger!!).hasSize(1)
+            assertThat(egenaktivitet.tittel).isEqualTo("tittel")
+            assertThat(egenaktivitet.dialog).isNull()
             assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter).hasSize(1)
             assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter!![0].stillingFraNav.dialog).isNull()
         }
