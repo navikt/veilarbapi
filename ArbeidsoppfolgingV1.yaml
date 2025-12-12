@@ -111,6 +111,17 @@ components:
             referat:
               type: string
               description: Referatet hvis det er delt med bruker
+    Egenaktivitet:
+      allOf:
+        - $ref: '#/components/schemas/Baseaktivitet'
+        - type: object
+          properties:
+            hensikt:
+              type: string
+              example: Mål med aktiviteten (fritekst)
+            oppfolging:
+              type: string
+              description: Huskeliste for denne aktiviteten (fritekst)
     StillingFraNav:
       allOf:
         - $ref: '#/components/schemas/Baseaktivitet'
@@ -203,6 +214,7 @@ components:
         - $ref: '#/components/schemas/Mote'
         - $ref: '#/components/schemas/Samtalereferat'
         - $ref: '#/components/schemas/StillingFraNav'
+        - $ref: '#/components/schemas/Egenaktivitet'
       discriminator:
         propertyName: aktivitet_type
 
