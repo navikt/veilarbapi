@@ -62,6 +62,8 @@ spec:
           cluster: dev-external
         - application: saas-proxy
           namespace: teamcrm
+        - application: saas-proxy
+          namespace: platforce
     outbound:
       rules:
         - application: veilarbaktivitet
