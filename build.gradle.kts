@@ -13,9 +13,6 @@ val logstashEncoderVersion: String by project
 val prometeus_version: String by project
 val graphql_kotlin_version: String by project
 
-//tasks.shadowJar {
-//    enabled = false
-//}
 
 plugins {
     application
@@ -42,6 +39,11 @@ tasks.jacocoTestReport {
         xml.required.set(true)
     }
 }
+
+//tasks.shadowJar {
+//    enabled = false
+//}
+
 
 kotlin {
     jvmToolchain {
@@ -119,6 +121,12 @@ tasks.register<GenerateTask>("generateVeilarbapiServer") {
 tasks.named( "compileKotlin") {
     dependsOn(  "generateDialogClient", "generateAktivitetsplanClient", "generateVeilarbapiServer")
 }
+
+tasks.build {
+    dependsOn(tasks.installDist)
+}
+
+
 java.sourceSets["main"].java.srcDir("$buildDir/generated/src/main/java")
 kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated/src/main/kotlin")
 
