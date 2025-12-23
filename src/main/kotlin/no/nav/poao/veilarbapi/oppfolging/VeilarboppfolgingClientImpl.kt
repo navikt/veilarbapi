@@ -1,12 +1,13 @@
 package no.nav.poao.veilarbapi.oppfolging
 
 
-import com.google.gson.reflect.TypeToken
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.serialization.json.Json
 import no.nav.common.types.identer.AktorId
+import no.nav.poao.veilarbapi.oppfolging.serdes.VeilarbapiSerializerModule
 import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.EksternServerFeilException
@@ -19,7 +20,9 @@ class VeilarboppfolgingClientImpl(
     private val client: HttpClient = baseClient()
 ) : VeilarboppfolgingClient {
 
-    val json = gson()
+    val json = Json {
+        serializersModule = VeilarbapiSerializerModule
+    }
 
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String): Result<List<OppfolgingsperiodeDTO>> {
         val response =
@@ -28,8 +31,7 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val type = object : TypeToken<List<OppfolgingsperiodeDTO>>() {}.type
-            val perioder = json.fromJson<List<OppfolgingsperiodeDTO>>(response.bodyAsText(), type)
+            val perioder = json.decodeFromString<List<OppfolgingsperiodeDTO>>(response.bodyAsText())
 
             return Result.success(perioder)
         } else {
@@ -44,7 +46,7 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val underOppfolgingDTO: UnderOppfolgingDTO = json.fromJson(response.bodyAsText(), UnderOppfolgingDTO::class.java)
+            val underOppfolgingDTO = Json.decodeFromString<UnderOppfolgingDTO>(response.bodyAsText())
 
             return Result.success(underOppfolgingDTO)
         } else {
@@ -59,7 +61,7 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val veilederDTO = json.fromJson(response.bodyAsText(), VeilederDTO::class.java)
+            val veilederDTO = Json.decodeFromString<VeilederDTO>(response.bodyAsText())
             return Result.success(veilederDTO)
         } else if (response.status === HttpStatusCode.NoContent) {
             return Result.success(null)
@@ -75,7 +77,7 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val oppfolgingsenhetDTO = json.fromJson(response.bodyAsText(), OppfolgingsenhetDTO::class.java)
+            val oppfolgingsenhetDTO = Json.decodeFromString<OppfolgingsenhetDTO>(response.bodyAsText())
 
             return Result.success(oppfolgingsenhetDTO)
         } else if (response.status == HttpStatusCode.NotFound) {

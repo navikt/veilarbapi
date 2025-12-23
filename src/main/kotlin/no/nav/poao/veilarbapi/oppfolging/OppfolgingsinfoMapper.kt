@@ -8,12 +8,12 @@ internal fun mapOppfolgingsinfo(
     veilederDTO: VeilederDTO? = null,
     oppfolgingsenhetDTO: OppfolgingsenhetDTO?
 ): Oppfolgingsinfo {
-    return Oppfolgingsinfo().apply {
-        underOppfolging = underOppfolgingDTO?.erUnderOppfolging
-        primaerVeileder = veilederDTO?.veilederIdent
-        oppfolgingsEnhet = OppfolgingsinfoOppfolgingsEnhet().apply {
-            enhetId = oppfolgingsenhetDTO?.enhetId
+    return Oppfolgingsinfo(
+        underOppfolging = underOppfolgingDTO?.erUnderOppfolging,
+        primaerVeileder = veilederDTO?.veilederIdent,
+        oppfolgingsEnhet = OppfolgingsinfoOppfolgingsEnhet(
+            enhetId = oppfolgingsenhetDTO?.enhetId,
             navn = oppfolgingsenhetDTO?.navn
-        }
-    }
+        )
+    )
 }

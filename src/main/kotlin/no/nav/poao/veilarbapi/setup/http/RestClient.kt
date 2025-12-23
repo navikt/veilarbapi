@@ -1,52 +1,39 @@
 package no.nav.poao.veilarbapi.setup.http
 
-import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.databind.DeserializationFeature
 import io.ktor.client.*
 import io.ktor.client.engine.*
-import io.ktor.client.engine.okhttp.*
+import io.ktor.client.engine.cio.CIO
+import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.*
 
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
-import no.nav.common.rest.client.LogInterceptor
-import java.net.ProxySelector
-import java.util.concurrent.TimeUnit
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 
-val HttpHeaders.DownstreamAuthorization: String
-    get() = "Downstream-Authorization"
-
-internal val defaultHttpClient = HttpClient(OkHttp) {
+internal val defaultHttpClient = HttpClient {
     install(ContentNegotiation) {
-        jackson {
-            configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            setSerializationInclusion(JsonInclude.Include.NON_NULL)
-        }
+        json(Json {
+            ignoreUnknownKeys = true
+            explicitNulls = true
+        })
     }
-    engine {
-        config {
-            proxySelector(ProxySelector.getDefault())
-        }
+
+    install(HttpTimeout) {
+        connectTimeoutMillis = 5_000
+        this@HttpClient.followRedirects = true
     }
 }
 
 fun baseClient(): HttpClient {
-    return baseClient(baseEngine())
+    return baseClient(null)
 }
 
-fun baseClient(engine: HttpClientEngine): HttpClient {
-    return HttpClient(engine) {
+fun baseClient(engine: HttpClientEngine? = null): HttpClient {
+    if (engine == null) return HttpClient(CIO) {
         expectSuccess = false
     }
-}
-
-private fun baseEngine(): HttpClientEngine {
-    return OkHttp.create {
-        config {
-            connectTimeout(10, TimeUnit.SECONDS)
-            readTimeout(15, TimeUnit.SECONDS)
-            followRedirects(false)
-        }
-        addInterceptor(LogInterceptor())
+    return HttpClient(engine) {
+        expectSuccess = false
     }
 }

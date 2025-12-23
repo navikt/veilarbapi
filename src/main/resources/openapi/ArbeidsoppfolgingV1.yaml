@@ -21,13 +21,37 @@ components:
       scheme: bearer
       bearerFormat: JWT  # optional, for documentation purposes only
   schemas:
+    AktivitetStatus:
+      type: string
+      enum:
+        - PLANLAGT
+        - GJENNOMFORES
+        - FULLFORT
+        - BRUKER_ER_INTERESSERT
+        - AVBRUTT
+      example: FULLFORT
+    AktivitetType:
+      enum:
+        - Sokeavtale
+        - Behandling
+        - Mote
+        - Samtalereferat
+        - StillingFraNav
+        - Egenaktivitet
     Baseaktivitet:
       type: object
       required:
-        - aktivitet_type
         - aktivitet_type_navn
+        - aktivitet_type
       discriminator:
         propertyName: aktivitet_type
+#        mapping:
+#          Sokeavtale: '#/components/schemas/Sokeavtale'
+#          Behandling: '#/components/schemas/Behandling'
+#          Mote: '#/components/schemas/Mote'
+#          Samtalereferat: '#/components/schemas/Samtalereferat'
+#          StillingFraNav: '#/components/schemas/StillingFraNav'
+#          Egenaktivitet: '#/components/schemas/Egenaktivitet'
       properties:
         aktivitet_type:
           type: string
@@ -39,14 +63,7 @@ components:
           description: Definer om den definerte aktiviteten er avtalt med NAV
           example: true
         status:
-          type: string
-          enum:
-            - PLANLAGT
-            - GJENNOMFORES
-            - FULLFORT
-            - BRUKER_ER_INTERESSERT
-            - AVBRUTT
-          example: FULLFORT
+          $ref: "#/components/schemas/AktivitetStatus"
         status_navn:
           type: string
         beskrivelse:
@@ -70,10 +87,14 @@ components:
         dialog:
           $ref: '#/components/schemas/Dialog'
     Sokeavtale:
+      required:
+        - aktivitet_type
       allOf:
         - $ref: '#/components/schemas/Baseaktivitet'
         - type: object
           properties:
+#            aktivitet_type:
+#              type: string
             antallStillingerIUken:
               type: integer
             avtaleOppfolging:
@@ -204,9 +225,9 @@ components:
         aktiviteter:
           type: array
           items:
-            $ref: '#/components/schemas/Aktivitet'
+            $ref: '#/components/schemas/Baseaktivitet'
           description: Liste med aktiviteter tilknyttet en oppfølgingsperiode
-    Aktivitet:
+    AktivitetUnion:
       type: object
       oneOf:
         - $ref: '#/components/schemas/Sokeavtale'
@@ -215,8 +236,15 @@ components:
         - $ref: '#/components/schemas/Samtalereferat'
         - $ref: '#/components/schemas/StillingFraNav'
         - $ref: '#/components/schemas/Egenaktivitet'
-      discriminator:
-        propertyName: aktivitet_type
+#      discriminator:
+#        propertyName: aktivitet_type
+#        mapping:
+#          Sokeavtale: '#/components/schemas/Sokeavtale'
+#          Behandling: '#/components/schemas/Behandling'
+#          Mote: '#/components/schemas/Mote'
+#          Samtalereferat: '#/components/schemas/Samtalereferat'
+#          StillingFraNav: '#/components/schemas/StillingFraNav'
+#          Egenaktivitet: '#/components/schemas/Egenaktivitet'
 
     Melding:
       type: object
