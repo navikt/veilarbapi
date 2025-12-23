@@ -67,6 +67,8 @@ spec:
           namespace: teamcrm
         - application: saas-proxy
           namespace: platforce
+        - application: azure-token-generator
+          namespace: nais
     outbound:
       rules:
         - application: veilarbaktivitet
