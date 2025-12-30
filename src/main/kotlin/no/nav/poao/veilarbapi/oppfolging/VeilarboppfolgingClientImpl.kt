@@ -1,18 +1,22 @@
 package no.nav.poao.veilarbapi.oppfolging
 
 
+import com.expediagroup.graphql.client.ktor.GraphQLKtorClient
 import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import no.nav.common.types.identer.AktorId
+import no.nav.common.types.identer.Fnr
+import no.nav.http.graphql.generated.client.HentOppfolgingsDataQuery
 import no.nav.poao.veilarbapi.oppfolging.serdes.VeilarbapiSerializerModule
 import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.EksternServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
 import org.slf4j.LoggerFactory
+import java.net.URI
 
 
 class VeilarboppfolgingClientImpl(
@@ -25,6 +29,21 @@ class VeilarboppfolgingClientImpl(
     val json = Json {
         serializersModule = VeilarbapiSerializerModule
         ignoreUnknownKeys = true
+    }
+
+    val graphqlClient = GraphQLKtorClient(
+        url = URI.create("$baseUrl/graphql").toURL(),
+        httpClient = client
+    )
+
+    suspend fun hentOppfolgingsData(fnr: Fnr) {
+        val request = HentOppfolgingsDataQuery(HentOppfolgingsDataQuery.Variables(fnr.toString()))
+        val response = graphqlClient.execute(request)
+
+        if (response.errors != null && response.errors!!.isNotEmpty()) {
+        } else {
+
+        }
     }
 
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String): Result<List<OppfolgingsperiodeDTO>> {
