@@ -49,7 +49,7 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val underOppfolgingDTO = Json.decodeFromString<UnderOppfolgingDTO>(response.bodyAsText())
+            val underOppfolgingDTO = json.decodeFromString<UnderOppfolgingDTO>(response.bodyAsText())
 
             return Result.success(underOppfolgingDTO)
         } else {
@@ -64,7 +64,7 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val veilederDTO = Json.decodeFromString<VeilederDTO>(response.bodyAsText())
+            val veilederDTO = json.decodeFromString<VeilederDTO>(response.bodyAsText())
             return Result.success(veilederDTO)
         } else if (response.status === HttpStatusCode.NoContent) {
             return Result.success(null)
@@ -81,7 +81,7 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val oppfolgingsenhetDTO = Json.decodeFromString<OppfolgingsenhetDTO>(response.bodyAsText())
+            val oppfolgingsenhetDTO = json.decodeFromString<OppfolgingsenhetDTO>(response.bodyAsText())
 
             return Result.success(oppfolgingsenhetDTO)
         } else if (response.status == HttpStatusCode.NotFound) {

@@ -5,6 +5,8 @@ import io.ktor.client.engine.*
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.request.header
 
 import io.ktor.http.*
 import io.ktor.serialization.jackson.*
@@ -23,6 +25,14 @@ internal val defaultHttpClient = HttpClient {
         connectTimeoutMillis = 5_000
         this@HttpClient.followRedirects = true
     }
+
+    defaultNavConsumerId()
+}
+
+fun HttpClientConfig<*>.defaultNavConsumerId() {
+    defaultRequest {
+        header("Nav-Consumer-Id", "veilarbapi")
+    }
 }
 
 fun baseClient(): HttpClient {
@@ -31,9 +41,11 @@ fun baseClient(): HttpClient {
 
 fun baseClient(engine: HttpClientEngine? = null): HttpClient {
     if (engine == null) return HttpClient(CIO) {
+        defaultNavConsumerId()
         expectSuccess = false
     }
     return HttpClient(engine) {
+        defaultNavConsumerId()
         expectSuccess = false
     }
 }
