@@ -167,7 +167,7 @@ dependencies {
 
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.14")
     // LOGGING
-    implementation(group= "ch.qos.logback", name= "logback-classic", version= logback_version)
+    implementation("ch.qos.logback:logback-classic:${logback_version}")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
     // Monitoring
