@@ -82,7 +82,8 @@ class VeilarboppfolgingClientImpl(
             }
 
         if (response.status == HttpStatusCode.OK) {
-            val oppfolgingsenhetDTO = json.decodeFromString<OppfolgingsenhetDTO>(response.bodyAsText())
+            val body = response.bodyAsText()
+            val oppfolgingsenhetDTO =  if (body.isEmpty()) null else json.decodeFromString<OppfolgingsenhetDTO>(response.bodyAsText())
 
             return Result.success(oppfolgingsenhetDTO)
         } else if (response.status == HttpStatusCode.NotFound) {
