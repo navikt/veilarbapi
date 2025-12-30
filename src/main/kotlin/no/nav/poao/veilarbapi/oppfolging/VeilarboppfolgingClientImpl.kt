@@ -24,6 +24,7 @@ class VeilarboppfolgingClientImpl(
     val logger = LoggerFactory.getLogger(VeilarboppfolgingClientImpl::class.java)
     val json = Json {
         serializersModule = VeilarbapiSerializerModule
+        ignoreUnknownKeys = true
     }
 
     override suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String): Result<List<OppfolgingsperiodeDTO>> {
