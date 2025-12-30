@@ -12,6 +12,7 @@ import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.EksternServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
+import org.slf4j.LoggerFactory
 
 
 class VeilarboppfolgingClientImpl(
@@ -20,6 +21,7 @@ class VeilarboppfolgingClientImpl(
     private val client: HttpClient = baseClient()
 ) : VeilarboppfolgingClient {
 
+    val logger = LoggerFactory.getLogger(VeilarboppfolgingClientImpl::class.java)
     val json = Json {
         serializersModule = VeilarbapiSerializerModule
     }
@@ -35,6 +37,7 @@ class VeilarboppfolgingClientImpl(
 
             return Result.success(perioder)
         } else {
+            logger.error("Kunne ikke hente oppfolgingsperioder fra veilarboppfolging: ${response.status} ${response.bodyAsText()}}")
             return Result.failure(callFailure(response))
         }
     }
@@ -66,6 +69,7 @@ class VeilarboppfolgingClientImpl(
         } else if (response.status === HttpStatusCode.NoContent) {
             return Result.success(null)
         } else {
+            logger.error("Kunne ikke hente veileder fra veilarboppfolging: ${response.status} ${response.bodyAsText()}}")
             return Result.failure(callFailure(response))
         }
     }
@@ -83,6 +87,7 @@ class VeilarboppfolgingClientImpl(
         } else if (response.status == HttpStatusCode.NotFound) {
             return Result.success(null)
         } else {
+            logger.error("Kunne ikke hente oppfolgingsenhet fra veilarboppfolging: ${response.status} ${response.bodyAsText()}}")
             return Result.failure(callFailure(response))
         }
     }
