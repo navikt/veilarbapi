@@ -67,10 +67,10 @@ class VeilarboppfolgingClientImpl(
         if (response.status == HttpStatusCode.OK) {
             val veilederDTO = json.decodeFromString<VeilederDTO>(response.bodyAsText())
             return Result.success(veilederDTO)
-        } else if (response.status === HttpStatusCode.NoContent) {
+        } else if (response.status == HttpStatusCode.NoContent) {
             return Result.success(null)
         } else {
-            logger.error("Kunne ikke hente veileder fra veilarboppfolging: ${response.status} ${response.bodyAsText()}}")
+            logger.error("Kunne ikke hente veileder fra veilarboppfolging: ${response.status} ${response.bodyAsText()}")
             return Result.failure(callFailure(response))
         }
     }
