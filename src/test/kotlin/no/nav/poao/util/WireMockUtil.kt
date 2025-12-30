@@ -3,7 +3,7 @@ package no.nav.poao.util
 import com.github.tomakehurst.wiremock.WireMockServer
 import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import com.google.gson.Gson
+import kotlinx.serialization.json.Json
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsenhetDTO
 import no.nav.poao.veilarbapi.oppfolging.UnderOppfolgingDTO
 import no.nav.poao.veilarbapi.oppfolging.VeilederDTO
@@ -21,7 +21,7 @@ internal fun <R> withWiremockServer(
 }
 
 internal fun stubVeileder(wireMockServer: WireMockServer, veilederDTO: VeilederDTO) {
-    val veilederMock = Gson().toJson(veilederDTO)
+    val veilederMock = Json.encodeToString(veilederDTO)
     wireMockServer.stubFor(
         WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/veileder"))
             .withQueryParam("aktorId", WireMock.equalTo("123"))
@@ -34,7 +34,7 @@ internal fun stubVeileder(wireMockServer: WireMockServer, veilederDTO: VeilederD
 }
 
 internal fun stubUnderOppfolging(wireMockServer: WireMockServer, underOppfolgingDTO: UnderOppfolgingDTO) {
-    val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
+    val underOppfolgingMock = Json.encodeToString(underOppfolgingDTO)
     wireMockServer.stubFor(
         WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/oppfolging"))
             .withQueryParam("aktorId", WireMock.equalTo("123"))
@@ -47,7 +47,7 @@ internal fun stubUnderOppfolging(wireMockServer: WireMockServer, underOppfolging
 }
 
 internal fun stubOppfolgingsEnhet(wireMockServer: WireMockServer, oppfolgingsenhetDTO: OppfolgingsenhetDTO) {
-    val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
+    val oppfolgingsenhetMock = Json.encodeToString(oppfolgingsenhetDTO)
     wireMockServer.stubFor(
         WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/person/oppfolgingsenhet"))
             .withQueryParam("aktorId", WireMock.equalTo("123"))

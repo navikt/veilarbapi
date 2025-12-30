@@ -1,41 +1,41 @@
+import com.github.tomakehurst.wiremock.http.HttpClientFactory.createClient
 import io.ktor.client.*
-import io.ktor.client.engine.okhttp.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.server.testing.testApplication
 import kotlinx.coroutines.runBlocking
-import no.nav.poao.util.RealServerTestUtil
+import no.nav.poao.util.RealServerTestUtil.Companion.setDefaultTestSystemProperties
+import no.nav.poao.util.RealServerTestUtil.Companion.withMockOAuth2ServerWithEnv
+import no.nav.poao.veilarbapi.module
 import org.assertj.core.api.Assertions.assertThat
 import kotlin.test.Test
 
 
 class IntegrationTestsInternal {
 
-    private companion object {
-        init {
-            RealServerTestUtil.setup()
-        }
-    }
-
     @Test
-    fun testIsAlive() {
-        val client = HttpClient(OkHttp)
-        runBlocking {
-            val response: HttpResponse = client.get("http://0.0.0.0:8080/internal/isAlive")
-            val responseString = response.bodyAsText()
-            assertThat(response.status).isEqualTo(HttpStatusCode.OK)
-            assertThat(responseString).isEmpty()
-        }
-    }
+    fun testIsAlive() = testApplication {
+        setDefaultTestSystemProperties()
+        withMockOAuth2ServerWithEnv {
+            application {
+                val config = no.nav.poao.veilarbapi.setup.config.Configuration()
+                module(config)
+            }
 
-    @Test
-    fun testIsReady() {
-        val client = HttpClient(OkHttp)
-        runBlocking {
-            val response: HttpResponse = client.get("http://0.0.0.0:8080/internal/isReady")
-            val responseString = response.bodyAsText()
-            assertThat(response.status).isEqualTo(HttpStatusCode.OK)
-            assertThat(responseString).isEmpty()
+            val client = createClient {}
+
+            client.get("/internal/isAlive")
+                .let { response ->
+                    assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+                    assertThat(response.bodyAsText()).isEmpty()
+                }
+
+            client.get("/internal/isReady")
+                .let { response ->
+                    assertThat(response.status).isEqualTo(HttpStatusCode.OK)
+                    assertThat(response.bodyAsText()).isEmpty()
+                }
         }
     }
 }

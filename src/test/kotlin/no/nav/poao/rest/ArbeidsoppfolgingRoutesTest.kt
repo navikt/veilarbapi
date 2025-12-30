@@ -1,29 +1,30 @@
 package no.nav.poao.rest
 
-import com.google.gson.Gson
 import io.ktor.client.engine.mock.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
+import kotlinx.serialization.json.Json
 import no.nav.poao.util.InternAktivitetBuilder
 import no.nav.poao.util.InternDialogBuilder
 import no.nav.poao.util.createMockClient
+import no.nav.poao.util.nyHenvendelsePaaDialog
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
 import no.nav.poao.veilarbapi.oppfolging.*
+import no.nav.poao.veilarbapi.oppfolging.serdes.VeilarbapiSerializerModule
 import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.poao.veilarbapi.setup.plugins.configureExceptionHandler
 import no.nav.poao.veilarbapi.setup.plugins.configureSerialization
 import no.nav.poao.veilarbapi.setup.rest.arbeidsoppfolgingRoutes
-import no.nav.veilarbaktivitet.JSON
 import no.nav.veilarbapi.model.Oppfolgingsinfo
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
 import org.junit.Test
 import org.mockito.kotlin.mock
-import org.threeten.bp.OffsetDateTime
+import java.time.OffsetDateTime
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -36,10 +37,8 @@ class ArbeidsoppfolgingRoutesTest {
     private val veilarboppfolgingConfig =
         Configuration.VeilarboppfolgingConfig(url = "/veilarboppfolging")
 
-    init {
-        no.nav.veilarbaktivitet.JSON()
-        no.nav.veilarbdialog.JSON()
-        no.nav.veilarbapi.JSON()
+    val json = Json {
+        serializersModule = VeilarbapiSerializerModule
     }
 
     @Test
@@ -54,25 +53,22 @@ class ArbeidsoppfolgingRoutesTest {
             val response = client.get("/v1/oppfolging/periode?aktorId=123") {
                 header("Authorization", "Bearer $mockJwtToken")
             }
+            val responsebody = response.bodyAsText()
             assertEquals(HttpStatusCode.OK, response.status)
 
-            val oppfolgingsperioder =
-                no.nav.veilarbapi.JSON.deserialize<Oppfolgingsperioder>(
-                    response.bodyAsText(),
-                    Oppfolgingsperioder::class.java
-                )
-            assertThat(oppfolgingsperioder.oppfolgingsperioder).hasSize(2)
-            assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter).hasSize(2)
+            val oppfolgingsperioder = json.decodeFromString<Oppfolgingsperioder>(responsebody)
+            assertThat(oppfolgingsperioder.oppfolgingsperioder).hasSize(2).withFailMessage { "Forventet 2 oppfolgingsperioder men fant ikke det" }
+            assertThat(oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter).hasSize(3).withFailMessage { "Forventet 3 aktiviteter i periode 1" }
 
-            val behandling = oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![1].behandling
-            val egenaktivitet = oppfolgingsperioder.oppfolgingsperioder!![0].aktiviteter!![0].egenaktivitet
+            val behandling = oppfolgingsperioder.oppfolgingsperioder[0].aktiviteter!![1]
+            val egenaktivitet = oppfolgingsperioder.oppfolgingsperioder[0].aktiviteter!![0]
 
             assertThat(behandling.tittel).isEqualTo("ikke kvp")
             assertThat(behandling.dialog!!.meldinger!!).hasSize(1)
             assertThat(egenaktivitet.tittel).isEqualTo("tittel")
             assertThat(egenaktivitet.dialog).isNull()
-            assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter).hasSize(1)
-            assertThat(oppfolgingsperioder.oppfolgingsperioder!![1].aktiviteter!![0].stillingFraNav.dialog).isNull()
+            assertThat(oppfolgingsperioder.oppfolgingsperioder[1].aktiviteter).hasSize(1)
+            assertThat(oppfolgingsperioder.oppfolgingsperioder[1].aktiviteter!![0].dialog).isNull()
         }
     }
 
@@ -108,11 +104,7 @@ class ArbeidsoppfolgingRoutesTest {
             }
             assertEquals(HttpStatusCode.OK, response.status)
 
-            val oppfolgingsperioder =
-                no.nav.veilarbapi.JSON.deserialize<Oppfolgingsperioder>(
-                    response.bodyAsText(),
-                    Oppfolgingsperioder::class.java
-                )
+            val oppfolgingsperioder = Json.decodeFromString<Oppfolgingsperioder>(response.bodyAsText())
 
             SoftAssertions().apply {
                 assertThat(oppfolgingsperioder.oppfolgingsperioder).isEmpty()
@@ -125,13 +117,13 @@ class ArbeidsoppfolgingRoutesTest {
     @Test
     fun `tom oppfolgingsenhet skal returnere 204`() {
         val underOppfolgingDTO = UnderOppfolgingDTO(true)
-        val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
+        val underOppfolgingMock = Json.encodeToString(underOppfolgingDTO)
 
         val veilederDTO = VeilederDTO("z123456")
-        val veilederMock = Gson().toJson(veilederDTO)
+        val veilederMock = Json.encodeToString(veilederDTO)
 
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO(null, null)
-        val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
+        val oppfolgingsenhetMock = Json.encodeToString(oppfolgingsenhetDTO)
 
         val httpClient = createMockClient { request ->
             when (request.url.encodedPath) {
@@ -172,10 +164,10 @@ class ArbeidsoppfolgingRoutesTest {
     @Test
     fun `test oppfolgingsinfo feilhaandtering`() {
         val veilederDTO = VeilederDTO("z123456")
-        val veilederMock = Gson().toJson(veilederDTO)
+        val veilederMock = Json.encodeToString(veilederDTO)
 
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO("NAV Grünerløkka", "1234")
-        val oppfolgingsenhetMock = Gson().toJson(oppfolgingsenhetDTO)
+        val oppfolgingsenhetMock = Json.encodeToString(oppfolgingsenhetDTO)
 
         val veilarboppfolgingHttpClient = createMockClient { request ->
             when (request.url.encodedPath) {
@@ -214,7 +206,7 @@ class ArbeidsoppfolgingRoutesTest {
         }
 
         val underOppfolgingDTO = UnderOppfolgingDTO(true)
-        val underOppfolgingMock = Gson().toJson(underOppfolgingDTO)
+        val underOppfolgingMock = Json.encodeToString(underOppfolgingDTO)
 
         val veilarboppfolgingHttpClient2 = createMockClient { request ->
             when (request.url.encodedPath) {
@@ -251,10 +243,7 @@ class ArbeidsoppfolgingRoutesTest {
             }
             assertEquals(HttpStatusCode.OK, response.status)
 
-            val oppfolgingsinfo: Oppfolgingsinfo = no.nav.veilarbapi.JSON.deserialize(
-                response.bodyAsText(),
-                Oppfolgingsinfo::class.java
-            )
+            val oppfolgingsinfo: Oppfolgingsinfo = Json.decodeFromString<Oppfolgingsinfo>(response.bodyAsText())
 
             SoftAssertions().apply {
                 assertThat(oppfolgingsinfo.underOppfolging).isEqualTo(true)
@@ -270,20 +259,20 @@ class ArbeidsoppfolgingRoutesTest {
         val uuid2 = UUID.randomUUID()
 
         val internAktiviteter = listOf(
-            InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid1),
-            InternAktivitetBuilder.nyAktivitet("behandling").oppfolgingsperiodeId(uuid1).aktivitetId("3")
-                .tittel("ikke kvp"),
-            InternAktivitetBuilder.nyAktivitet("sokeavtale", true).oppfolgingsperiodeId(uuid1).aktivitetId("6"),
-            InternAktivitetBuilder.nyAktivitet("stilling_fra_nav").oppfolgingsperiodeId(uuid2).aktivitetId("9"),
+            InternAktivitetBuilder.nyEgenaktivitet().copy(oppfolgingsperiodeId = uuid1),
+            InternAktivitetBuilder.nyBehandling().copy(oppfolgingsperiodeId = uuid1, aktivitetId = "3", tittel = "ikke kvp"),
+            InternAktivitetBuilder.nySokeavtale().copy(oppfolgingsperiodeId = uuid1, aktivitetId = "6"),
+            InternAktivitetBuilder.nyStillingFraNav().copy(oppfolgingsperiodeId = uuid2, aktivitetId = "9"),
         )
 
-        val internDialog = InternDialogBuilder.nyDialog().oppfolgingsperiodeId(uuid1).aktivitetId("3")
-        InternDialogBuilder.nyHenvendelsePaaDialog(internDialog, true)
-        val internDialog2 = InternDialogBuilder.nyDialog(true, true).oppfolgingsperiodeId(uuid2).aktivitetId("9")
-        InternDialogBuilder.nyHenvendelsePaaDialog(internDialog2, false)
+        val internDialog = InternDialogBuilder.nyDialog().copy(oppfolgingsperiodeId = uuid1, aktivitetId = "3")
+            .nyHenvendelsePaaDialog( true)
+        val internDialog2 = InternDialogBuilder.nyDialog(true, true)
+            .copy(oppfolgingsperiodeId = uuid2, aktivitetId = "9")
+            .nyHenvendelsePaaDialog( false)
         val internDialoger = listOf(
             internDialog,
-            InternDialogBuilder.nyDialog().oppfolgingsperiodeId(uuid1).aktivitetId("6"),
+            InternDialogBuilder.nyDialog().copy(oppfolgingsperiodeId = uuid1, aktivitetId = "6"),
             internDialog2
         )
         val oppfolgingsperiodeDTOer = listOf(
@@ -297,9 +286,9 @@ class ArbeidsoppfolgingRoutesTest {
             OppfolgingsperiodeDTO(uuid2, "aktorid", null, OffsetDateTime.now().minusDays(1), null)
         )
 
-        val mockAktiviteter = JSON.getGson().toJson(internAktiviteter)
-        val mockDialoger = no.nav.veilarbdialog.JSON.getGson().toJson(internDialoger)
-        val mockOppfolgingsperioder = gson().toJson(oppfolgingsperiodeDTOer)
+        val mockAktiviteter = json.encodeToString(internAktiviteter)
+        val mockDialoger = json.encodeToString(internDialoger)
+        val mockOppfolgingsperioder = json.encodeToString(oppfolgingsperiodeDTOer)
 
         val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
             baseUrl = veilarbaktivitetConfig.url,

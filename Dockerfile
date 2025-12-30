@@ -9,9 +9,13 @@ COPY --from=busybox /bin/chown /bin/chown
 
 ENV TZ="Europe/Oslo"
 WORKDIR /app
-COPY /build/libs/veilarbapi-all.jar app.jar
+#COPY /build/libs/veilarbapi-all.jar app.jar
+COPY build/install/*/lib /lib
+COPY src/main/resources/logback.xml /app/logback.xml
+
 RUN /bin/mkdir /secure-logs
 RUN chown nonroot /secure-logs
 EXPOSE 8080
 USER nonroot
-CMD ["app.jar"]
+
+ENTRYPOINT ["java", "-Dlogback.configurationFile=/app/logback.xml", "-cp", "/lib/*", "no.nav.poao.veilarbapi.ApplicationKt"]

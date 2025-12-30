@@ -2,15 +2,15 @@ package no.nav.poao.veilarbapi.setup.plugins
 
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.application.*
-import io.ktor.serialization.gson.*
-import io.ktor.http.*
-import no.nav.veilarbapi.JSON
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.json.Json
+import no.nav.poao.veilarbapi.oppfolging.serdes.VeilarbapiSerializerModule
 
 
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
-        JSON()
-        val converter = GsonConverter(JSON.getGson())
-        register(ContentType.Application.Json, converter)
+        json( Json {
+            serializersModule = VeilarbapiSerializerModule
+        } )
     }
 }

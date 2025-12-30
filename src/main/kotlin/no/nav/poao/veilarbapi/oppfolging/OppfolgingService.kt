@@ -5,10 +5,10 @@ import no.nav.poao.veilarbapi.dialog.VeilarbdialogClient
 import no.nav.common.types.identer.AktorId
 import no.nav.veilarbaktivitet.model.Aktivitet
 import no.nav.veilarbapi.model.Oppfolgingsinfo
-import no.nav.veilarbapi.model.OppfolgingsinfoFeil
+import no.nav.veilarbapi.model.OppfolgingsinfoFeilInner
 import no.nav.veilarbapi.model.Oppfolgingsperioder
-import no.nav.veilarbapi.model.OppfolgingsperioderFeil
-import no.nav.veilarbapi.model.OppfolgingsperioderFeil.FeilkilderEnum
+import no.nav.veilarbapi.model.OppfolgingsperioderFeilInner
+import no.nav.veilarbapi.model.OppfolgingsperioderFeilInner.Feilkilder
 import no.nav.veilarbdialog.model.Dialog
 
 class OppfolgingService(
@@ -26,8 +26,10 @@ class OppfolgingService(
         val filtrerteDialoger: List<Dialog>? = dialoger.getOrNull()
             ?.filter { it.kontorsperreEnhetId == null }
             ?.map { dialog ->
-                dialog.henvendelser = dialog.henvendelser?.filter { henvendelse -> henvendelse.kontorsperreEnhetId == null }
-                dialog
+                dialog.copy(
+                    henvendelser = dialog.henvendelser
+                        ?.filter { henvendelse -> henvendelse.kontorsperreEnhetId == null }
+                )
             }
 
         val response = mapOppfolgingsperioder(
@@ -36,28 +38,28 @@ class OppfolgingService(
             dialoger = filtrerteDialoger
         )
 
-        if(dialoger.isFailure) {
-            val feil = OppfolgingsperioderFeil().apply {
-                feilkilder = FeilkilderEnum.DIALOG
-                feilmelding = dialoger.exceptionOrNull()?.message
-            }
-            response.addFeilItem(feil)
-        }
-        if(aktiviteter.isFailure) {
-            val feil = OppfolgingsperioderFeil().apply {
-                feilkilder = FeilkilderEnum.AKTIVITET
-                feilmelding = aktiviteter.exceptionOrNull()?.message
-            }
-            response.addFeilItem(feil)
-        }
-        if(oppfolgingsperioder.isFailure) {
-            val feil = OppfolgingsperioderFeil().apply {
-                feilkilder = FeilkilderEnum.OPPFOLGING
-                feilmelding = oppfolgingsperioder.exceptionOrNull()?.message
-            }
-            response.addFeilItem(feil)
-        }
-        return response
+        val feil = listOfNotNull(
+            if(dialoger.isFailure) {
+                OppfolgingsperioderFeilInner(
+                    feilkilder = Feilkilder.DIALOG,
+                    feilmelding = dialoger.exceptionOrNull()?.message
+                )
+            } else null,
+            if(aktiviteter.isFailure) {
+                OppfolgingsperioderFeilInner(
+                    feilkilder = Feilkilder.AKTIVITET,
+                    feilmelding = aktiviteter.exceptionOrNull()?.message
+                )
+            } else null,
+            if(oppfolgingsperioder.isFailure) {
+                OppfolgingsperioderFeilInner(
+                    feilkilder = Feilkilder.OPPFOLGING,
+                    feilmelding = oppfolgingsperioder.exceptionOrNull()?.message
+                )
+            } else null
+        )
+
+        return response.copy(feil = feil)
     }
 
     suspend fun fetchOppfolgingsInfo(aktorId: AktorId, accessToken: String): Result<Oppfolgingsinfo?> {
@@ -75,23 +77,22 @@ class OppfolgingService(
 
         val oppfolgingsinfo = mapOppfolgingsinfo(erUnderOppfolging.getOrNull(), veileder.getOrNull(), oppfolgingsenhet.getOrNull())
 
-        veileder.exceptionOrNull()?.let { exception ->
-            val feil = OppfolgingsinfoFeil().apply {
-                feilkilder = "veilederinfo"
-                feilmelding = exception.message
+        val feil = listOfNotNull(
+            veileder.exceptionOrNull()?.let { exception ->
+                OppfolgingsinfoFeilInner(
+                    feilkilder = "veilederinfo",
+                    feilmelding = exception.message
+                )
+            },
+            oppfolgingsenhet.exceptionOrNull()?.let { exception ->
+                OppfolgingsinfoFeilInner(
+                    feilkilder = "oppfolgingsenhet",
+                    feilmelding = exception.message
+                )
             }
-            oppfolgingsinfo.addFeilItem(feil)
-        }
+        )
 
-        oppfolgingsenhet.exceptionOrNull()?.let { exception ->
-            val feil = OppfolgingsinfoFeil().apply {
-                feilkilder = "oppfolgingsenhet"
-                feilmelding = exception.message
-            }
-            oppfolgingsinfo.addFeilItem(feil)
-        }
-
-        return Result.success(oppfolgingsinfo)
+        return Result.success(oppfolgingsinfo.copy(feil = feil))
     }
 
     private fun nullOrEmpty(oppfolgingsenhetDTO: OppfolgingsenhetDTO?): Boolean {

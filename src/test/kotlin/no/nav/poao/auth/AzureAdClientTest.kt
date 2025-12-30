@@ -6,7 +6,9 @@ import com.nimbusds.oauth2.sdk.TokenRequest
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import io.ktor.util.*
+import io.ktor.utils.io.InternalAPI
 import kotlinx.coroutines.runBlocking
+import no.nav.poao.util.RealServerTestUtil.Companion.withMockOAuth2ServerWithEnv
 import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.poao.veilarbapi.setup.oauth.AzureAdClient
 import no.nav.poao.veilarbapi.setup.http.defaultHttpClient

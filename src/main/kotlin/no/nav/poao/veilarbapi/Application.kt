@@ -3,7 +3,6 @@ package no.nav.poao.veilarbapi
 import io.ktor.server.application.*
 import io.ktor.server.engine.*
 import io.ktor.server.netty.*
-import no.nav.common.utils.SslUtils
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingService
@@ -16,10 +15,7 @@ import no.nav.poao.veilarbapi.setup.util.TokenProviders
 
 
 fun main() {
-    SslUtils.setupTruststore()
-
     val httpServerWait = Cluster.current != Cluster.LOKAL
-
     embeddedServer(factory = Netty, port = 8080, host = "0.0.0.0", module = Application::module)
         .start(wait =  httpServerWait)
 }

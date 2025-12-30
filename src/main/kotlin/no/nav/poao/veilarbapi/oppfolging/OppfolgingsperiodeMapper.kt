@@ -28,9 +28,9 @@ internal fun mapOppfolgingsperioder(oppfolgingsperioder: List<Oppfolgingsperiode
         }
     }
 
-    return Oppfolgingsperioder().apply {
-        oppfolgingsperioder(mappedOppfolgingsperioder)
-    }
+    return Oppfolgingsperioder(
+        oppfolgingsperioder = mappedOppfolgingsperioder
+    )
 }
 
 private fun mapOppfolgingsperiode(oppfolgingsperiode: OppfolgingsperiodeDTO, aktiviteter: List<InternAktivitet>?, dialoger: List<InternDialog>?): Oppfolgingsperiode {
@@ -41,10 +41,10 @@ private fun mapOppfolgingsperiode(oppfolgingsperiode: OppfolgingsperiodeDTO, akt
     val mappedAktiviteter = mapAktiviteter(aktiviteter, dialogerMedAktiviteter)
     val mappedDialoger = mapDialoger(dialogerUtenAktiviteter)
 
-    return Oppfolgingsperiode().apply {
-        startDato = oppfolgingsperiode.startDato
-        sluttDato = oppfolgingsperiode.sluttDato
-        dialoger(mappedDialoger)
-        aktiviteter(mappedAktiviteter)
-    }
+    return Oppfolgingsperiode(
+        startDato = oppfolgingsperiode.startDato,
+        sluttDato = oppfolgingsperiode.sluttDato,
+        dialoger = mappedDialoger,
+        aktiviteter = mappedAktiviteter
+    )
 }

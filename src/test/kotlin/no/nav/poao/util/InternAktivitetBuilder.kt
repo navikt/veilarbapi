@@ -2,8 +2,8 @@ package no.nav.poao.util
 
 import no.nav.poao.veilarbapi.aktivitet.InternAktivitet
 import no.nav.veilarbaktivitet.model.*
-import org.threeten.bp.LocalDate
-import org.threeten.bp.OffsetDateTime
+import java.time.LocalDate
+import java.time.OffsetDateTime
 import java.util.*
 import kotlin.random.Random
 
@@ -21,129 +21,237 @@ class InternAktivitetBuilder {
                 "stilling_fra_nav" -> nyStillingFraNav()
                 else -> throw IllegalArgumentException("Ukjent aktivitetstype")
             }
+
+            val aktivitetMedFellesFelter = nyAktivitet(aktivitet)
+
             if (kvp) {
-                return aktivitet.kontorsperreEnhetId(Random.nextInt().toString())
+                val enhet = Random.nextInt().toString()
+                return when (aktivitetMedFellesFelter) {
+                    is Egenaktivitet -> aktivitetMedFellesFelter.copy(kontorsperreEnhetId = enhet)
+                    is Jobbsoeking -> aktivitetMedFellesFelter.copy(kontorsperreEnhetId = enhet)
+                    is Sokeavtale -> aktivitetMedFellesFelter.copy(kontorsperreEnhetId = enhet)
+                    is Ijobb -> aktivitetMedFellesFelter.copy(kontorsperreEnhetId = enhet)
+                    is Behandling -> aktivitetMedFellesFelter.copy(kontorsperreEnhetId = enhet)
+                    is Mote -> aktivitetMedFellesFelter.copy(kontorsperreEnhetId = enhet)
+                    is Samtalereferat -> aktivitetMedFellesFelter.copy(kontorsperreEnhetId = enhet)
+                    is StillingFraNav -> aktivitetMedFellesFelter.copy(kontorsperreEnhetId = enhet)
+                    else -> aktivitetMedFellesFelter
+                }
             }
-            return aktivitet
+            return aktivitetMedFellesFelter
         }
 
         private fun nyAktivitet(aktivitet: InternAktivitet): InternAktivitet {
-            return aktivitet.apply {
-                aktivitetId = Random.nextLong().toString()
-                oppfolgingsperiodeId = UUID.randomUUID()
-                avtaltMedNav = false
-                status = AktivitetStatus.PLANLAGT
-                beskrivelse = "beskrivelse"
-                tittel = "tittel"
-                fraDato = OffsetDateTime.now()
-                tilDato = OffsetDateTime.now()
-                opprettetDato = OffsetDateTime.now()
-                endretDato = OffsetDateTime.now()
+            // The model types are now Kotlin data classes, so use copy(...) to create
+            // a new instance with the common fields populated instead of mutating via apply.
+            val nowOffset = OffsetDateTime.now()
+            val commonAktivitetId = Random.nextLong().toString()
+            val commonOppfolgingsperiodeId = UUID.randomUUID()
+
+            return when (aktivitet) {
+                is Egenaktivitet -> aktivitet.copy(
+                    aktivitetId = commonAktivitetId,
+                    oppfolgingsperiodeId = commonOppfolgingsperiodeId,
+                    avtaltMedNav = false,
+                    status = AktivitetStatus.PLANLAGT,
+                    beskrivelse = "beskrivelse",
+                    tittel = "tittel",
+                    fraDato = nowOffset,
+                    tilDato = nowOffset,
+                    opprettetDato = nowOffset,
+                    endretDato = nowOffset
+                )
+                is Jobbsoeking -> aktivitet.copy(
+                    aktivitetId = commonAktivitetId,
+                    oppfolgingsperiodeId = commonOppfolgingsperiodeId,
+                    avtaltMedNav = false,
+                    status = AktivitetStatus.PLANLAGT,
+                    beskrivelse = "beskrivelse",
+                    tittel = "tittel",
+                    fraDato = nowOffset,
+                    tilDato = nowOffset,
+                    opprettetDato = nowOffset,
+                    endretDato = nowOffset
+                )
+                is Sokeavtale -> aktivitet.copy(
+                    aktivitetId = commonAktivitetId,
+                    oppfolgingsperiodeId = commonOppfolgingsperiodeId,
+                    avtaltMedNav = false,
+                    status = AktivitetStatus.PLANLAGT,
+                    beskrivelse = "beskrivelse",
+                    tittel = "tittel",
+                    fraDato = nowOffset,
+                    tilDato = nowOffset,
+                    opprettetDato = nowOffset,
+                    endretDato = nowOffset
+                )
+                is Ijobb -> aktivitet.copy(
+                    aktivitetId = commonAktivitetId,
+                    oppfolgingsperiodeId = commonOppfolgingsperiodeId,
+                    avtaltMedNav = false,
+                    status = AktivitetStatus.PLANLAGT,
+                    beskrivelse = "beskrivelse",
+                    tittel = "tittel",
+                    fraDato = nowOffset,
+                    tilDato = nowOffset,
+                    opprettetDato = nowOffset,
+                    endretDato = nowOffset
+                )
+                is Behandling -> aktivitet.copy(
+                    aktivitetId = commonAktivitetId,
+                    oppfolgingsperiodeId = commonOppfolgingsperiodeId,
+                    avtaltMedNav = false,
+                    status = AktivitetStatus.PLANLAGT,
+                    beskrivelse = "beskrivelse",
+                    tittel = "tittel",
+                    fraDato = nowOffset,
+                    tilDato = nowOffset,
+                    opprettetDato = nowOffset,
+                    endretDato = nowOffset
+                )
+                is Mote -> aktivitet.copy(
+                    aktivitetId = commonAktivitetId,
+                    oppfolgingsperiodeId = commonOppfolgingsperiodeId,
+                    avtaltMedNav = false,
+                    status = AktivitetStatus.PLANLAGT,
+                    beskrivelse = "beskrivelse",
+                    tittel = "tittel",
+                    fraDato = nowOffset,
+                    tilDato = nowOffset,
+                    opprettetDato = nowOffset,
+                    endretDato = nowOffset
+                )
+                is Samtalereferat -> aktivitet.copy(
+                    aktivitetId = commonAktivitetId,
+                    oppfolgingsperiodeId = commonOppfolgingsperiodeId,
+                    avtaltMedNav = false,
+                    status = AktivitetStatus.PLANLAGT,
+                    beskrivelse = "beskrivelse",
+                    tittel = "tittel",
+                    fraDato = nowOffset,
+                    tilDato = nowOffset,
+                    opprettetDato = nowOffset,
+                    endretDato = nowOffset
+                )
+                is StillingFraNav -> aktivitet.copy(
+                    aktivitetId = commonAktivitetId,
+                    oppfolgingsperiodeId = commonOppfolgingsperiodeId,
+                    avtaltMedNav = false,
+                    status = AktivitetStatus.PLANLAGT,
+                    beskrivelse = "beskrivelse",
+                    tittel = "tittel",
+                    fraDato = nowOffset,
+                    tilDato = nowOffset,
+                    opprettetDato = nowOffset,
+                    endretDato = nowOffset
+                )
+                else -> aktivitet
             }
         }
 
-        private fun nyEgenaktivitet(): InternAktivitet {
-            val egenaktivitet = Egenaktivitet().apply {
-                aktivitetType = "egenaktivitet"
-                hensikt = "hensikt"
+        fun nyEgenaktivitet(): Egenaktivitet {
+            // Use primary constructor with named params for Kotlin data classes
+            val egenaktivitet = Egenaktivitet(
+                aktivitetType = "egenaktivitet",
+                hensikt = "hensikt",
                 oppfolging = "oppfolging"
-            }
+            )
 
-            return nyAktivitet(egenaktivitet)
+            return nyAktivitet(egenaktivitet) as Egenaktivitet
         }
 
-        private fun nyJobbsoeking(): InternAktivitet {
-            val jobbsoeking = Jobbsoeking().apply {
-                aktivitetType = "jobbsoeking"
-                arbeidsgiver = "arbeidsgiver"
-                stillingsTittel = "stillingstittel"
-                arbeidssted = "arbeidssted"
-                stillingsoekEtikett = Jobbsoeking.StillingsoekEtikettEnum.SOKNAD_SENDT
-            }
+        fun nyJobbsoeking(): Jobbsoeking {
+            val jobbsoeking = Jobbsoeking(
+                aktivitetType = "jobbsoeking",
+                arbeidsgiver = "arbeidsgiver",
+                stillingsTittel = "stillingstittel",
+                arbeidssted = "arbeidssted",
+                stillingsoekEtikett = Jobbsoeking.StillingsoekEtikett.SOKNAD_SENDT
+            )
 
-            return nyAktivitet(jobbsoeking)
+            return nyAktivitet(jobbsoeking) as Jobbsoeking
         }
 
-        private fun nySokeavtale(): InternAktivitet {
-            val sokeavtale = Sokeavtale().apply {
-                aktivitetType = "sokeavtale"
-                antallStillingerSokes = 10
-                antallStillingerIUken = 2
+        fun nySokeavtale(): Sokeavtale {
+            val sokeavtale = Sokeavtale(
+                aktivitetType = "sokeavtale",
+                antallStillingerSokes = 10,
+                antallStillingerIUken = 2,
                 avtaleOppfolging = "oppfolging"
-            }
+            )
 
-            return nyAktivitet(sokeavtale)
+            return nyAktivitet(sokeavtale) as Sokeavtale
         }
 
-        private fun nyIjobb(): InternAktivitet {
-            val ijobb = Ijobb().apply {
-                aktivitetType = "ijobb"
-                jobbStatusType = Ijobb.JobbStatusTypeEnum.DELTID
-                ansettelsesforhold = "ansettelsesforhold"
+        fun nyIjobb(): Ijobb {
+            val ijobb = Ijobb(
+                aktivitetType = "ijobb",
+                jobbStatusType = Ijobb.JobbStatusType.DELTID,
+                ansettelsesforhold = "ansettelsesforhold",
                 arbeidstid = "arbeidstid"
-            }
+            )
 
-            return nyAktivitet(ijobb)
+            return nyAktivitet(ijobb) as Ijobb
         }
 
-        private fun nyBehandling(): InternAktivitet {
-            val behandling = Behandling().apply {
-                aktivitetType = "behandling"
-                behandlingType = "behandlingstype"
-                behandlingSted = "behandlingssted"
-                effekt = "effekt"
+        fun nyBehandling(): Behandling {
+            val behandling = Behandling(
+                aktivitetType = "behandling",
+                behandlingType = "behandlingstype",
+                behandlingSted = "behandlingssted",
+                effekt = "effekt",
                 behandlingOppfolging = "behandlingoppfolging"
-            }
+            )
 
-            return nyAktivitet(behandling)
+            return nyAktivitet(behandling) as Behandling
         }
 
-        private fun nyMote(): InternAktivitet {
-            val mote = Mote().apply {
-                aktivitetType = "mote"
-                adresse = "adresse"
-                forberedelser = "forberedelser"
-                kanal = Mote.KanalEnum.OPPMOTE
-                referat = "referat"
+        fun nyMote(): Mote {
+            val mote = Mote(
+                aktivitetType = "mote",
+                adresse = "adresse",
+                forberedelser = "forberedelser",
+                kanal = SamtaleKanal.OPPMOTE,
+                referat = "referat",
                 referatPublisert = true
-            }
+            )
 
-            return nyAktivitet(mote)
+            return nyAktivitet(mote) as Mote
         }
 
-        private fun nySamtalereferat(): InternAktivitet {
-            val samtalereferat = Samtalereferat().apply {
-                aktivitetType = "samtalereferat"
-                kanal = Samtalereferat.KanalEnum.OPPMOTE
-                referat = "referat"
+        fun nySamtalereferat(): Samtalereferat {
+            val samtalereferat = Samtalereferat(
+                aktivitetType = "samtalereferat",
+                kanal = SamtaleKanal.OPPMOTE,
+                referat = "referat",
                 referatPublisert = true
-            }
+            )
 
-            return nyAktivitet(samtalereferat)
+            return nyAktivitet(samtalereferat) as Samtalereferat
         }
 
-        private fun nyStillingFraNav(): InternAktivitet {
-            val stillingFraNavCvKanDelesData = StillingFraNavAllOfCvKanDelesData().apply {
-                kanDeles = true
-                endretTidspunkt = OffsetDateTime.now()
-                endretAv = "endret av"
-                endretAvType = StillingFraNavAllOfCvKanDelesData.EndretAvTypeEnum.BRUKER
+        fun nyStillingFraNav(): StillingFraNav {
+            val stillingFraNavCvKanDelesData = StillingFraNavAllOfCvKanDelesData(
+                kanDeles = true,
+                endretTidspunkt = OffsetDateTime.now(),
+                endretAv = "endret av",
+                endretAvType = StillingFraNavAllOfCvKanDelesData.EndretAvType.BRUKER,
                 avtaltDato = LocalDate.now()
-            }
+            )
 
-            val stillingFraNav = StillingFraNav().apply {
-                aktivitetType = "stilling_fra_nav"
-                cvKanDelesData = stillingFraNavCvKanDelesData
-                soknadsfrist = "soknadsfrist"
-                svarfrist = LocalDate.now()
-                arbeidsgiver = "arbeidsgiver"
-                bestillingsId = "bestillingsid"
-                stillingsId = "stillingsid"
-                arbeidssted = "arbeidssted"
-                soknadsstatus = StillingFraNav.SoknadsstatusEnum.VENTER
-            }
+            val stillingFraNav = StillingFraNav(
+                aktivitetType = "stilling_fra_nav",
+                cvKanDelesData = stillingFraNavCvKanDelesData,
+                soknadsfrist = "soknadsfrist",
+                svarfrist = LocalDate.now(),
+                arbeidsgiver = "arbeidsgiver",
+                bestillingsId = "bestillingsid",
+                stillingsId = "stillingsid",
+                arbeidssted = "arbeidssted",
+                soknadsstatus = StillingFraNav.Soknadsstatus.VENTER
+            )
 
-            return nyAktivitet(stillingFraNav)
+            return nyAktivitet(stillingFraNav) as StillingFraNav
         }
 
     }

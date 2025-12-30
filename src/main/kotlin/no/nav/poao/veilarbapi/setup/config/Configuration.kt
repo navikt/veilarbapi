@@ -1,11 +1,12 @@
 package no.nav.poao.veilarbapi.setup.config
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.natpryce.konfig.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.poao.veilarbapi.setup.http.defaultHttpClient
 
@@ -60,14 +61,15 @@ data class Configuration(
     )
 }
 
+@Serializable
 data class AzureAdOpenIdConfiguration(
-    @JsonProperty("jwks_uri")
+    @SerialName("jwks_uri")
     val jwksUri: String,
-    @JsonProperty("issuer")
+    @SerialName("issuer")
     val issuer: String,
-    @JsonProperty("token_endpoint")
+    @SerialName("token_endpoint")
     val tokenEndpoint: String,
-    @JsonProperty("authorization_endpoint")
+    @SerialName("authorization_endpoint")
     val authorizationEndpoint: String
 )
 

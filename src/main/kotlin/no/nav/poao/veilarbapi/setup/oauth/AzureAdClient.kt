@@ -1,6 +1,5 @@
 package no.nav.poao.veilarbapi.setup.oauth
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.github.michaelbull.result.Err
 import com.github.michaelbull.result.Ok
 import com.github.michaelbull.result.Result
@@ -10,6 +9,8 @@ import io.ktor.client.plugins.*
 import io.ktor.client.request.forms.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import no.nav.poao.veilarbapi.setup.config.Configuration
 import no.nav.poao.veilarbapi.setup.http.defaultHttpClient
 import org.slf4j.LoggerFactory
@@ -68,11 +69,12 @@ class AzureAdClient(
         )
 }
 
+@Serializable
 data class AccessToken(
-    @JsonProperty("access_token")
+    @SerialName("access_token")
     val accessToken: String,
-    @JsonProperty("expires_in")
+    @SerialName("expires_in")
     val expiresIn: Int,
-    @JsonProperty("token_type")
+    @SerialName("token_type")
     val tokenType: String
 )

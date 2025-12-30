@@ -5,12 +5,13 @@ import io.ktor.client.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import kotlinx.serialization.json.Json
 import no.nav.common.types.identer.AktorId
+import no.nav.poao.veilarbapi.oppfolging.serdes.VeilarbapiSerializerModule
 import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
 import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
 import no.nav.poao.veilarbapi.setup.exceptions.EksternServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
-import no.nav.veilarbdialog.JSON
 import no.nav.veilarbdialog.model.Dialog
 import org.slf4j.LoggerFactory
 
@@ -22,7 +23,7 @@ class VeilarbdialogClientImpl(
     private val client: HttpClient = baseClient()
 ) : VeilarbdialogClient {
 
-    init { JSON() }
+    val json = Json { serializersModule = VeilarbapiSerializerModule }
 
     override suspend fun hentDialoger(aktorId: AktorId, accessToken: String): Result<List<Dialog>> {
         val response =
@@ -30,7 +31,7 @@ class VeilarbdialogClientImpl(
                 header(HttpHeaders.Authorization, "Bearer ${veilarbdialogTokenProvider(accessToken)}")
             }
         if (response.status == HttpStatusCode.OK) {
-            val dialoger = JSON.deserialize<Array<Dialog>>(response.bodyAsText(), Dialog::class.java.arrayType())
+            val dialoger = json.decodeFromString<List<Dialog>>(response.bodyAsText())
             return Result.success(dialoger.toList())
         } else {
             logger.error("Feilet å hente dialog data", response.toString())

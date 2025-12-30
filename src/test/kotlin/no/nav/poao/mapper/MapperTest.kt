@@ -11,7 +11,7 @@ import no.nav.veilarbapi.model.Behandling
 import no.nav.veilarbapi.model.Oppfolgingsperioder
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.SoftAssertions
-import org.threeten.bp.OffsetDateTime
+import java.time.OffsetDateTime
 import java.util.*
 import kotlin.test.Test
 
@@ -37,32 +37,32 @@ class MapperTest {
     @Test
     fun testAktivitetMapper() {
         val internAktiviteter = listOf(
-            InternAktivitetBuilder.nyAktivitet("jobbsoeking").aktivitetId("2"),
-            InternAktivitetBuilder.nyAktivitet("sokeavtale").aktivitetId("6"),
-            InternAktivitetBuilder.nyAktivitet("ijobb"),
-            InternAktivitetBuilder.nyAktivitet("behandling").aktivitetId("8"),
-            InternAktivitetBuilder.nyAktivitet("egenaktivitet"),
-            InternAktivitetBuilder.nyAktivitet("mote"),
-            InternAktivitetBuilder.nyAktivitet("samtalereferat"),
-            InternAktivitetBuilder.nyAktivitet("stilling_fra_nav")
+            InternAktivitetBuilder.nyJobbsoeking().copy(aktivitetId = "2"),
+            InternAktivitetBuilder.nySokeavtale().copy(aktivitetId = "6"),
+            InternAktivitetBuilder.nyIjobb(),
+            InternAktivitetBuilder.nyBehandling().copy(aktivitetId = "8"),
+            InternAktivitetBuilder.nyEgenaktivitet(),
+            InternAktivitetBuilder.nyMote(),
+            InternAktivitetBuilder.nySamtalereferat(),
+            InternAktivitetBuilder.nyStillingFraNav()
         )
 
         val internDialoger = listOf(
-            InternDialogBuilder.nyDialog().aktivitetId("2"),
-            InternDialogBuilder.nyDialog().aktivitetId("6"),
-            InternDialogBuilder.nyDialog().aktivitetId("8").overskrift("overskrift"),
+            InternDialogBuilder.nyDialog().copy(aktivitetId = "2"),
+            InternDialogBuilder.nyDialog().copy(aktivitetId = "6"),
+            InternDialogBuilder.nyDialog().copy(aktivitetId = "8", overskrift = "overskrift"),
         )
 
         val aktiviteter = mapAktiviteter(internAktiviteter)
 
         assertThat(aktiviteter!!).hasSize(6) // mapperen filtrerer vekk noen typer
-        assertThat(aktiviteter[1].actualInstance).isInstanceOf(Behandling::class.java)
-        assertThat(aktiviteter[1].behandling.dialog).isNull()
+        assertThat(aktiviteter[1]).isInstanceOf(Behandling::class.java)
+        assertThat(aktiviteter[1].dialog).isNull()
 
         val aktiviteter2 = mapAktiviteter(internAktiviteter, internDialoger)
 
-        assertThat(aktiviteter2!![1].behandling.dialog).isNotNull
-        assertThat(aktiviteter2[1].behandling.dialog?.tittel).isEqualTo("overskrift")
+        assertThat(aktiviteter2!![1].dialog).isNotNull
+        assertThat(aktiviteter2[1].dialog?.tittel).isEqualTo("overskrift")
     }
 
     @Test
@@ -84,29 +84,29 @@ class MapperTest {
         SoftAssertions().apply {
             assertThat(oppfolgingsperioder1.oppfolgingsperioder).hasSize(2)
             assertThat(oppfolgingsperioder1.oppfolgingsperioder!![0].startDato).isEqualTo(periode1.first)
-            assertThat(oppfolgingsperioder1.oppfolgingsperioder!![1].sluttDato).isEqualTo(periode2.second)
+            assertThat(oppfolgingsperioder1.oppfolgingsperioder[1].sluttDato).isNull()
             assertThat(oppfolgingsperioder1.feil).isNull()
         }.assertAll()
 
-        val internAktivitet = InternAktivitetBuilder.nyAktivitet("sokeavtale").oppfolgingsperiodeId(uuid2)
+        val internAktivitet = InternAktivitetBuilder.nySokeavtale().copy(oppfolgingsperiodeId = uuid2)
         val interneAktiviteter = listOf(
-            InternAktivitetBuilder.nyAktivitet("egenaktivitet").oppfolgingsperiodeId(uuid1),
-            InternAktivitetBuilder.nyAktivitet("behandling").oppfolgingsperiodeId(uuid1),
-            InternAktivitetBuilder.nyAktivitet("mote").oppfolgingsperiodeId(uuid1),
+            InternAktivitetBuilder.nyEgenaktivitet().copy(oppfolgingsperiodeId = uuid1),
+            InternAktivitetBuilder.nyBehandling().copy(oppfolgingsperiodeId = uuid1),
+            InternAktivitetBuilder.nyMote().copy(oppfolgingsperiodeId = uuid1),
             internAktivitet
         )
 
         val interneDialoger = listOf(
-            InternDialogBuilder.nyDialog().oppfolgingsperiodeId(uuid2).aktivitetId(internAktivitet.aktivitetId),
-            InternDialogBuilder.nyDialog().oppfolgingsperiodeId(uuid2)
+            InternDialogBuilder.nyDialog().copy(oppfolgingsperiodeId = uuid2, aktivitetId = internAktivitet.aktivitetId),
+            InternDialogBuilder.nyDialog().copy(oppfolgingsperiodeId = uuid2)
         )
 
         val oppfolgingsperioder2: Oppfolgingsperioder =
             mapOppfolgingsperioder(oppfolgingsperiodeDTOer, interneAktiviteter, interneDialoger)
 
         assertThat(oppfolgingsperioder2.oppfolgingsperioder!![0].aktiviteter).hasSize(3)
-        assertThat(oppfolgingsperioder2.oppfolgingsperioder!![1].aktiviteter).hasSize(1)
-        assertThat(oppfolgingsperioder2.oppfolgingsperioder!![1].aktiviteter!![0].sokeavtale.dialog).isNotNull
+        assertThat(oppfolgingsperioder2.oppfolgingsperioder[1].aktiviteter).hasSize(1)
+        assertThat(oppfolgingsperioder2.oppfolgingsperioder[1].aktiviteter!![0].dialog).isNotNull
 
         val oppfolgingsperioder3: Oppfolgingsperioder =
             mapOppfolgingsperioder(null, interneAktiviteter, interneDialoger)
