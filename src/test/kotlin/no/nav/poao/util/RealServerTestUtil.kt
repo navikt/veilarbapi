@@ -1,7 +1,11 @@
 package no.nav.poao.util
 
 import io.ktor.server.config.MapApplicationConfig
-import io.ktor.server.testing.ApplicationTestBuilder
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.runBlocking
 import no.nav.security.mock.oauth2.MockOAuth2Server
 
 class RealServerTestUtil {
@@ -13,14 +17,7 @@ class RealServerTestUtil {
             System.setProperty("AZURE_APP_WELL_KNOWN_URL", "${server.wellKnownUrl("default")}")
             System.setProperty("AZURE_APP_CLIENT_ID", "clientid")
             System.setProperty("AZURE_APP_CLIENT_SECRET", "supersecret")
-            server.testBlock()
             server.shutdown()
-        }
-
-        fun ApplicationTestBuilder.setupExternalEndpoints(block: () -> Unit) {
-            externalServices {
-            }
-            block()
         }
 
         fun setDefaultTestSystemProperties() {

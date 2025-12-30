@@ -3,19 +3,21 @@ package no.nav.poao.rest
 import com.auth0.jwt.JWT
 import com.nimbusds.jwt.SignedJWT
 import io.ktor.client.engine.mock.*
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import io.ktor.http.*
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.testing.*
-import kotlinx.coroutines.test.runTest
 import kotlinx.serialization.json.Json
 import no.nav.poao.util.*
 import no.nav.poao.util.setupEnvironment
-import no.nav.poao.util.withWiremockServer
 import no.nav.poao.veilarbapi.module
 import no.nav.poao.veilarbapi.oppfolging.*
 import no.nav.poao.veilarbapi.oppfolging.serdes.VeilarbapiSerializerModule
 import no.nav.poao.veilarbapi.setup.config.Configuration
+import no.nav.security.mock.oauth2.MockOAuth2Server
 import no.nav.security.mock.oauth2.withMockOAuth2Server
 import no.nav.veilarbapi.model.Oppfolgingsinfo
 import org.assertj.core.api.Assertions
@@ -27,42 +29,46 @@ import kotlin.test.assertNotNull
 
 class ArbeidsoppfolgingRoutesITest {
 
-    init {
-//        no.nav.veilarbaktivitet.JSON()
-//        no.nav.veilarbdialog.JSON()
-//        no.nav.veilarbapi.JSON()
-    }
-
     @Test
-    fun `hent oppfolgingsinfo med wiremock for eksterne kall`() = runTest {
-        withWiremockServer {
-            withMockOAuth2Server {
-                testApplication {
-                    application {
-                        setupEnvironment(this@withMockOAuth2Server, this@withWiremockServer)
-                        module()
-                    }
+    fun `hent oppfolgingsinfo med wiremock for eksterne kall`() = testApplication {
+        val server = MockOAuth2Server()
+        server.start()
+        System.setProperty("AZURE_APP_WELL_KNOWN_URL", "${server.wellKnownUrl("default")}")
+        System.setProperty("AZURE_APP_CLIENT_ID", "clientid")
+        System.setProperty("AZURE_APP_CLIENT_SECRET", "supersecret")
 
-                    val underOppfolgingDTO = UnderOppfolgingDTO(true)
-                    val veilederDTO = VeilederDTO("z999999")
-                    val oppfolgingsenhetDTO = OppfolgingsenhetDTO(navn = "Nav Grunerløkka", "1234")
+        val underOppfolgingDTO = UnderOppfolgingDTO(true)
+        val veilederDTO = VeilederDTO("z999999")
+        val oppfolgingsenhetDTO = OppfolgingsenhetDTO(navn = "Nav Grunerløkka", "1234")
 
-                    stubUnderOppfolging(this@withWiremockServer, underOppfolgingDTO)
-                    stubVeileder(this@withWiremockServer, veilederDTO)
-                    stubOppfolgingsEnhet(this@withWiremockServer, oppfolgingsenhetDTO)
+        this@testApplication.stubUnderOppfolging(underOppfolgingDTO)
+        this@testApplication.stubVeileder(veilederDTO)
+        this@testApplication.stubOppfolgingsEnhet(oppfolgingsenhetDTO)
 
-                    val token = this@withMockOAuth2Server.issueToken(subject = "enduser", audience = "client_id")
-                    val response = client.get("/v1/oppfolging/info?aktorId=123") {
-                        header(HttpHeaders.Authorization, "Bearer ${token.serialize()}")
-                    }
-                    assertEquals(HttpStatusCode.OK, response.status)
-
-                    val oppfolgingsinfo = Json.decodeFromString<Oppfolgingsinfo>(response.bodyAsText())
-                    Assertions.assertThat(oppfolgingsinfo.underOppfolging)
-                        .isEqualTo(underOppfolgingDTO.erUnderOppfolging)
-                }
-            }
+        setupEnvironment(server.wellKnownUrl("default").toString())
+        application {
+            module()
         }
+
+        val token = server.issueToken(subject = "enduser", audience = "client_id")
+
+        val client = this@testApplication.createClient {
+            install(ContentNegotiation) { json() }
+            install(Logging)
+        }
+        val response = client.get("/v1/oppfolging/info") {
+            header(HttpHeaders.Authorization, "Bearer ${token.serialize()}")
+            header(HttpHeaders.Accept, "application/json")
+        }
+        val responseBody = response.bodyAsText()
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("lol", responseBody)
+
+        val oppfolgingsinfo = Json.decodeFromString<Oppfolgingsinfo>(response.bodyAsText())
+        Assertions.assertThat(oppfolgingsinfo.underOppfolging)
+            .isEqualTo(underOppfolgingDTO.erUnderOppfolging)
+
+        server.shutdown()
     }
 
     /**
@@ -97,7 +103,7 @@ class ArbeidsoppfolgingRoutesITest {
 
             testApplication {
                 application {
-                    setupEnvironment(this@withMockOAuth2Server)
+                    setupEnvironment(this@withMockOAuth2Server.wellKnownUrl("default").toString())
                     module(Configuration(veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingMockClient)))
                 }
                 val response = client.get("/v1/oppfolging/info?aktorId=123") {
@@ -143,12 +149,14 @@ class ArbeidsoppfolgingRoutesITest {
 
             testApplication {
                 application {
-                    setupEnvironment(this@withMockOAuth2Server)
-                    module(Configuration(
-                        veilarbdialogConfig = Configuration.VeilarbdialogConfig(httpClient = veilarbdialogClient),
-                        veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(httpClient = veilarbaktivitetClient),
-                        veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingClient)
-                    ))
+                    setupEnvironment(this@withMockOAuth2Server.wellKnownUrl("default").toString())
+                    module(
+                        Configuration(
+                            veilarbdialogConfig = Configuration.VeilarbdialogConfig(httpClient = veilarbdialogClient),
+                            veilarbaktivitetConfig = Configuration.VeilarbaktivitetConfig(httpClient = veilarbaktivitetClient),
+                            veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingClient)
+                        )
+                    )
                 }
                 val response = client.get("/v1/oppfolging/periode?aktorId=123") {
                     header(HttpHeaders.Authorization, "Bearer ${initialToken.serialize()}")
@@ -186,7 +194,7 @@ class ArbeidsoppfolgingRoutesITest {
         withMockOAuth2Server {
             testApplication {
                 application {
-                    setupEnvironment(this@withMockOAuth2Server)
+                    setupEnvironment(this@withMockOAuth2Server.wellKnownUrl("default").toString())
                     module(Configuration(veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingMockClient)))
                 }
                 val response = client.get("/v1/oppfolging/info?aktorId=123")
@@ -220,7 +228,7 @@ class ArbeidsoppfolgingRoutesITest {
 
             testApplication {
                 application {
-                    setupEnvironment(this@withMockOAuth2Server)
+                    setupEnvironment(this@withMockOAuth2Server.wellKnownUrl("default").toString())
                     module(Configuration(veilarboppfolgingConfig = Configuration.VeilarboppfolgingConfig(httpClient = veilarboppfolgingMockClient)))
                 }
                 val response = client.get("/v1/oppfolging/info?aktorId=123") {
@@ -234,7 +242,7 @@ class ArbeidsoppfolgingRoutesITest {
         }
     }
 
-    private fun checkBearerTokenContent(request: HttpRequestData, expectedAudience: String) {
+    fun checkBearerTokenContent(request: HttpRequestData, expectedAudience: String) {
         val authString = request.headers[HttpHeaders.Authorization]?.substringAfter("Bearer ")
         val authJwt = JWT.decode(authString)
         Assertions.assertThat(authJwt.subject).isEqualTo("enduser")

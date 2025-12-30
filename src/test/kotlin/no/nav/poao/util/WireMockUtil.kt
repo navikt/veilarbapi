@@ -1,60 +1,58 @@
 package no.nav.poao.util
 
-import com.github.tomakehurst.wiremock.WireMockServer
-import com.github.tomakehurst.wiremock.client.WireMock
-import com.github.tomakehurst.wiremock.core.WireMockConfiguration
-import kotlinx.serialization.json.Json
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.install
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.response.respond
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.ApplicationTestBuilder
 import no.nav.poao.veilarbapi.oppfolging.OppfolgingsenhetDTO
 import no.nav.poao.veilarbapi.oppfolging.UnderOppfolgingDTO
 import no.nav.poao.veilarbapi.oppfolging.VeilederDTO
 
-internal fun <R> withWiremockServer(
-    test: WireMockServer.() -> R
-): R {
-    val server = WireMockServer(WireMockConfiguration.DYNAMIC_PORT)
-    server.start()
-    try {
-        return server.test()
-    } finally {
-        server.shutdown()
+fun ApplicationTestBuilder.stubVeileder(veilederDTO: VeilederDTO) {
+    externalServices {
+        hosts("veilarboppfolging") {
+            this@hosts.install(ContentNegotiation) {
+                json()
+            }
+            this@hosts.routing {
+                get("/veilarboppfolging/api/v2/veileder") {
+                    call.respond(veilederDTO)
+                }
+            }
+        }
     }
 }
 
-internal fun stubVeileder(wireMockServer: WireMockServer, veilederDTO: VeilederDTO) {
-    val veilederMock = Json.encodeToString(veilederDTO)
-    wireMockServer.stubFor(
-        WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/veileder"))
-            .withQueryParam("aktorId", WireMock.equalTo("123"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(200)
-                    .withBody(veilederMock)
-            )
-    )
+fun ApplicationTestBuilder.stubUnderOppfolging(underOppfolgingDTO: UnderOppfolgingDTO) {
+    externalServices {
+        hosts("veilarboppfolging") {
+            this@hosts.install(ContentNegotiation) {
+                json()
+            }
+            this@hosts.routing {
+                 get("/veilarboppfolging/api/v2/oppfolging") {
+                    call.respond(underOppfolgingDTO)
+                }
+            }
+        }
+    }
 }
 
-internal fun stubUnderOppfolging(wireMockServer: WireMockServer, underOppfolgingDTO: UnderOppfolgingDTO) {
-    val underOppfolgingMock = Json.encodeToString(underOppfolgingDTO)
-    wireMockServer.stubFor(
-        WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/v2/oppfolging"))
-            .withQueryParam("aktorId", WireMock.equalTo("123"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(200)
-                    .withBody(underOppfolgingMock)
-            )
-    )
+fun ApplicationTestBuilder.stubOppfolgingsEnhet(oppfolgingsenhetDTO: OppfolgingsenhetDTO) {
+    externalServices {
+        hosts("veilarboppfolging") {
+            this@hosts.install(ContentNegotiation) {
+                json()
+            }
+            this@hosts.routing {
+                get("/veilarboppfolging/api/person/oppfolgingsenhet") {
+                    call.respond(oppfolgingsenhetDTO)
+                }
+            }
+        }
+    }
 }
 
-internal fun stubOppfolgingsEnhet(wireMockServer: WireMockServer, oppfolgingsenhetDTO: OppfolgingsenhetDTO) {
-    val oppfolgingsenhetMock = Json.encodeToString(oppfolgingsenhetDTO)
-    wireMockServer.stubFor(
-        WireMock.get(WireMock.urlPathEqualTo("/veilarboppfolging/api/person/oppfolgingsenhet"))
-            .withQueryParam("aktorId", WireMock.equalTo("123"))
-            .willReturn(
-                WireMock.aResponse()
-                    .withStatus(200)
-                    .withBody(oppfolgingsenhetMock)
-            )
-    )
-}

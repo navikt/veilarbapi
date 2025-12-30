@@ -156,6 +156,7 @@ dependencies {
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeine_version")
     implementation("io.ktor:ktor-client-cio-jvm:3.3.0")
+    implementation("io.ktor:ktor-client-logging:${ktor_version}")
 //    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
@@ -167,7 +168,8 @@ dependencies {
 
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.14")
     // LOGGING
-    implementation(group= "ch.qos.logback", name= "logback-classic", version= logback_version)
+//    implementation(group= "ch.qos.logback", name= "logback-classic", version= logback_version)
+    implementation("ch.qos.logback:logback-classic:$logback_version")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
     // Monitoring

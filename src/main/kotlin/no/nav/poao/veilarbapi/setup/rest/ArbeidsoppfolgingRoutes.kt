@@ -12,9 +12,9 @@ import no.nav.poao.veilarbapi.setup.util.getAccessToken
 import no.nav.veilarbapi.model.Oppfolgingsinfo
 
 fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean = true, oppfolgingService: OppfolgingService) {
-    routing() {
+    routing {
         conditionalAuthenticate(useAuthentication) {
-            route("/v1/oppfolging/") {
+            route("/v1/oppfolging") {
                 get("/periode") {
                     val aktorId = call.request.queryParameters["aktorId"]
                     if (aktorId == null) {
@@ -25,7 +25,7 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean = true, oppfo
                         call.respond(oppfolgingService.fetchOppfolgingsPerioder(AktorId.of(aktorId), token))
                     }
                 }
-                get("info") {
+                get("/info") {
                     val aktorId = call.request.queryParameters["aktorId"]
                     if (aktorId == null) {
                         call.respond(HttpStatusCode.BadRequest, "AktorId er påkrevd")

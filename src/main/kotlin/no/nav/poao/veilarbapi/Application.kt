@@ -33,7 +33,10 @@ fun Application.module(configuration: Configuration = Configuration()) {
     val veilarbdialogClient = VeilarbdialogClientImpl(configuration.veilarbdialogConfig.url, tokenProviders.veilarbdialogTokenProvider, configuration.veilarbdialogConfig.httpClient)
     val veilarboppfolgingClient = VeilarboppfolgingClientImpl(configuration.veilarboppfolgingConfig.url, tokenProviders.veilarboppfolgingTokenProvider, configuration.veilarboppfolgingConfig.httpClient)
 
-    val oppfolgingService = OppfolgingService(veilarbaktivitetClient = veilarbaktivitetClient, veilarbdialogClient = veilarbdialogClient, veilarboppfolgingClient =  veilarboppfolgingClient)
+    val oppfolgingService = OppfolgingService(
+        veilarbaktivitetClient = veilarbaktivitetClient,
+        veilarbdialogClient = veilarbdialogClient,
+        veilarboppfolgingClient =  veilarboppfolgingClient)
 
     configureMonitoring()
     configureAuthentication(configuration.useAuthentication, configuration.azureAd)
