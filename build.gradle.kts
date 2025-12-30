@@ -40,11 +40,6 @@ tasks.jacocoTestReport {
     }
 }
 
-//tasks.shadowJar {
-//    enabled = false
-//}
-
-
 kotlin {
     jvmToolchain {
         (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(21))
