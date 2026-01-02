@@ -1,3 +1,5 @@
+import com.expediagroup.graphql.plugin.gradle.config.GraphQLScalar
+import com.expediagroup.graphql.plugin.gradle.config.GraphQLSerializer
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
 //import com.expediagroup.graphql.plugin.gradle.config.GraphQLSerializer
@@ -22,7 +24,7 @@ plugins {
     id ("org.openapi.generator") version "7.17.0"
     id("org.sonarqube") version "4.4.1.3373"
     id ("jacoco")
-//    id("com.expediagroup.graphql") version "8.8.1"
+    id("com.expediagroup.graphql") version "8.8.1"
 }
 
 sonarqube {
@@ -125,14 +127,15 @@ tasks.build {
 java.sourceSets["main"].java.srcDir("$buildDir/generated/src/main/java")
 kotlin.sourceSets["main"].kotlin.srcDir("$buildDir/generated/src/main/kotlin")
 
-/*
+
 graphql {
     client {
         serializer = GraphQLSerializer.KOTLINX
-        schemaFile = file("src/main/resources/graphql/schema.veilarboppfolging.graphql")
+        schemaFile = file("src/main/resources/graphql/schema.veilarboppfolging.graphqls")
         packageName = "no.nav.http.graphql.generated.client"
+        customScalars = listOf(GraphQLScalar("OffsetDateTime", "java.time.OffsetDateTime","no.nav.poao.veilarbapi.oppfolging.serdes.OffsetDatetimeScalarConverter"))
     }
-}*/
+}
 
 dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:${ktor_version}")
@@ -147,15 +150,12 @@ dependencies {
     implementation("io.ktor:ktor-server-content-negotiation:$ktor_version")
     implementation("io.ktor:ktor-server-cors:$ktor_version")
     implementation("io.ktor:ktor-serialization:$ktor_version")
-//    implementation("io.ktor:ktor-serialization-gson:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeine_version")
     implementation("io.ktor:ktor-client-cio-jvm:3.3.0")
-//    testImplementation("io.ktor:ktor-server-tests:$ktor_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
     testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
     implementation("no.nav.security:token-validation-ktor-v3:$token_support_version")
-//    implementation("no.nav.security:token-client-core:$token_support_version")
     api("javax.validation:validation-api:2.0.1.Final")
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
     implementation("com.expediagroup:graphql-kotlin-ktor-client:$graphql_kotlin_version")
@@ -187,14 +187,9 @@ dependencies {
     testImplementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     testImplementation("io.ktor:ktor-server-test-host:${ktor_version}")
     // avhengigheter i generert server kode
-//    implementation("io.gsonfire:gson-fire:1.8.5")
     api("javax.ws.rs:javax.ws.rs-api:2.1.1")
     implementation("io.swagger:swagger-annotations:1.6.5")
     implementation("com.squareup.okio:okio:3.0.0")
-    // avhengigheter i generert client kode
-//    implementation("com.squareup.okhttp3:okhttp:4.9.3")
-//    implementation("com.squareup.okhttp3:logging-interceptor:4.9.3")
-    // avhengigheter i generert kode SLUTT
 
     testImplementation("com.github.tomakehurst:wiremock-jre8:2.33.1")
 }

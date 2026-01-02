@@ -1,6 +1,7 @@
 package no.nav.poao.rest
 
 import com.auth0.jwt.JWT
+import com.expediagroup.graphql.client.types.GraphQLClientError
 import com.nimbusds.jwt.SignedJWT
 import io.ktor.client.engine.mock.*
 import io.ktor.client.request.*
@@ -27,12 +28,6 @@ import kotlin.test.assertNotNull
 
 class ArbeidsoppfolgingRoutesITest {
 
-    init {
-//        no.nav.veilarbaktivitet.JSON()
-//        no.nav.veilarbdialog.JSON()
-//        no.nav.veilarbapi.JSON()
-    }
-
     @Test
     fun `hent oppfolgingsinfo med wiremock for eksterne kall`() = runTest {
         withWiremockServer {
@@ -47,9 +42,7 @@ class ArbeidsoppfolgingRoutesITest {
                     val veilederDTO = VeilederDTO("z999999")
                     val oppfolgingsenhetDTO = OppfolgingsenhetDTO(navn = "Nav Grunerløkka", "1234")
 
-                    stubUnderOppfolging(this@withWiremockServer, underOppfolgingDTO)
-                    stubVeileder(this@withWiremockServer, veilederDTO)
-                    stubOppfolgingsEnhet(this@withWiremockServer, oppfolgingsenhetDTO)
+                    stubOppfolgingsInfo(this@withWiremockServer, oppfolgingsenhetDTO, veilederDTO.veilederIdent!!)
 
                     val token = this@withMockOAuth2Server.issueToken(subject = "enduser", audience = "client_id")
                     val response = client.get("/v1/oppfolging/info?aktorId=123") {
@@ -60,6 +53,10 @@ class ArbeidsoppfolgingRoutesITest {
                     val oppfolgingsinfo = Json.decodeFromString<Oppfolgingsinfo>(response.bodyAsText())
                     Assertions.assertThat(oppfolgingsinfo.underOppfolging)
                         .isEqualTo(underOppfolgingDTO.erUnderOppfolging)
+                    Assertions.assertThat(oppfolgingsinfo.primaerVeileder)
+                        .isEqualTo(veilederDTO.veilederIdent)
+                    Assertions.assertThat(oppfolgingsinfo.oppfolgingsEnhet?.enhetId)
+                        .isEqualTo(oppfolgingsenhetDTO.enhetId)
                 }
             }
         }
@@ -82,12 +79,10 @@ class ArbeidsoppfolgingRoutesITest {
 
         val veilarboppfolgingMockClient = createMockClient { request ->
             when (request.url.encodedPath) {
-                "/veilarboppfolging/api/v2/oppfolging" -> {
+                "/veilarboppfolging/api/graphql" -> {
                     checkBearerTokenContent(request, "api://local.poao.veilarboppfolging/.default")
-                    respondOk(underOppfolgingMock)
+                    respondOk(oppfolgingsInfoResponse(oppfolgingsenhetDTO, veilederDTO.veilederIdent!!))
                 }
-                "/veilarboppfolging/api/v2/veileder" -> respondOk(veilederMock)
-                "/veilarboppfolging/api/person/oppfolgingsenhet" -> respondOk(oppfolgingsenhetMock)
                 else -> error("Unhandled ${request.url.encodedPath}")
             }
         }
@@ -197,20 +192,26 @@ class ArbeidsoppfolgingRoutesITest {
 
     @Test
     fun `hent veilederinfo feiler`() {
-        val underOppfolgingDTO = UnderOppfolgingDTO(true)
-        val underOppfolgingMock = Json.encodeToString(underOppfolgingDTO)
-
         val oppfolgingsenhetDTO = OppfolgingsenhetDTO("NAV Grünerløkka", "1234")
-        val oppfolgingsenhetMock = Json.encodeToString(oppfolgingsenhetDTO)
 
         val veilarboppfolgingMockClient = createMockClient { request ->
             when (request.url.encodedPath) {
-                "/veilarboppfolging/api/v2/oppfolging" -> {
+                "/veilarboppfolging/api/graphql" -> {
                     checkBearerTokenContent(request, "api://local.poao.veilarboppfolging/.default")
-                    respondOk(underOppfolgingMock)
+                    // Alt untatt veileder funker
+                    respondOk(oppfolgingsInfoResponse(
+                        oppfolgingsenhetDTO,
+                        null,
+                        errors = listOf(
+                            object: GraphQLClientError {
+                                override val message: String
+                                    get() = "WOOPS"
+                                override val path: List<Any>?
+                                    get() = listOf("veilederinfo")
+                            }
+                        )
+                    ))
                 }
-                "/veilarboppfolging/api/v2/veileder" -> respondBadRequest()
-                "/veilarboppfolging/api/person/oppfolgingsenhet" -> respondOk(oppfolgingsenhetMock)
                 else -> error("Unhandled ${request.url.encodedPath}")
             }
         }

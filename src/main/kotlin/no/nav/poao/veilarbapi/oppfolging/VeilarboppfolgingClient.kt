@@ -1,7 +1,9 @@
 package no.nav.poao.veilarbapi.oppfolging
 
+import com.expediagroup.graphql.client.types.GraphQLClientResponse
 import kotlinx.serialization.Serializable
 import no.nav.common.types.identer.AktorId
+import no.nav.http.graphql.generated.client.HentOppfolgingsDataQuery
 import no.nav.poao.veilarbapi.oppfolging.serdes.OffsetDateTimeSerializer
 import no.nav.poao.veilarbapi.oppfolging.serdes.UUIDSerializer
 import java.time.OffsetDateTime
@@ -9,9 +11,7 @@ import java.util.*
 
 interface VeilarboppfolgingClient {
     suspend fun hentOppfolgingsperioder(aktorId: AktorId, accessToken: String): Result<List<OppfolgingsperiodeDTO>>
-    suspend fun hentErUnderOppfolging(aktorId: AktorId, accessToken: String): Result<UnderOppfolgingDTO>
-    suspend fun hentVeileder(aktorId: AktorId, accessToken: String): Result<VeilederDTO?>
-    suspend fun hentOppfolgingsenhet(aktorId: AktorId, accessToken: String): Result<OppfolgingsenhetDTO?>
+    suspend fun hentOppfolgingsData(aktorId: AktorId, accessToken: String): Result<GraphQLClientResponse<HentOppfolgingsDataQuery.Result>>
 }
 
 @Serializable

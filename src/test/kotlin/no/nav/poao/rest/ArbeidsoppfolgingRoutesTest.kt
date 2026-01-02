@@ -1,5 +1,6 @@
 package no.nav.poao.rest
 
+import com.expediagroup.graphql.client.types.GraphQLClientError
 import io.ktor.client.engine.mock.*
 import io.ktor.client.request.*
 import io.ktor.client.statement.*
@@ -10,6 +11,8 @@ import no.nav.poao.util.InternAktivitetBuilder
 import no.nav.poao.util.InternDialogBuilder
 import no.nav.poao.util.createMockClient
 import no.nav.poao.util.nyHenvendelsePaaDialog
+import no.nav.poao.util.oppfolgingsInfoResponse
+import no.nav.poao.util.oppfolgingsperioderResponse
 import no.nav.poao.veilarbapi.aktivitet.VeilarbaktivitetClientImpl
 import no.nav.poao.veilarbapi.dialog.VeilarbdialogClientImpl
 import no.nav.poao.veilarbapi.oppfolging.*
@@ -26,6 +29,7 @@ import org.junit.Test
 import org.mockito.kotlin.mock
 import java.time.OffsetDateTime
 import java.util.*
+import kotlin.collections.listOf
 import kotlin.test.assertEquals
 
 val mockJwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTIzNDU2Nzg5LCJuYW1lIjoiSm9zZXBoIn0.OpOSSw7e485LOP5PrzScxHb7SR6sAOMRckfFwi4rp7o"
@@ -35,7 +39,7 @@ class ArbeidsoppfolgingRoutesTest {
         Configuration.VeilarbaktivitetConfig(url = "/veilarbaktivitet")
     private val veilarbdialogConfig = Configuration.VeilarbdialogConfig(url = "/veilarbdialog")
     private val veilarboppfolgingConfig =
-        Configuration.VeilarboppfolgingConfig(url = "/veilarboppfolging")
+        Configuration.VeilarboppfolgingConfig(url = "http://localhost/veilarboppfolging")
 
     val json = Json {
         serializersModule = VeilarbapiSerializerModule
@@ -127,12 +131,13 @@ class ArbeidsoppfolgingRoutesTest {
 
         val httpClient = createMockClient { request ->
             when (request.url.encodedPath) {
-                "/veilarboppfolging/api/v2/oppfolging" ->
-                    respond(underOppfolgingMock, HttpStatusCode.OK)
-                "/veilarboppfolging/api/v2/veileder" ->
-                    respond(veilederMock, HttpStatusCode.OK)
-                "/veilarboppfolging/api/person/oppfolgingsenhet" ->
-                    respond(oppfolgingsenhetMock, HttpStatusCode.OK)
+                "/veilarboppfolging/api/graphql" ->
+                    respondOk(
+                        oppfolgingsInfoResponse(
+                            null,
+                            veilederDTO.veilederIdent,
+                        )
+                    )
                 else -> error("Unhandled ${request.url.encodedPath}")
             }
         }
@@ -171,12 +176,20 @@ class ArbeidsoppfolgingRoutesTest {
 
         val veilarboppfolgingHttpClient = createMockClient { request ->
             when (request.url.encodedPath) {
-                "/veilarboppfolging/api/v2/oppfolging" ->
-                    respondError(HttpStatusCode.Forbidden)
-                "/veilarboppfolging/api/v2/veileder" ->
-                    respond(veilederMock, HttpStatusCode.OK)
-                "/veilarboppfolging/api/person/oppfolgingsenhet" ->
-                    respond(oppfolgingsenhetMock, HttpStatusCode.OK)
+                "/veilarboppfolging/api/graphql" ->
+                    // Oppfolging feiler men veileder og oppfolgingsenhet funker
+                    respondOk(oppfolgingsInfoResponse(
+                        oppfolgingsenhetDTO,
+                        veilederDTO.veilederIdent,
+                        listOf(
+                            object: GraphQLClientError {
+                                override val message: String
+                                    get() = "WOOPS"
+                                override val path: List<Any>?
+                                    get() = listOf("veilederinfo")
+                            }
+                        )
+                    ))
                 else -> error("Unhandled ${request.url.encodedPath}")
             }
         }
@@ -202,7 +215,7 @@ class ArbeidsoppfolgingRoutesTest {
             val response = client.get("/v1/oppfolging/info?aktorId=123") {
                 header("Authorization", "Bearer $mockJwtToken")
             }
-            assertEquals(HttpStatusCode.Forbidden, response.status)
+            assertEquals(HttpStatusCode.OK, response.status)
         }
 
         val underOppfolgingDTO = UnderOppfolgingDTO(true)
@@ -210,12 +223,25 @@ class ArbeidsoppfolgingRoutesTest {
 
         val veilarboppfolgingHttpClient2 = createMockClient { request ->
             when (request.url.encodedPath) {
-                "/veilarboppfolging/api/v2/oppfolging" ->
-                    respondOk(underOppfolgingMock)
-                "/veilarboppfolging/api/v2/veileder" ->
-                    respondError(HttpStatusCode.Forbidden)
-                "/veilarboppfolging/api/person/oppfolgingsenhet" ->
-                    respondError(HttpStatusCode.InternalServerError)
+                "/veilarboppfolging/api/graphql" ->
+                    respondOk( oppfolgingsInfoResponse(
+                        null,
+                        null,
+                        listOf(
+                            object: GraphQLClientError {
+                                override val message: String
+                                    get() = "Mangler tilgang"
+                                override val path: List<Any>?
+                                    get() = listOf("veilederinfo")
+                            },
+                            object: GraphQLClientError {
+                                override val message: String
+                                    get() = "Serverfeil i klientkall"
+                                override val path: List<Any>?
+                                    get() = listOf("oppfolgingsenhet")
+                            }
+                        )
+                    ))
                 else -> error("Unhandled ${request.url.encodedPath}")
             }
         }
@@ -288,7 +314,7 @@ class ArbeidsoppfolgingRoutesTest {
 
         val mockAktiviteter = json.encodeToString(internAktiviteter)
         val mockDialoger = json.encodeToString(internDialoger)
-        val mockOppfolgingsperioder = json.encodeToString(oppfolgingsperiodeDTOer)
+        val mockOppfolgingsperioder = oppfolgingsperioderResponse(oppfolgingsperiodeDTOer)
 
         val veilarbaktivitetClient = VeilarbaktivitetClientImpl(
             baseUrl = veilarbaktivitetConfig.url,
