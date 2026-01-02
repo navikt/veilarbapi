@@ -2,14 +2,15 @@ query HentOppfolgingsDataQuery ($fnr: String!) {
     oppfolgingsEnhet(fnr: $fnr) {
         enhet {
             id
+            navn
         }
-    }
-    oppfolgingsPerioder(fnr: $fnr) {
-        id
-        sluttTidspunkt
-        startTidspunkt
     }
     oppfolging(fnr: $fnr) {
         erUnderOppfolging
+    }
+    brukerStatus(fnr: $fnr) {
+        veilederTilordning {
+            veilederIdent
+        }
     }
 }

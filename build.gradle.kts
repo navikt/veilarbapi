@@ -1,3 +1,4 @@
+import com.expediagroup.graphql.plugin.gradle.config.GraphQLScalar
 import com.expediagroup.graphql.plugin.gradle.config.GraphQLSerializer
 import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
 
@@ -132,6 +133,7 @@ graphql {
         serializer = GraphQLSerializer.KOTLINX
         schemaFile = file("src/main/resources/graphql/schema.veilarboppfolging.graphqls")
         packageName = "no.nav.http.graphql.generated.client"
+        customScalars = listOf(GraphQLScalar("OffsetDateTime", "java.time.OffsetDateTime","no.nav.poao.veilarbapi.oppfolging.serdes.OffsetDatetimeScalarConverter"))
     }
 }
 
