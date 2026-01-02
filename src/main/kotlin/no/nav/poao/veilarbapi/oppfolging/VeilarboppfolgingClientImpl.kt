@@ -29,7 +29,7 @@ class VeilarboppfolgingClientImpl(
     }
 
     val graphqlClient = GraphQLKtorClient(
-        url = URI.create("$baseUrl/graphql").toURL(),
+        url = URI.create("$baseUrl/api/graphql").toURL(),
         httpClient = client
     )
 

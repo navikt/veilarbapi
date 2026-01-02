@@ -79,7 +79,7 @@ class ArbeidsoppfolgingRoutesITest {
 
         val veilarboppfolgingMockClient = createMockClient { request ->
             when (request.url.encodedPath) {
-                "/veilarboppfolging/graphql" -> {
+                "/veilarboppfolging/api/graphql" -> {
                     checkBearerTokenContent(request, "api://local.poao.veilarboppfolging/.default")
                     respondOk(oppfolgingsInfoResponse(oppfolgingsenhetDTO, veilederDTO.veilederIdent!!))
                 }
@@ -196,7 +196,7 @@ class ArbeidsoppfolgingRoutesITest {
 
         val veilarboppfolgingMockClient = createMockClient { request ->
             when (request.url.encodedPath) {
-                "/veilarboppfolging/graphql" -> {
+                "/veilarboppfolging/api/graphql" -> {
                     checkBearerTokenContent(request, "api://local.poao.veilarboppfolging/.default")
                     // Alt untatt veileder funker
                     respondOk(oppfolgingsInfoResponse(

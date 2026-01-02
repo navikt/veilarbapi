@@ -131,7 +131,7 @@ class ArbeidsoppfolgingRoutesTest {
 
         val httpClient = createMockClient { request ->
             when (request.url.encodedPath) {
-                "/veilarboppfolging/graphql" ->
+                "/veilarboppfolging/api/graphql" ->
                     respondOk(
                         oppfolgingsInfoResponse(
                             null,
@@ -176,7 +176,7 @@ class ArbeidsoppfolgingRoutesTest {
 
         val veilarboppfolgingHttpClient = createMockClient { request ->
             when (request.url.encodedPath) {
-                "/veilarboppfolging/graphql" ->
+                "/veilarboppfolging/api/graphql" ->
                     // Oppfolging feiler men veileder og oppfolgingsenhet funker
                     respondOk(oppfolgingsInfoResponse(
                         oppfolgingsenhetDTO,
@@ -223,7 +223,7 @@ class ArbeidsoppfolgingRoutesTest {
 
         val veilarboppfolgingHttpClient2 = createMockClient { request ->
             when (request.url.encodedPath) {
-                "/veilarboppfolging/graphql" ->
+                "/veilarboppfolging/api/graphql" ->
                     respondOk( oppfolgingsInfoResponse(
                         null,
                         null,

@@ -75,7 +75,7 @@ fun oppfolgingsInfoResponse(enhet: OppfolgingsenhetDTO?, veilederIdent: String?,
 
 internal fun stubOppfolgingsInfo(wireMockServer: WireMockServer, enhet: OppfolgingsenhetDTO, veilederIdent: String) {
     wireMockServer.stubFor(
-        WireMock.post(WireMock.urlPathEqualTo("/veilarboppfolging/graphql"))
+        WireMock.post(WireMock.urlPathEqualTo("/veilarboppfolging/api/graphql"))
             .willReturn(
                 WireMock.aResponse()
                     .withStatus(200)
