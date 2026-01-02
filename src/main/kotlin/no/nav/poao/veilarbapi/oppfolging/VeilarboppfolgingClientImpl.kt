@@ -5,16 +5,11 @@ import com.expediagroup.graphql.client.ktor.GraphQLKtorClient
 import com.expediagroup.graphql.client.types.GraphQLClientResponse
 import io.ktor.client.*
 import io.ktor.client.request.*
-import io.ktor.client.statement.*
-import io.ktor.http.*
 import kotlinx.serialization.json.Json
 import no.nav.common.types.identer.AktorId
 import no.nav.http.graphql.generated.client.HentOppfolgingsDataQuery
 import no.nav.http.graphql.generated.client.HentOppfolgingsPerioderQuery
 import no.nav.poao.veilarbapi.oppfolging.serdes.VeilarbapiSerializerModule
-import no.nav.poao.veilarbapi.setup.exceptions.IkkePaaLoggetException
-import no.nav.poao.veilarbapi.setup.exceptions.ManglerTilgangException
-import no.nav.poao.veilarbapi.setup.exceptions.EksternServerFeilException
 import no.nav.poao.veilarbapi.setup.http.baseClient
 import org.slf4j.LoggerFactory
 import java.net.URI
@@ -77,15 +72,6 @@ class VeilarboppfolgingClientImpl(
             }
         } catch (exception: Exception) {
             return Result.failure(exception)
-        }
-    }
-
-    private suspend fun callFailure(response: HttpResponse): Exception {
-        return when (response.status) {
-            HttpStatusCode.Forbidden -> ManglerTilgangException(response, response.bodyAsText())
-            HttpStatusCode.Unauthorized -> IkkePaaLoggetException(response, response.bodyAsText())
-            HttpStatusCode.InternalServerError -> EksternServerFeilException(response, response.bodyAsText())
-            else -> Exception("Ukjent statuskode ${response.status}")
         }
     }
 }

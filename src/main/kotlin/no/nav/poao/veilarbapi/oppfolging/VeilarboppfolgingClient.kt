@@ -3,7 +3,6 @@ package no.nav.poao.veilarbapi.oppfolging
 import com.expediagroup.graphql.client.types.GraphQLClientResponse
 import kotlinx.serialization.Serializable
 import no.nav.common.types.identer.AktorId
-import no.nav.common.types.identer.Fnr
 import no.nav.http.graphql.generated.client.HentOppfolgingsDataQuery
 import no.nav.poao.veilarbapi.oppfolging.serdes.OffsetDateTimeSerializer
 import no.nav.poao.veilarbapi.oppfolging.serdes.UUIDSerializer
