@@ -13,8 +13,6 @@ WORKDIR /app
 COPY build/install/*/lib /lib
 COPY src/main/resources/logback.xml /app/logback.xml
 
-RUN /bin/mkdir /secure-logs
-RUN chown nonroot /secure-logs
 EXPOSE 8080
 USER nonroot
 

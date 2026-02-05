@@ -34,8 +34,6 @@ spec:
     requests:
       cpu: 200m
       memory: 768Mi
-  secureLogs:
-    enabled: true
   observability:
     autoInstrumentation:
       enabled: true
