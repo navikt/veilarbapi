@@ -8,15 +8,10 @@ concurrency:
 
 permissions:
   packages: write
-  contents: write
+  id-token: write
 
 jobs:
   test-build-and-push:
-    permissions:
-      packages: write
-      contents: write
-      id-token: write
-      actions: read
     name: Test, build and push
     runs-on: ubuntu-latest
     outputs:
