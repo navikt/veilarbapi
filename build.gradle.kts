@@ -22,7 +22,7 @@ plugins {
     `java-library`
     id("org.jetbrains.kotlin.plugin.serialization") version "2.3.0"
     id ("org.openapi.generator") version "7.17.0"
-    id("org.sonarqube") version "4.4.1.3373"
+    id("org.sonarqube") version "7.3.0.8198"
     id ("jacoco")
     id("com.expediagroup.graphql") version "8.8.1"
 }
