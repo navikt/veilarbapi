@@ -160,7 +160,7 @@ dependencies {
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
     implementation("com.expediagroup:graphql-kotlin-ktor-client:$graphql_kotlin_version")
 
-    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.14")
+    implementation("com.michael-bull.kotlin-result:kotlin-result:2.3.1")
     // LOGGING
     implementation("ch.qos.logback:logback-classic:${logback_version}")
     implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
