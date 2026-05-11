@@ -163,7 +163,7 @@ dependencies {
     implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.14")
     // LOGGING
     implementation("ch.qos.logback:logback-classic:${logback_version}")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.5")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
     // Monitoring
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktor_version")
