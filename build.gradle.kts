@@ -154,7 +154,7 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeine_version")
     implementation("io.ktor:ktor-client-cio-jvm:3.3.0")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
     implementation("no.nav.security:token-validation-ktor-v3:$token_support_version")
     api("javax.validation:validation-api:2.0.1.Final")
     implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
