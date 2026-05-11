@@ -191,6 +191,6 @@ dependencies {
     implementation("io.swagger:swagger-annotations:1.6.5")
     implementation("com.squareup.okio:okio:3.0.0")
 
-    testImplementation("com.github.tomakehurst:wiremock-jre8:2.33.1")
+    testImplementation("com.github.tomakehurst:wiremock-jre8:3.0.1")
 }
 
