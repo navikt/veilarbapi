@@ -178,7 +178,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     testImplementation("io.ktor:ktor-server-test-host:${ktor_version}")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.49")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.50")
 
     testImplementation("org.wiremock:wiremock:3.13.2")
 }
