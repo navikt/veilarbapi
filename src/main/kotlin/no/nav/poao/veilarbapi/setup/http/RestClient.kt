@@ -8,8 +8,6 @@ import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.request.header
 
-import io.ktor.http.*
-import io.ktor.serialization.jackson.*
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 

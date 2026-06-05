@@ -18,13 +18,13 @@ val graphql_kotlin_version: String by project
 
 plugins {
     application
-    kotlin("jvm") version "2.3.0"
+    kotlin("jvm") version "2.3.21"
     `java-library`
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.0"
-    id ("org.openapi.generator") version "7.17.0"
-    id("org.sonarqube") version "4.4.1.3373"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.21"
+    id ("org.openapi.generator") version "7.22.0"
+    id("org.sonarqube") version "7.3.0.8198"
     id ("jacoco")
-    id("com.expediagroup.graphql") version "8.8.1"
+    id("com.expediagroup.graphql") version "10.0.0"
 }
 
 sonarqube {
@@ -152,18 +152,15 @@ dependencies {
     implementation("io.ktor:ktor-serialization:$ktor_version")
     implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
     implementation("com.github.ben-manes.caffeine:caffeine:$caffeine_version")
-    implementation("io.ktor:ktor-client-cio-jvm:3.3.0")
+    implementation("io.ktor:ktor-client-cio-jvm:$ktor_version")
     testImplementation("io.ktor:ktor-client-mock:$ktor_version")
-    testImplementation("org.mockito.kotlin:mockito-kotlin:4.0.0")
+    testImplementation("org.mockito.kotlin:mockito-kotlin:6.3.0")
     implementation("no.nav.security:token-validation-ktor-v3:$token_support_version")
-    api("javax.validation:validation-api:2.0.1.Final")
-    implementation("org.realityforge.javax.annotation:javax.annotation:1.0.1")
     implementation("com.expediagroup:graphql-kotlin-ktor-client:$graphql_kotlin_version")
 
-    implementation("com.michael-bull.kotlin-result:kotlin-result:1.1.14")
+    implementation("com.michael-bull.kotlin-result:kotlin-result:2.3.1")
     // LOGGING
     implementation("ch.qos.logback:logback-classic:${logback_version}")
-    implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
     implementation("net.logstash.logback:logstash-logback-encoder:$logstashEncoderVersion")
     // Monitoring
     implementation("io.ktor:ktor-server-metrics-micrometer:$ktor_version")
@@ -172,25 +169,17 @@ dependencies {
 
     implementation("com.natpryce:konfig:1.6.10.0")
 
-    implementation("no.nav.common:util:$navcommonVersion")
-    implementation("no.nav.common:sts:$navcommonVersion")
+    implementation("no.nav.common:types:$navcommonVersion")
     // Velarbaktivitet Rest Client START
     implementation("io.ktor:ktor-client-core:$ktor_version")
-//    implementation("io.ktor:ktor-client-gson:$ktor_version")
     implementation("io.ktor:ktor-client-java:$ktor_version")
-//    implementation("io.ktor:ktor-client-okhttp:$ktor_version")
-    // Azure client
-    implementation("io.ktor:ktor-serialization-jackson:$ktor_version")
-    // Rest Client END
+
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
-    testImplementation("org.assertj:assertj-core:3.22.0")
+    testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     testImplementation("io.ktor:ktor-server-test-host:${ktor_version}")
-    // avhengigheter i generert server kode
-    api("javax.ws.rs:javax.ws.rs-api:2.1.1")
-    implementation("io.swagger:swagger-annotations:1.6.5")
-    implementation("com.squareup.okio:okio:3.0.0")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.49")
 
-    testImplementation("com.github.tomakehurst:wiremock-jre8:2.33.1")
+    testImplementation("org.wiremock:wiremock:3.13.2")
 }
 
