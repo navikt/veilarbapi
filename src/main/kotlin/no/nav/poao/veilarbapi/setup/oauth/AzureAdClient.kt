@@ -33,7 +33,7 @@ class AzureAdClient(
             onFailure = { error -> error.handleError("Could not fetch access token from authority endpoint") }
         )
 
-    private suspend fun Throwable.handleError(message: String): Err<ThrowableErrorMessage> {
+    private suspend fun Throwable.handleError(message: String): Result<Nothing, ThrowableErrorMessage> {
         val responseBody: String? = when (this) {
             is ResponseException -> this.response.bodyAsText()
             else -> null

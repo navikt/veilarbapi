@@ -16,7 +16,7 @@ fun Application.configureMonitoring() {
 
         timers { call, exception ->
             tag("path", call.request.path())
-            if (exception != null) tag("exception", exception::class.simpleName)
+            if (exception != null) tag("exception", exception::class.simpleName ?: "ukjent")
         }
     }
 
