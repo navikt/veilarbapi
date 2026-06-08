@@ -18,11 +18,11 @@ val graphql_kotlin_version: String by project
 
 plugins {
     application
-    kotlin("jvm") version "2.3.21"
+    kotlin("jvm") version "2.4.0"
     `java-library`
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.21"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.4.0"
     id ("org.openapi.generator") version "7.22.0"
-    id("org.sonarqube") version "7.3.0.8198"
+    id("org.sonarqube") version "7.3.1.8318"
     id ("jacoco")
     id("com.expediagroup.graphql") version "10.0.0"
 }
