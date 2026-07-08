@@ -18,13 +18,13 @@ val graphql_kotlin_version: String by project
 
 plugins {
     application
-    kotlin("jvm") version "2.4.0"
+    kotlin("jvm") version "2.3.21"
     `java-library`
-    id("org.jetbrains.kotlin.plugin.serialization") version "2.4.0"
+    id("org.jetbrains.kotlin.plugin.serialization") version "2.3.21"
     id ("org.openapi.generator") version "7.22.0"
-    id("org.sonarqube") version "7.3.1.8318"
+    id("org.sonarqube") version "7.3.0.8198"
     id ("jacoco")
-    id("com.expediagroup.graphql") version "10.0.1"
+    id("com.expediagroup.graphql") version "10.0.0"
 }
 
 sonarqube {
@@ -178,7 +178,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     testImplementation("io.ktor:ktor-server-test-host:${ktor_version}")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.51")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.50")
 
     testImplementation("org.wiremock:wiremock:3.13.2")
 }
