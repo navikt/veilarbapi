@@ -22,7 +22,7 @@ jobs:
       telemetry: ${{ steps.docker-build-push.outputs.telemetry }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Set up JDK 21
         uses: actions/setup-java@v5
         with:
@@ -44,9 +44,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Deploy application
-        uses: nais/deploy/actions/deploy@a7f8690f9b367fcbf5348a0a1e21d44f1aae50eb
+        uses: nais/deploy/actions/deploy@2d18f050f07b6a007864c6a57070ed915d571beb
         env:
           CLUSTER: dev-gcp
           RESOURCE: nais-dev.yaml
@@ -59,9 +59,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Deploy application
-        uses: nais/deploy/actions/deploy@a7f8690f9b367fcbf5348a0a1e21d44f1aae50eb
+        uses: nais/deploy/actions/deploy@2d18f050f07b6a007864c6a57070ed915d571beb
         env:
           CLUSTER: prod-gcp
           RESOURCE: nais.yaml
@@ -73,7 +73,7 @@ jobs:
     needs: deploy-prod
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Build website
         run: cp src/main/resources/openapi/ArbeidsoppfolgingV1.yaml docs/
 
