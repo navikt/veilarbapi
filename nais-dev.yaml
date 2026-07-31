@@ -2,9 +2,9 @@ kind: Application
 apiVersion: nais.io/v1alpha1
 metadata:
   name: veilarbapi
-  namespace: pto
+  namespace: dab
   labels:
-    team: pto
+    team: dab
 spec:
   image: {{image}}
   ingresses:
