@@ -62,8 +62,6 @@ spec:
           namespace: nais
           cluster: dev-gcp
         - application: saas-proxy
-          namespace: teamcrm
-        - application: saas-proxy
           namespace: platforce
         - application: azure-token-generator
           namespace: nais
