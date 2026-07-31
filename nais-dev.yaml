@@ -55,9 +55,6 @@ spec:
         - application: ida
           namespace: traktor
           cluster: prod-fss
-        - application: salesforce
-          namespace: teamcrm
-          cluster: dev-external
         - application: azure-token-generator
           namespace: nais
           cluster: dev-gcp
