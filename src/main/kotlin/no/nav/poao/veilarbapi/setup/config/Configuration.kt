@@ -1,11 +1,12 @@
 package no.nav.poao.veilarbapi.setup.config
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.natpryce.konfig.*
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.request.*
 import kotlinx.coroutines.runBlocking
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 import no.nav.poao.veilarbapi.setup.http.baseClient
 import no.nav.poao.veilarbapi.setup.http.defaultHttpClient
 
@@ -15,8 +16,10 @@ private val defaultProperties by lazy {
         mapOf(
             "NAIS_CLUSTER_NAME" to notUsedLocally,
             "VEILARBAKTIVITETAPI_URL" to notUsedLocally,
+            "VEILARBAKTIVITETAPI_SCOPE" to notUsedLocally,
             "VEILARBDIALOGAPI_URL" to notUsedLocally,
             "VEILARBOPPFOLGINGAPI_URL" to notUsedLocally,
+            "VEILARBOPPFOLGINGAPI_SCOPE" to notUsedLocally,
             "AZURE_APP_CLIENT_SECRET" to notUsedLocally,
             "AZURE_APP_CLIENT_ID" to notUsedLocally,
             "AZURE_APP_WELL_KNOWN_URL" to notUsedLocally
@@ -28,7 +31,6 @@ data class Configuration(
     val veilarbaktivitetConfig: VeilarbaktivitetConfig = VeilarbaktivitetConfig(),
     val veilarbdialogConfig: VeilarbdialogConfig = VeilarbdialogConfig(),
     val veilarboppfolgingConfig: VeilarboppfolgingConfig = VeilarboppfolgingConfig(),
-    val poaoGcpProxyConfig: PoaoGcpProxyConfig = PoaoGcpProxyConfig(),
     val clustername: String = config()[Key("NAIS_CLUSTER_NAME", stringType)],
     val azureAd: AzureAd = AzureAd(),
     val useAuthentication: Boolean = true
@@ -42,34 +44,32 @@ data class Configuration(
         }
     )
 
-    data class PoaoGcpProxyConfig(
-        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.poao-gcp-proxy/.default"
-    )
     data class VeilarbaktivitetConfig(
         val url: String = config()[Key("VEILARBAKTIVITETAPI_URL", stringType)],
-        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarbaktivitet/.default",
+        val authenticationScope: String = config()[Key("VEILARBAKTIVITETAPI_SCOPE", stringType)],
         val httpClient: HttpClient = baseClient()
     )
     data class VeilarbdialogConfig(
         val url: String = config()[Key("VEILARBDIALOGAPI_URL", stringType)],
-        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarbdialog/.default",
+        val authenticationScope: String = "api://${Cluster.current.toGcp()}.dab.veilarbdialog/.default",
         val httpClient: HttpClient = baseClient()
     )
     data class VeilarboppfolgingConfig(
         val url: String = config()[Key("VEILARBOPPFOLGINGAPI_URL", stringType)],
-        val authenticationScope: String = "api://${Cluster.current.toOnPrem()}.pto.veilarboppfolging/.default",
+        val authenticationScope: String = config()[Key("VEILARBOPPFOLGINGAPI_SCOPE", stringType)],
         val httpClient: HttpClient = baseClient()
     )
 }
 
+@Serializable
 data class AzureAdOpenIdConfiguration(
-    @JsonProperty("jwks_uri")
+    @SerialName("jwks_uri")
     val jwksUri: String,
-    @JsonProperty("issuer")
+    @SerialName("issuer")
     val issuer: String,
-    @JsonProperty("token_endpoint")
+    @SerialName("token_endpoint")
     val tokenEndpoint: String,
-    @JsonProperty("authorization_endpoint")
+    @SerialName("authorization_endpoint")
     val authorizationEndpoint: String
 )
 

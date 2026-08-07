@@ -2,12 +2,11 @@ kind: Application
 apiVersion: nais.io/v1alpha1
 metadata:
   name: veilarbapi
-  namespace: pto
-  cluster: prod-gcp
+  namespace: dab
   labels:
-    team: pto
+    team: dab
 spec:
-  image: docker.pkg.github.com/navikt/veilarbapi/veilarbapi:{{version}}
+  image: {{image}}
   port: 8080
   prometheus:
     enabled: true
@@ -33,10 +32,17 @@ spec:
     requests:
       cpu: 200m
       memory: 768Mi
-  secureLogs:
-    enabled: true
+  observability:
+    autoInstrumentation:
+      enabled: true
+      runtime: java
+    logging:
+      destinations:
+        - id: elastic
+        - id: loki
   azure:
     application:
+      allowAllUsers: true
       enabled: true
       claims:
         extra:
@@ -44,17 +50,26 @@ spec:
   accessPolicy:
     inbound:
       rules:
-        - application: salesforce
-          namespace: teamcrm
-          cluster: prod-external
         - application: saas-proxy
-          namespace: teamcrm
+          namespace: platforce
+    outbound:
+      rules:
+        - application: veilarbaktivitet
+          namespace: dab
+        - application: veilarbdialog
+          namespace: dab
+        - application: veilarboppfolging
+          namespace: poao
   env:
     - name: AZURE_APP_WELL_KNOWN_URL
       value: https://login.microsoftonline.com/62366534-1ec3-4962-8869-9b5535279d0b/v2.0/.well-known/openid-configuration
-    - name : VEILARBAKTIVITETAPI_URL
-      value: https://poao-gcp-proxy.prod-fss-pub.nais.io/proxy/veilarbaktivitet
+    - name: VEILARBAKTIVITETAPI_URL
+      value: http://veilarbaktivitet.dab/veilarbaktivitet
+    - name: VEILARBAKTIVITETAPI_SCOPE
+      value: api://prod-gcp.dab.veilarbaktivitet/.default
     - name : VEILARBDIALOGAPI_URL
-      value: https://poao-gcp-proxy.prod-fss-pub.nais.io/proxy/veilarbdialog
+      value: http://veilarbdialog.dab/veilarbdialog
     - name : VEILARBOPPFOLGINGAPI_URL
-      value: https://poao-gcp-proxy.prod-fss-pub.nais.io/proxy/veilarboppfolging
+      value: http://veilarboppfolging.poao/veilarboppfolging
+    - name: VEILARBOPPFOLGINGAPI_SCOPE
+      value: api://prod-gcp.poao.veilarboppfolging/.default

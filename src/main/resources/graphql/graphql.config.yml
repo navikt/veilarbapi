@@ -1,0 +1,2 @@
+schema: schema.veilarboppfolging.graphqls
+documents: '**/*.graphql'

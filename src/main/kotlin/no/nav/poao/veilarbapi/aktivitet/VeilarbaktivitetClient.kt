@@ -5,7 +5,7 @@ import no.nav.veilarbaktivitet.model.Aktivitet
 
 interface VeilarbaktivitetClient {
 
-    suspend fun hentAktiviteter(aktorId: AktorId, accessToken: String?): Result<List<Aktivitet>>
+    suspend fun hentAktiviteter(aktorId: AktorId, accessToken: String): Result<List<Aktivitet>>
 
 }
 

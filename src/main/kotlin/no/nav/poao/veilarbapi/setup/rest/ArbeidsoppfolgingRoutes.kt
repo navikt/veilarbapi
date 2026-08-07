@@ -20,8 +20,7 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean = true, oppfo
                     if (aktorId == null) {
                         call.respond(HttpStatusCode.BadRequest, "AktorId er påkrevd")
                     } else {
-                        call.application.log.info("Hent oppfølgingsperioder for aktorId: {}", aktorId)
-                        val token = call.getAccessToken()
+                        val token = call.getAccessToken()!!
                         call.respond(oppfolgingService.fetchOppfolgingsPerioder(AktorId.of(aktorId), token))
                     }
                 }
@@ -30,8 +29,7 @@ fun Application.arbeidsoppfolgingRoutes(useAuthentication: Boolean = true, oppfo
                     if (aktorId == null) {
                         call.respond(HttpStatusCode.BadRequest, "AktorId er påkrevd")
                     } else {
-                        call.application.log.info("Hent oppfølgingsInfo for aktorId: {}", aktorId)
-                        val token = call.getAccessToken()
+                        val token = call.getAccessToken()!!
 
                         val result: Result<Oppfolgingsinfo?> = oppfolgingService.fetchOppfolgingsInfo(AktorId.of(aktorId), token)
 

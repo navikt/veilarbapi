@@ -6,6 +6,11 @@ servers:
   - url: https://veilarbdialog
 components:
   schemas:
+    avsenderType:
+      type: string
+      enum:
+        - VEILEDER
+        - BRUKER
     dialog:
       type: object
       properties:
@@ -39,10 +44,7 @@ components:
         kontorsperre_enhet_id:
           type: string
         avsender_type:
-          type: string
-          enum:
-            - VEILEDER
-            - BRUKER
+          $ref: "#/components/schemas/avsenderType"
         avsender_id:
           type: string
         sendt_dato:

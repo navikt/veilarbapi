@@ -14,6 +14,12 @@ enum class Cluster {
         }
     }
 
+    fun toGcp(): String = when (this) {
+        DEV_GCP -> "dev-gcp"
+        PROD_GCP -> "prod-gcp"
+        LOKAL -> "local"
+    }
+
     fun toOnPrem(): String = when (this) {
         DEV_GCP -> "dev-fss"
         PROD_GCP -> "prod-fss"

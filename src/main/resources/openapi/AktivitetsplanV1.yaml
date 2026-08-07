@@ -6,10 +6,23 @@ servers:
   - url: https://veilarbaktivitet
 components:
   schemas:
+    samtaleKanal:
+      type: string
+      enum:
+        - OPPMOTE
+        - TELEFON
+        - INTERNETT
     aktivitet:
       type: object
       discriminator:
         propertyName: aktivitet_type
+        mapping:
+          sokeavtale: '#/components/schemas/sokeavtale'
+          behandling: '#/components/schemas/behandling'
+          mote: '#/components/schemas/mote'
+          samtalereferat: '#/components/schemas/samtalereferat'
+          stillingFraNav: '#/components/schemas/stilling_fra_nav'
+          egenaktivitet: '#/components/schemas/egenaktivitet'
       required:
         - aktivitet_type
       properties:
@@ -24,7 +37,6 @@ components:
           example: true
         status:
           $ref: '#/components/schemas/AktivitetStatus'
-          example: FULLFORT
         beskrivelse:
           type: string
           description: Beskrivelse av aktiviteten som er planlagt/gjennomført
@@ -125,11 +137,7 @@ components:
             forberedelser:
               type: string
             kanal:
-              type: string
-              enum:
-                - OPPMOTE
-                - TELEFON
-                - INTERNETT
+              $ref: "#/components/schemas/samtaleKanal"
             referat:
               type: string
             referatPublisert:
@@ -140,11 +148,7 @@ components:
         - type: object
           properties:
             kanal:
-              type: string
-              enum:
-                - OPPMOTE
-                - TELEFON
-                - INTERNETT
+              $ref: "#/components/schemas/samtaleKanal"
             referat:
               type: string
             referatPublisert:
@@ -194,7 +198,10 @@ components:
                 - JOBBTILBUD
                 - AVSLAG
                 - IKKE_FATT_JOBBEN
+                - FATT_JOBBEN
     AktivitetStatus:
+      description: Status for aktiviteten
+      example: FULLFORT
       type: string
       enum:
         - PLANLAGT
