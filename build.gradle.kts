@@ -22,7 +22,7 @@ plugins {
     `java-library`
     id("org.jetbrains.kotlin.plugin.serialization") version "2.4.10"
     id ("org.openapi.generator") version "7.22.0"
-    id("org.sonarqube") version "7.3.1.8318"
+    id("org.sonarqube") version "7.4.0.8496"
     id ("jacoco")
     id("com.expediagroup.graphql") version "10.2.0"
 }
@@ -178,7 +178,7 @@ dependencies {
     testImplementation("org.assertj:assertj-core:3.27.7")
     testImplementation("no.nav.security:mock-oauth2-server:$mockOAuth2ServerVersion")
     testImplementation("io.ktor:ktor-server-test-host:${ktor_version}")
-    implementation("io.swagger.core.v3:swagger-annotations:2.2.52")
+    implementation("io.swagger.core.v3:swagger-annotations:2.2.53")
 
     testImplementation("org.wiremock:wiremock:3.13.2")
 }
