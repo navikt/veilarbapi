@@ -24,7 +24,7 @@ plugins {
     id ("org.openapi.generator") version "7.22.0"
     id("org.sonarqube") version "7.4.0.8496"
     id ("jacoco")
-    id("com.expediagroup.graphql") version "10.2.0"
+    id("com.expediagroup.graphql") version "10.2.1"
 }
 
 sonarqube {
