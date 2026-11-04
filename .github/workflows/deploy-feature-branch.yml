@@ -26,21 +26,11 @@ jobs:
           cache: 'gradle'
       - name: Build artifacts
         run: ./gradlew build --no-daemon
-
-      - name: Generate and output SBOM
-        uses: anchore/sbom-action@66cbf4bc1f1c0d2edc94016e65bc221b6bb0ad6c
-        with:
-          path: 'build/libs'
-          format: 'cyclonedx-json'
-          artifact-name: 'bom.json'
-          output-file: 'build/reports/bom.json'
-          upload-artifact: 'true'
       - name: Push docker image to GAR
-        uses: nais/docker-build-push@dd7421d5068057a020ca46ead966c26190c516b1
+        uses: nais/docker-build-push@12796b9f29e4c8569e1779ac384bfa7a9e4f68c3
         id: docker-build-push
         with:
           team: dab
-          byosbom: 'build/reports/bom.json'
 
   deploy-dev:
     name: Deploy application to GCP dev
