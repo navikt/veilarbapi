@@ -138,6 +138,7 @@ graphql {
 }
 
 dependencies {
+    implementation(platform("com.fasterxml.jackson:jackson-bom:2.18.11"))
     implementation("io.ktor:ktor-serialization-kotlinx-json:${ktor_version}")
     implementation(kotlin("stdlib"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version")
