@@ -27,7 +27,7 @@ jobs:
       - name: Build artifacts
         run: ./gradlew build --no-daemon
       - name: Push docker image to GAR
-        uses: nais/docker-build-push@12796b9f29e4c8569e1779ac384bfa7a9e4f68c3
+        uses: nais/docker-build-push@588f76a6f45aeb1e75d5e8417ec6ef6d79b2b39f
         id: docker-build-push
         with:
           team: dab
